@@ -28,7 +28,16 @@
                 transform: translateY(0) rotateZ(0deg);
             }
         }
-
+        .home {
+            position: absolute;
+            top: 15px;
+            left: 40px;
+            font-size: 1.6rem;
+            background: transparent;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 1px solid #555;
+        }
         .animate-deal-player {
             animation: drawPlayerCard 1s cubic-bezier(0.25, 1, 0.5, 1) both;
         }
@@ -41,6 +50,9 @@
 <body class="bg-emerald-900 text-white min-h-screen flex flex-col justify-between font-sans overflow-hidden">
 
     <!-- Header -->
+    <div class = "home">
+        <a href = "index.html" style = "color: white;">Home</a>
+    </div>
     <header class="p-4 text-center bg-emerald-950 shadow-md">
         <h1 class="text-3xl font-bold tracking-wider">BLACKJACK</h1>
         <p class="text-xs text-emerald-300 mt-1">Animated Boilerplate</p>
