@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel = "icon" type="image/png" href ="dog.png">
+        <title>Title</title>
+    </head>
+    <body>
+     <form action = "index.php" method = "POST">
+        <label for "Username">Username: </label>
+        <input type = "text" id = "username" placeholder = "Enter your username here" minlength = "5" maxlength = "10" required>
+        <br>
+        <br>
+        <label for "password">Password: </label>
+        <input type="password" id = "password" placeholder = "Enter your password here" minlength = "5" maxlength = "10" required>
+        <br>
+        <br>
+        <label for "phone">Phone #: </label>
+        <input type = "tel" id = "phone" placeholder = "Enter phone number here" pattern = "[0-9]{3}-[0-9]{3}-[0-9]{4}" required><br><br>
+        <input type = "reset">
+        <input type = "submit">
+        
+     </form>
+    </body>
+</html>

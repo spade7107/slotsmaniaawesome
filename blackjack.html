@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack with Animations</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes drawPlayerCard {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) rotateZ(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateZ(0deg);
+            }
+        }
+
+        @keyframes drawDealerCard {
+            0% {
+                opacity: 0;
+                transform: translateY(-100vh) rotateZ(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateZ(0deg);
+            }
+        }
+
+        .animate-deal-player {
+            animation: drawPlayerCard 1s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+
+        .animate-deal-dealer {
+            animation: drawDealerCard 1s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+    </style>
+</head>
+<body class="bg-emerald-900 text-white min-h-screen flex flex-col justify-between font-sans overflow-hidden">
+
+    <!-- Header -->
+    <header class="p-4 text-center bg-emerald-950 shadow-md">
+        <h1 class="text-3xl font-bold tracking-wider">BLACKJACK</h1>
+        <p class="text-xs text-emerald-300 mt-1">Animated Boilerplate</p>
+    </header>
+
+    <!-- Game Table Container -->
+    <main class="flex-grow flex flex-col items-center justify-around p-4 max-w-xl mx-auto w-full">
+
+        <!-- Dealer Area -->
+        <div class="bg-emerald-800/60 p-4 rounded-xl w-full text-center border border-emerald-700/50 shadow-inner">
+            <h2 class="text-lg font-semibold mb-2 text-emerald-200">Dealer <span id="dealer-score" class="text-sm font-normal"></span></h2>
+            <div id="dealer-cards" class="flex justify-center gap-2 min-h-[96px] items-center"></div>
+        </div>
+
+        <!-- Message Banner -->
+        <div id="message" class="text-xl font-bold tracking-wide text-yellow-300 min-h-[32px] text-center">
+            Place your bet to start
+        </div>
+
+        <!-- Player Area -->
+        <div class="bg-emerald-800/60 p-4 rounded-xl w-full text-center border border-emerald-700/50 shadow-inner">
+            <h2 class="text-lg font-semibold mb-2 text-emerald-200">Player <span id="player-score" class="text-sm font-normal"></span></h2>
+            <div id="player-cards" class="flex justify-center gap-2 min-h-[96px] items-center"></div>
+        </div>
+
+    </main>
+
+    <!-- Controls & Status Footer -->
+    <footer class="bg-emerald-950 p-4 shadow-lg border-t border-emerald-800">
+        <div class="max-w-xl mx-auto flex flex-col gap-4">
+            
+            <!-- Stats Bar -->
+            <div class="flex justify-between items-center text-sm px-2">
+                <div>Bankroll: <span id="bankroll" class="font-bold text-emerald-300">$1000</span></div>
+                <div>Current Bet: <span id="current-bet" class="font-bold text-emerald-300">$0</span></div>
+            </div>
+
+            <!-- Action Controls -->
+            <div id="betting-controls" class="flex gap-2">
+                <button onclick="placeBet(10)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold py-2 rounded transition">$10</button>
+                <button onclick="placeBet(50)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold py-2 rounded transition">$50</button>
+                <button onclick="placeBet(100)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold py-2 rounded transition">$100</button>
+            </div>
+
+            <div id="game-controls" class="flex gap-2 hidden">
+                <button id="hit-btn" onclick="playerHit()" class="flex-1 bg-blue-600 hover:bg-blue-500 font-semibold py-2 rounded transition">Hit</button>
+                <button id="stand-btn" onclick="playerStand()" class="flex-1 bg-red-600 hover:bg-red-500 font-semibold py-2 rounded transition">Stand</button>
+            </div>
+
+            <button id="restart-btn" onclick="resetGame()" class="w-full bg-emerald-700 hover:bg-emerald-600 font-semibold py-2 rounded transition hidden">Play Again</button>
+
+        </div>
+    </footer>
+
+    <!-- Game Logic Script -->
+    <script>
+        const suits = ['♠', '♥', '♦', '♣'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let bankroll = 1000;
+        let currentBet = 0;
+        let gameOver = true;
+
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            // Shuffle
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function preloadCardImages() {
+            const valueMap = { 'A': 'ace', 'J': 'jack', 'Q': 'queen', 'K': 'king' };
+            for (let suit of suits) {
+                for (let value of values) {
+                    const suitMap = { '♠': 'spades', '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs' };
+                    const img = new Image();
+                    img.src = `https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${valueMap[value] || value.toLowerCase()}_of_${suitMap[suit]}.png`;
+                }
+            }
+        }
+
+        function calculateHand(hand, hideFirstCard = false) {
+            let sum = 0;
+            let aces = 0;
+
+            for (let i = 0; i < hand.length; i++) {
+                if (hideFirstCard && i === 0) continue;
+                let card = hand[i].value;
+                if (card === 'A') {
+                    aces++;
+                    sum += 11;
+                } else if (['K', 'Q', 'J', '10'].includes(card)) {
+                    sum += 10;
+                } else {
+                    sum += parseInt(card);
+                }
+            }
+
+            while (sum > 21 && aces > 0) {
+                sum -= 10;
+                aces--;
+            }
+
+            return sum;
+        }
+
+        function createCardHTML(card, animationClass = '') {
+            const suitMap = { '♠': 'spades', '♥': 'hearts', '♦': 'diamonds', '♣': 'clubs' };
+            const valueMap = { 'A': 'ace', 'J': 'jack', 'Q': 'queen', 'K': 'king' };
+            const imgUrl = `https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${valueMap[card.value] || card.value.toLowerCase()}_of_${suitMap[card.suit]}.png`;
+
+            return `
+                <div class="w-16 h-24 bg-white rounded-lg shadow-md overflow-hidden flex items-center justify-center p-1 border border-slate-200 relative ${animationClass}">
+                    <img src="${imgUrl}" alt="${card.value} of ${card.suit}" class="w-full h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="absolute inset-0 hidden flex-col justify-between p-1 text-slate-900 font-bold text-xs select-none">
+                        <span>${card.value}</span>
+                        <span class="text-xl text-center">${card.suit}</span>
+                        <span class="self-end rotate-180">${card.value}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function render(hideDealerCard = true, animatedPlayerIndices = [], animatedDealerIndices = []) {
+            const playerCardEl = document.getElementById('player-cards');
+            
+            playerCardEl.innerHTML = playerHand.map((c, i) => {
+                const animationClass = animatedPlayerIndices.includes(i) ? 'animate-deal-player' : '';
+                return createCardHTML(c, animationClass);
+            }).join('');
+
+            renderDealerCards(hideDealerCard, animatedDealerIndices);
+
+            document.getElementById('player-score').innerText = `(${calculateHand(playerHand)})`;
+            document.getElementById('dealer-score').innerText = gameOver || !hideDealerCard ? `(${calculateHand(dealerHand)})` : `(${calculateHand(dealerHand, true)})`;
+
+            document.getElementById('bankroll').innerText = `$${bankroll}`;
+            document.getElementById('current-bet').innerText = `$${currentBet}`;
+        }
+
+        function renderDealerCards(hideDealerCard, animatedDealerIndices = []) {
+            const dealerCardEl = document.getElementById('dealer-cards');
+            dealerCardEl.innerHTML = dealerHand.map((c, i) => {
+                const animationClass = animatedDealerIndices.includes(i) ? 'animate-deal-dealer' : '';
+                if (hideDealerCard && i === 0) {
+                    return `<div class="w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 ${animationClass}">🂠</div>`;
+                }
+                return createCardHTML(c, animationClass);
+            }).join('');
+        }
+
+        function placeBet(amount) {
+            if (bankroll < amount) return;
+            bankroll -= amount;
+            currentBet += amount;
+            startGame();
+        }
+
+        function startGame() {
+            createDeck();
+            playerHand = [deck.pop(), deck.pop()];
+            dealerHand = [deck.pop(), deck.pop()];
+            gameOver = false;
+
+            document.getElementById('betting-controls').classList.add('hidden');
+            document.getElementById('game-controls').classList.remove('hidden');
+            document.getElementById('restart-btn').classList.add('hidden');
+            document.getElementById('message').innerText = "Hit or Stand?";
+
+            render(true, playerHand.map((_, i) => i), dealerHand.map((_, i) => i));
+
+            if (calculateHand(playerHand) === 21) {
+                gameOver = true;
+                setTimeout(() => endRound('blackjack'), 600);
+            }
+        }
+
+        function playerHit() {
+            if (gameOver) return;
+            playerHand.push(deck.pop());
+            
+            render(true, [playerHand.length - 1]);
+
+            const playerTotal = calculateHand(playerHand);
+            if (playerTotal > 21) {
+                endRound('bust');
+            } else if (playerTotal === 21) {
+                playerStand();
+            }
+        }
+
+        function playerStand() {
+            if (gameOver) return;
+            
+            const firstDrawnIndex = dealerHand.length;
+            let dealerTotal = calculateHand(dealerHand);
+            while (dealerTotal < 17) {
+                dealerHand.push(deck.pop());
+                dealerTotal = calculateHand(dealerHand);
+            }
+            const drawnDealerIndices = Array.from(
+                { length: dealerHand.length - firstDrawnIndex },
+                (_, i) => firstDrawnIndex + i
+            );
+
+            const playerTotal = calculateHand(playerHand);
+            
+            if (dealerTotal > 21) {
+                endRound('dealer-bust', drawnDealerIndices);
+            } else if (playerTotal > dealerTotal) {
+                endRound('win', drawnDealerIndices);
+            } else if (playerTotal < dealerTotal) {
+                endRound('lose', drawnDealerIndices);
+            } else {
+                endRound('push', drawnDealerIndices);
+            }
+        }
+
+        function endRound(result, animatedDealerIndices = []) {
+            gameOver = true;
+            renderDealerCards(false, animatedDealerIndices);
+            document.getElementById('dealer-score').innerText = `(${calculateHand(dealerHand)})`;
+
+            const msgEl = document.getElementById('message');
+            if (result === 'blackjack') {
+                msgEl.innerText = "Blackjack! You win!";
+                bankroll += currentBet * 2.5;
+            } else if (result === 'bust') {
+                msgEl.innerText = "Bust! You lose.";
+            } else if (result === 'dealer-bust') {
+                msgEl.innerText = "Dealer busts! You win!";
+                bankroll += currentBet * 2;
+            } else if (result === 'win') {
+                msgEl.innerText = "You win!";
+                bankroll += currentBet * 2;
+            } else if (result === 'push') {
+                msgEl.innerText = "Push (Tie).";
+                bankroll += currentBet;
+            } else {
+                msgEl.innerText = "Dealer wins.";
+            }
+
+            currentBet = 0;
+            document.getElementById('game-controls').classList.add('hidden');
+            document.getElementById('restart-btn').classList.remove('hidden');
+            document.getElementById('bankroll').innerText = `$${bankroll}`;
+        }
+
+        function resetGame() {
+            if (bankroll <= 0) bankroll = 1000;
+            document.getElementById('restart-btn').classList.add('hidden');
+            document.getElementById('betting-controls').classList.remove('hidden');
+            document.getElementById('message').innerText = "Place your bet to start";
+            playerHand = [];
+            dealerHand = [];
+            render(true);
+        }
+
+        // Initialize preloader on load
+        preloadCardImages();
+    </script>
+</body>
+</html>
