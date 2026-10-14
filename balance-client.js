@@ -1,34 +1,37 @@
-async function fetchBalance() {
-  const res = await fetch('/api/balance');
-  if (!res.ok) throw new Error('Could not load balance');
-  const data = await res.json();
-  return data.balance;
+const BALANCE_KEY = 'casinoBalance';
+const STARTING_BALANCE = 1000;
+
+function fetchBalance() {
+  const raw = localStorage.getItem(BALANCE_KEY);
+  const value = Number(raw);
+  if (raw === null || !Number.isFinite(value)) {
+    localStorage.setItem(BALANCE_KEY, String(STARTING_BALANCE));
+    return STARTING_BALANCE;
+  }
+  return Math.max(0, Math.floor(value));
 }
 
-async function adjustBalance(delta) {
-  const res = await fetch('/api/balance/adjust', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ delta }),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    const err = new Error(data.error || 'Balance update failed');
-    err.balance = data.balance;
+function adjustBalance(delta) {
+  const current = fetchBalance();
+  const next = current + Number(delta);
+  if (!Number.isFinite(next)) {
+    throw new Error('Balance update failed');
+  }
+  if (next < 0) {
+    const err = new Error('Insufficient funds');
+    err.balance = current;
     throw err;
   }
-  return data.balance;
+  const saved = Math.floor(next);
+  localStorage.setItem(BALANCE_KEY, String(saved));
+  return saved;
 }
 
-async function initBalanceDisplay(elementId, fallback = 1000) {
+function initBalanceDisplay(elementId, fallback = STARTING_BALANCE) {
   const el = document.getElementById(elementId);
-  if (!el) return fallback;
-  try {
-    const value = await fetchBalance();
+  const value = fetchBalance();
+  if (el) {
     el.textContent = elementId === 'bankroll' ? `$${value}` : value;
-    return value;
-  } catch {
-    el.textContent = elementId === 'bankroll' ? `$${fallback}` : fallback;
-    return fallback;
   }
+  return Promise.resolve(value || fallback);
 }

@@ -226,7 +226,7 @@
             try {
                 bankroll = await adjustBalance(-amount);
             } catch {
-                document.getElementById('message').innerText = 'Could not place bet. Is the server running?';
+                document.getElementById('message').innerText = 'Could not place bet.';
                 return;
             }
             currentBet += amount;

@@ -32,7 +32,7 @@ async function spin() {
         messageEl.style.color = '#ff4d4d';
         messageEl.textContent = err.message === 'Insufficient funds'
             ? 'Game Over! Out of cash.'
-            : 'Could not place bet. Is the server running?';
+            : 'Could not place bet.';
         spinBtn.disabled = false;
         return;
     }
