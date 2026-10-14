@@ -28,15 +28,21 @@
                 transform: translateY(0) rotateZ(0deg);
             }
         }
-        .home {
+        .home,
+        .balance {
             position: absolute;
             top: 15px;
-            left: 40px;
             font-size: 1.6rem;
             background: transparent;
             padding: 12px 24px;
             border-radius: 10px;
             border: 1px solid #555;
+        }
+        .home {
+            left: 40px;
+        }
+        .balance {
+            right: 40px;
         }
         .animate-deal-player {
             animation: drawPlayerCard 1s cubic-bezier(0.25, 1, 0.5, 1) both;
@@ -53,6 +59,9 @@
     <div class = "home">
         <a href = "index.html" style = "color: white;">Home</a>
     </div>
+    <div class = "balance">
+        <p>Balance: $<span id="balance">1000</span></p>
+    </div>
     <header class="p-4 text-center bg-emerald-950 shadow-md">
         <h1 class="text-3xl font-bold tracking-wider">BLACKJACK</h1>
         <p class="text-xs text-emerald-300 mt-1">Animated Boilerplate</p>
@@ -63,7 +72,7 @@
 
         <!-- Dealer Area -->
         <div class="bg-emerald-800/60 p-4 rounded-xl w-full text-center border border-emerald-700/50 shadow-inner">
-            <h2 class="text-lg font-semibold mb-2 text-emerald-200">Dealer <span id="dealer-score" class="text-sm font-normal"></span></h2>
+            <h2 class="text-lg font-semibold mb-2 text-emerald-200">Dealer <span id="dealer-score" class="text-xl font-semibold"></span></h2>
             <div id="dealer-cards" class="flex justify-center gap-2 min-h-[96px] items-center"></div>
         </div>
 
@@ -74,7 +83,7 @@
 
         <!-- Player Area -->
         <div class="bg-emerald-800/60 p-4 rounded-xl w-full text-center border border-emerald-700/50 shadow-inner">
-            <h2 class="text-lg font-semibold mb-2 text-emerald-200">Player <span id="player-score" class="text-sm font-normal"></span></h2>
+            <h2 class="text-lg font-semibold mb-2 text-emerald-200">Player <span id="player-score" class="text-xl font-semibold"></span></h2>
             <div id="player-cards" class="flex justify-center gap-2 min-h-[96px] items-center"></div>
         </div>
 
@@ -82,28 +91,20 @@
 
     <!-- Controls & Status Footer -->
     <footer class="bg-emerald-950 p-4 shadow-lg border-t border-emerald-800">
-        <div class="max-w-xl mx-auto flex flex-col gap-4">
-            
-            <!-- Stats Bar -->
-            <div class="flex justify-between items-center text-sm px-2">
-                <div>Bankroll: <span id="bankroll" class="font-bold text-emerald-300">$1000</span></div>
-                <div>Current Bet: <span id="current-bet" class="font-bold text-emerald-300">$0</span></div>
-            </div>
-
+        <div class="max-w-xl mx-auto w-full">
             <!-- Action Controls -->
-            <div id="betting-controls" class="flex gap-2">
-                <button onclick="placeBet(10)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold py-2 rounded transition">$10</button>
-                <button onclick="placeBet(50)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold py-2 rounded transition">$50</button>
-                <button onclick="placeBet(100)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold py-2 rounded transition">$100</button>
+            <div id="betting-controls" class="flex gap-3">
+                <button onclick="placeBet(10)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold text-2xl py-4 rounded transition">$10</button>
+                <button onclick="placeBet(50)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold text-2xl py-4 rounded transition">$50</button>
+                <button onclick="placeBet(100)" class="flex-1 bg-amber-600 hover:bg-amber-500 font-semibold text-2xl py-4 rounded transition">$100</button>
             </div>
 
-            <div id="game-controls" class="flex gap-2 hidden">
-                <button id="hit-btn" onclick="playerHit()" class="flex-1 bg-blue-600 hover:bg-blue-500 font-semibold py-2 rounded transition">Hit</button>
-                <button id="stand-btn" onclick="playerStand()" class="flex-1 bg-red-600 hover:bg-red-500 font-semibold py-2 rounded transition">Stand</button>
+            <div id="game-controls" class="flex gap-3 hidden">
+                <button id="hit-btn" onclick="playerHit()" class="flex-1 bg-blue-600 hover:bg-blue-500 font-semibold text-2xl py-4 rounded transition">Hit</button>
+                <button id="stand-btn" onclick="playerStand()" class="flex-1 bg-red-600 hover:bg-red-500 font-semibold text-2xl py-4 rounded transition">Stand</button>
             </div>
 
-            <button id="restart-btn" onclick="resetGame()" class="w-full bg-emerald-700 hover:bg-emerald-600 font-semibold py-2 rounded transition hidden">Play Again</button>
-
+            <button id="restart-btn" onclick="resetGame()" class="w-full bg-emerald-700 hover:bg-emerald-600 font-semibold text-2xl py-4 rounded transition hidden">Play Again</button>
         </div>
     </footer>
 
@@ -121,7 +122,7 @@
         let gameOver = true;
 
         document.addEventListener('DOMContentLoaded', () => {
-            initBalanceDisplay('bankroll', 1000).then((value) => {
+            initBalanceDisplay('balance', 1000).then((value) => {
                 bankroll = value;
             });
         });
@@ -206,8 +207,7 @@
             document.getElementById('player-score').innerText = `(${calculateHand(playerHand)})`;
             document.getElementById('dealer-score').innerText = gameOver || !hideDealerCard ? `(${calculateHand(dealerHand)})` : `(${calculateHand(dealerHand, true)})`;
 
-            document.getElementById('bankroll').innerText = `$${bankroll}`;
-            document.getElementById('current-bet').innerText = `$${currentBet}`;
+            document.getElementById('balance').innerText = bankroll;
         }
 
         function renderDealerCards(hideDealerCard, animatedDealerIndices = []) {
@@ -329,7 +329,7 @@
             currentBet = 0;
             document.getElementById('game-controls').classList.add('hidden');
             document.getElementById('restart-btn').classList.remove('hidden');
-            document.getElementById('bankroll').innerText = `$${bankroll}`;
+            document.getElementById('balance').innerText = bankroll;
         }
 
         function resetGame() {
