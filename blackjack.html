@@ -107,6 +107,7 @@
         </div>
     </footer>
 
+    <script src="balance-client.js"></script>
     <!-- Game Logic Script -->
     <script>
         const suits = ['♠', '♥', '♦', '♣'];
@@ -118,6 +119,12 @@
         let bankroll = 1000;
         let currentBet = 0;
         let gameOver = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initBalanceDisplay('bankroll', 1000).then((value) => {
+                bankroll = value;
+            });
+        });
 
         function createDeck() {
             deck = [];
@@ -214,9 +221,14 @@
             }).join('');
         }
 
-        function placeBet(amount) {
+        async function placeBet(amount) {
             if (bankroll < amount) return;
-            bankroll -= amount;
+            try {
+                bankroll = await adjustBalance(-amount);
+            } catch {
+                document.getElementById('message').innerText = 'Could not place bet. Is the server running?';
+                return;
+            }
             currentBet += amount;
             startGame();
         }
@@ -281,28 +293,37 @@
             }
         }
 
-        function endRound(result, animatedDealerIndices = []) {
+        async function endRound(result, animatedDealerIndices = []) {
             gameOver = true;
             renderDealerCards(false, animatedDealerIndices);
             document.getElementById('dealer-score').innerText = `(${calculateHand(dealerHand)})`;
 
             const msgEl = document.getElementById('message');
+            let payout = 0;
             if (result === 'blackjack') {
                 msgEl.innerText = "Blackjack! You win!";
-                bankroll += currentBet * 2.5;
+                payout = currentBet * 2.5;
             } else if (result === 'bust') {
                 msgEl.innerText = "Bust! You lose.";
             } else if (result === 'dealer-bust') {
                 msgEl.innerText = "Dealer busts! You win!";
-                bankroll += currentBet * 2;
+                payout = currentBet * 2;
             } else if (result === 'win') {
                 msgEl.innerText = "You win!";
-                bankroll += currentBet * 2;
+                payout = currentBet * 2;
             } else if (result === 'push') {
                 msgEl.innerText = "Push (Tie).";
-                bankroll += currentBet;
+                payout = currentBet;
             } else {
                 msgEl.innerText = "Dealer wins.";
+            }
+
+            if (payout > 0) {
+                try {
+                    bankroll = await adjustBalance(payout);
+                } catch {
+                    msgEl.innerText += ' (Could not save winnings.)';
+                }
             }
 
             currentBet = 0;
@@ -312,7 +333,9 @@
         }
 
         function resetGame() {
-            if (bankroll <= 0) bankroll = 1000;
+            if (bankroll <= 0) {
+                document.getElementById('message').innerText = "You're out of cash.";
+            }
             document.getElementById('restart-btn').classList.add('hidden');
             document.getElementById('betting-controls').classList.remove('hidden');
             document.getElementById('message').innerText = "Place your bet to start";
