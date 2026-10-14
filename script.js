@@ -1,22 +1,41 @@
 const symbols = ['🍒', '🍋', '🔔', '⭐', '7️⃣'];
-let balance = 100;
+const SPIN_COST = 10;
+let balance = 1000;
 
-function spin() {
+document.addEventListener('DOMContentLoaded', () => {
+  initBalanceDisplay('balance', 1000).then((value) => {
+    balance = value;
+  });
+});
+
+async function spin() {
     const balanceEl = document.getElementById('balance');
     const messageEl = document.getElementById('message');
     const spinBtn = document.getElementById('spinBtn');
 
-    if (balance < 10) {
+    if (balance < SPIN_COST) {
         messageEl.style.color = '#ff4d4d';
         messageEl.textContent = 'Game Over! Out of cash.';
         return;
     }
 
-    balance -= 10;
-    balanceEl.textContent = balance;
+    spinBtn.disabled = true;
     messageEl.textContent = 'Spinning... 🎰';
     messageEl.style.color = '#fff';
-    spinBtn.disabled = true;
+
+    try {
+        balance = await adjustBalance(-SPIN_COST);
+        balanceEl.textContent = balance;
+    } catch (err) {
+        if (typeof err.balance === 'number') balance = err.balance;
+        balanceEl.textContent = balance;
+        messageEl.style.color = '#ff4d4d';
+        messageEl.textContent = err.message === 'Insufficient funds'
+            ? 'Game Over! Out of cash.'
+            : 'Could not place bet. Is the server running?';
+        spinBtn.disabled = false;
+        return;
+    }
 
     // Generate a 3x3 matrix for the final result
     let finalGrid = [
@@ -46,8 +65,9 @@ function spin() {
                 }
             }
 
-            evaluateWins(finalGrid);
-            spinBtn.disabled = false;
+            evaluateWins(finalGrid).finally(() => {
+                spinBtn.disabled = false;
+            });
         }
     }, 60);
 }
@@ -56,7 +76,7 @@ function randSym() {
     return symbols[Math.floor(Math.random() * symbols.length)];
 }
 
-function evaluateWins(grid) {
+async function evaluateWins(grid) {
     const balanceEl = document.getElementById('balance');
     const messageEl = document.getElementById('message');
     let totalWinnings = 0;
@@ -79,22 +99,21 @@ function evaluateWins(grid) {
         checkLine(grid[r][0], grid[r][1], grid[r][2], 100, 30);
     }
 
-    // 2. Check Columns (3 vertical lines) -> NEW!
+    // 2. Check Columns (3 vertical lines)
     for (let c = 0; c < 3; c++) {
         checkLine(grid[0][c], grid[1][c], grid[2][c], 100, 30);
     }
 
-    // 3. Check Diagonals (2 diagonal lines) -> NEW! (Flat $15)
+    // 3. Check Diagonals (2 diagonal lines) (Flat $15)
     function checkDiagonal(a, b, c) {
         if (a === b && b === c) {
             winningLinesCount++;
             totalWinnings += 15;
         }
     }
-    checkDiagonal(grid[0][0], grid[1][1], grid[2][2]); // Top-Left to Bottom-Right
-    checkDiagonal(grid[0][2], grid[1][1], grid[2][0]); // Top-Right to Bottom-Left
+    checkDiagonal(grid[0][0], grid[1][1], grid[2][2]);
+    checkDiagonal(grid[0][2], grid[1][1], grid[2][0]);
 
-    // Final message output
     if (winningLinesCount > 0) {
         messageEl.textContent = `WIN! ${winningLinesCount} winning line(s)! (+$${totalWinnings})`;
         messageEl.style.color = '#4cd137';
@@ -103,6 +122,13 @@ function evaluateWins(grid) {
         messageEl.style.color = '#ff4d4d';
     }
 
-    balance += totalWinnings;
+    if (totalWinnings > 0) {
+        try {
+            balance = await adjustBalance(totalWinnings);
+        } catch {
+            messageEl.textContent = 'You won, but balance could not be saved.';
+            messageEl.style.color = '#ff4d4d';
+        }
+    }
     balanceEl.textContent = balance;
 }
