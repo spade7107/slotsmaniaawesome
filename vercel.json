@@ -7,8 +7,8 @@
     },
     "public": {
       "root": "public",
-      "runtime": "node",
-      "entrypoint": "server.js"
+      "runtime": "container",
+      "entrypoint": "Dockerfile"
     }
   },
   "rewrites": [
