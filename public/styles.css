@@ -58,6 +58,13 @@ a:link {
     width: min(100%, 80rem);
 }
 
+.games-heading {
+    margin: 0 0 clamp(1.5rem, 5vh, 3rem);
+    color: #fff;
+    font-size: 2.75rem;
+    text-align: center;
+}
+
 .game-card {
     display: flex;
     flex: 1 1 0;
@@ -79,6 +86,56 @@ a:link {
     max-width: min(300px, 38vw);
 }
 
+.roulette-card-wheel {
+    display: grid;
+    width: min(100%, 300px, 38vw);
+    aspect-ratio: 1;
+    place-items: center;
+    border: 10px solid #c9a964;
+    border-radius: 50%;
+    background: repeating-conic-gradient(#202622 0deg 9.73deg, #b83834 9.73deg 19.46deg);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.35), inset 0 0 0 5px #f0dba5;
+    color: #f4ead0;
+}
+
+.roulette-card-wheel span {
+    display: grid;
+    width: 28%;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 3px solid #e0c47b;
+    border-radius: 50%;
+    background: #101811;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.prize-card-wheel {
+    display: grid;
+    width: min(100%, 300px, 38vw);
+    aspect-ratio: 1;
+    place-items: center;
+    border: 10px solid #d1aa48;
+    border-radius: 50%;
+    background: repeating-conic-gradient(#20a88b 0deg 30deg, #ed5b53 30deg 60deg, #268ec2 60deg 90deg, #e8a534 90deg 120deg);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.35), inset 0 0 0 5px #fae296;
+    color: #f5d66e;
+}
+
+.prize-card-wheel span {
+    display: grid;
+    width: 28%;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 3px solid #f6db7b;
+    border-radius: 50%;
+    background: #111722;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
 .game-card figcaption {
     box-sizing: border-box;
     width: min(100%, 34rem);
@@ -87,7 +144,7 @@ a:link {
     border-radius: 1rem;
     background: #ffcc00;
     color: #111;
-    font-size: clamp(1.1rem, 2.5vw, 2.5rem);
+    font-size: 1.8rem;
     font-weight: 700;
     box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.3);
     transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
@@ -108,6 +165,30 @@ a:link {
     .game-card figcaption {
         transition: none;
     }
+}
+
+@media (max-width: 700px) {
+    .game-list {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .game-card .game-image,
+    .roulette-card-wheel,
+    .prize-card-wheel {
+        width: min(220px, 60vw);
+        max-width: 220px;
+    }
+
+    .games-heading { font-size: 2rem; }
+    .roulette-card-wheel span { font-size: 1.6rem; }
+    .prize-card-wheel span { font-size: 1.4rem; }
+    .game-card figcaption { font-size: 1.3rem; }
+}
+
+@media (min-width: 701px) and (max-width: 900px) {
+    .game-list { flex-wrap: wrap; gap: 1.5rem; }
+    .game-card { flex: 1 1 calc(50% - 1.5rem); }
 }
 
 

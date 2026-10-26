@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080c16">
+    <title>Prize Wheel</title>
+    <link rel="stylesheet" href="prize-wheel.css">
+</head>
+<body class="prize-page">
+    <main class="prize-app">
+        <header class="prize-header">
+            <div>
+                <p class="eyebrow">Arcade mode</p>
+                <h1>Prize wheel</h1>
+            </div>
+            <div class="header-actions">
+                <a class="back-link" href="games.html">&larr; All games</a>
+                <a class="back-link" href="roulette.html">Roulette</a>
+                <div class="balance-display">
+                    <span>Play credits</span>
+                    <strong>$<span id="balance">1000</span></strong>
+                </div>
+            </div>
+        </header>
+
+        <div class="prize-layout">
+            <section class="wheel-panel" aria-label="Prize wheel">
+                <div class="wheel-heading">
+                    <div>
+                        <p class="eyebrow">Spin for a multiplier</p>
+                        <p class="muted">Higher prizes have slimmer slices</p>
+                    </div>
+                    <span class="payout-tag">Bonus wheel</span>
+                </div>
+                <div class="wheel-frame">
+                    <div class="wheel-pointer" aria-hidden="true"></div>
+                    <div id="prize-wheel" class="prize-wheel" aria-hidden="true"></div>
+                    <div class="wheel-hub" aria-hidden="true">
+                        <span id="wheel-caption">Spin</span>
+                        <strong id="wheel-result">GO!</strong>
+                    </div>
+                </div>
+                <p id="game-status" class="game-status" aria-live="polite">Choose your wager, then spin.</p>
+                <button id="spin-button" class="spin-button" type="button" disabled>Spin the wheel</button>
+                <div class="wager-panel">
+                    <div>
+                        <p class="eyebrow">Your wager</p>
+                        <strong><span id="wager-display">10</span> credits</strong>
+                    </div>
+                    <div id="wager-selector" class="wager-selector" role="group" aria-label="Wager amount"></div>
+                    <button id="refill-button" class="secondary-button" type="button" hidden>Refill credits</button>
+                </div>
+            </section>
+
+            <aside class="prize-board">
+                <div class="board-heading">
+                    <div>
+                        <p class="eyebrow">Prize board</p>
+                        <p class="muted">Multiplier is applied to your wager</p>
+                    </div>
+                    <span class="sparkle-mark" aria-hidden="true">&#10022;</span>
+                </div>
+                <div id="prize-list" class="prize-list"></div>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span>Theoretical RTP</span>
+                        <strong id="rtp-value">0%</strong>
+                    </div>
+                    <div class="metric">
+                        <span>House edge</span>
+                        <strong id="edge-value">0%</strong>
+                    </div>
+                    <div class="metric metric-wide">
+                        <span>Expected net per spin</span>
+                        <strong id="expected-value">-0 credits</strong>
+                        <small id="odds-equation"></small>
+                    </div>
+                </div>
+                <p class="board-note">The miss chance is split across four wedges; the board shows their combined probability.</p>
+            </aside>
+        </div>
+    </main>
+
+    <dialog id="result-dialog" class="result-dialog" aria-labelledby="result-title">
+        <div class="dialog-content">
+            <p id="result-title" class="eyebrow">Wheel complete</p>
+            <p class="dialog-subtitle">You landed on</p>
+            <div id="dialog-prize" class="dialog-prize">MISS</div>
+            <p id="dialog-message" class="dialog-message"></p>
+            <p id="dialog-note" class="dialog-note"></p>
+            <button id="close-dialog" class="spin-button" type="button">Spin again</button>
+        </div>
+    </dialog>
+
+    <script src="balance-client.js"></script>
+    <script src="prize-wheel.js" defer></script>
+</body>
+</html>

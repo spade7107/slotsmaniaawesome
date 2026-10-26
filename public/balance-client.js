@@ -33,5 +33,5 @@ function initBalanceDisplay(elementId, fallback = STARTING_BALANCE) {
   if (el) {
     el.textContent = elementId === 'bankroll' ? `$${value}` : value;
   }
-  return Promise.resolve(value || fallback);
+  return Promise.resolve(value);
 }

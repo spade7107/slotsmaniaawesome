@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#08130e">
+    <title>European Roulette</title>
+    <link rel="stylesheet" href="roulette.css">
+</head>
+<body class="roulette-page">
+    <main class="roulette-app">
+        <header class="roulette-header">
+            <div class="roulette-brand">
+                <p class="eyebrow">The green room</p>
+                <h1>Roulette</h1>
+            </div>
+            <div class="header-actions">
+                <a class="back-link" href="games.html">&larr; All games</a>
+                <div class="balance-display" aria-live="polite">
+                    <span>Play credits</span>
+                    <strong>$<span id="balance">1000</span></strong>
+                </div>
+            </div>
+        </header>
+
+        <div class="roulette-layout">
+            <section class="wheel-panel" aria-label="Roulette wheel">
+                <div class="wheel-heading">
+                    <div>
+                        <p class="eyebrow">European wheel</p>
+                        <p class="muted">Single zero &middot; 37 pockets</p>
+                    </div>
+                    <span class="payout-tag">35 : 1</span>
+                </div>
+                <div class="wheel-frame">
+                    <div class="wheel-pointer" aria-hidden="true"></div>
+                    <div id="roulette-wheel" class="roulette-wheel" aria-hidden="true"></div>
+                    <div class="wheel-hub" aria-hidden="true">
+                        <span id="wheel-caption">Place your bets</span>
+                        <strong id="wheel-result">SPIN</strong>
+                    </div>
+                </div>
+                <p id="game-status" class="game-status" aria-live="polite">Place a chip on the table, then spin.</p>
+                <button id="spin-button" class="spin-button" type="button" disabled>Spin the wheel</button>
+                <div class="recent-section">
+                    <div class="recent-heading">
+                        <span class="eyebrow">Recent numbers</span>
+                        <span id="recent-count" class="muted">0 / 8</span>
+                    </div>
+                    <div id="recent-results" class="recent-results" aria-live="polite">
+                        <span class="empty-recent">Results will appear here</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="table-column">
+                <section class="chip-panel" aria-labelledby="chip-heading">
+                    <div class="panel-heading">
+                        <div>
+                            <p id="chip-heading" class="eyebrow">Your chips</p>
+                            <p class="muted">Choose a value, then tap a bet</p>
+                        </div>
+                        <div class="wager-total">
+                            <span>On the table</span>
+                            <strong id="total-wager">0</strong>
+                        </div>
+                    </div>
+                    <div id="chip-selector" class="chip-selector" role="group" aria-label="Chip value"></div>
+                    <div class="table-actions">
+                        <button id="undo-button" class="secondary-button" type="button" disabled>Undo bet</button>
+                        <button id="clear-button" class="secondary-button" type="button" disabled>Clear table</button>
+                        <span id="bet-count" class="bet-count">0 bets</span>
+                    </div>
+                </section>
+
+                <section class="betting-table" aria-label="Roulette betting table">
+                    <div class="table-title">
+                        <span class="eyebrow">Place your bets</span>
+                        <span>European &middot; Single zero</span>
+                    </div>
+                    <div id="zero-target" class="zero-row"></div>
+                    <div class="bet-scroll"><div id="number-grid" class="number-grid" aria-label="Number bets"></div></div>
+                    <div id="column-targets" class="target-row three-columns" aria-label="Column bets"></div>
+                    <div id="dozen-targets" class="target-row three-columns" aria-label="Dozen bets"></div>
+                    <div id="outside-targets" class="target-row outside-row" aria-label="Outside bets"></div>
+                    <div class="payout-legend">
+                        <span>Straight up <strong>35:1</strong></span>
+                        <span>Dozens &amp; columns <strong>2:1</strong></span>
+                        <span>Outside bets <strong>1:1</strong></span>
+                    </div>
+                </section>
+                <p id="balance-error" class="balance-error" role="alert" hidden></p>
+            </div>
+        </div>
+    </main>
+
+    <dialog id="result-dialog" class="result-dialog" aria-labelledby="result-title">
+        <div class="dialog-content">
+            <p id="result-title" class="eyebrow">Round complete</p>
+            <p class="dialog-subtitle">The ball landed on</p>
+            <div id="dialog-number" class="dialog-number">0</div>
+            <p id="dialog-message" class="dialog-message"></p>
+            <p id="dialog-note" class="dialog-note"></p>
+            <button id="close-dialog" class="spin-button" type="button">Keep playing</button>
+        </div>
+    </dialog>
+
+    <script src="balance-client.js"></script>
+    <script src="roulette.js" defer></script>
+</body>
+</html>
