@@ -43,8 +43,21 @@ Configure the backend environment:
 | `REDIS_URL` | `redis://127.0.0.1:6379` | Redis connection URL |
 | `INGESTION_API_KEY` | unset | Required bearer token for bet event ingestion; at least 32 bytes and required at startup in production |
 | `ALLOWED_ORIGINS` | `http://localhost:3000` | Comma-separated browser origins for HTTP and Socket.IO |
+| `SUPABASE_URL` | unset | Supabase project URL, required for profile names and in production |
+| `SUPABASE_SERVICE_ROLE_KEY` | unset | Server-only Supabase service role key; never expose to browser code |
+| `NEXT_PUBLIC_SUPABASE_URL` | unset | Supabase project URL used by the browser auth client |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | unset | Supabase publishable key for browser auth; the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY` name is also accepted |
+| `NEXT_PUBLIC_LEADERBOARD_API_URL` | `http://localhost:4000` | Public base URL of the leaderboard API |
 
-Start Redis, then run the backend in development:
+### Accounts and usernames
+
+The app uses Supabase Auth for email/password sign-up and sign-in, and Supabase Postgres for public usernames. Copy `.env.example` to `.env` (or `.env.local` for Next.js, and `.env` for the API), configure the public Supabase URL and publishable key for Next.js, and set `SUPABASE_URL` plus `SUPABASE_SERVICE_ROLE_KEY` for the Express API. The browser client uses `@supabase/ssr` for cookie-based session storage. Apply `supabase/migrations/20261027000000_profiles.sql` to the Supabase project before enabling sign-up (for example, run it in the Supabase SQL Editor). Never put the service role key in a `NEXT_PUBLIC_*` variable or browser code.
+
+The migration creates a profile row from signup metadata, enforces unique usernames regardless of letter case, and lets the browser read usernames while preventing browser-side profile writes. Usernames are 3–20 letters, digits, or underscores. The leaderboard API batch-resolves Redis player IDs to usernames and caches resolved profiles briefly; entries without a matching account are shown as “Player”. Use the Supabase Auth confirmation and password policies appropriate for your deployment.
+
+The current roulette and prize-wheel pages are client-only demos and do not submit authoritative results. Until a trusted game/settlement service posts events to `POST /v1/events/bets`, the leaderboard will correctly remain empty. Do not expose `INGESTION_API_KEY` in the browser or accept client-provided balances/wins as authoritative.
+
+Start Redis, configure the environment as above, then run the backend in development:
 
 ```bash
 npm run server:dev
@@ -60,11 +73,13 @@ npm run server:start
 ### HTTP API
 
 - `POST /v1/events/bets` — JSON body containing `eventId`, `playerId`, `balance`, `balanceVersion`, `winAmount`, and `occurredAt`. Send the configured API key as a bearer token in the `Authorization` header. Duplicate event IDs seen within ten minutes return `200`; newly accepted events return `202`.
-- `GET /v1/leaderboards/balance/all-time?limit=50` — current player balances.
-- `GET /v1/leaderboards/biggest-win/{daily|weekly|all-time}?limit=50` — each player's highest win in that UTC period.
+- `GET /v1/leaderboards/balance/all-time?limit=50` — current player balances with usernames.
+- `GET /v1/leaderboards/biggest-win/{daily|weekly|all-time}?limit=50` — each player's highest win in that UTC period, with usernames.
 - `GET /healthz` — Redis readiness check.
 
 The `balance` metric supports only the `all-time` window. Daily keys expire after the period plus eight days; weekly keys expire after the period plus eight days. All-time scores are retained. The API accepts limits from 1 to 100.
+
+The browser leaderboard page is available at `/leaderboards`; sign-up and sign-in are at `/signup` and `/login`. Set `NEXT_PUBLIC_LEADERBOARD_API_URL` to the API's browser-reachable URL and include that web origin in `ALLOWED_ORIGINS`.
 
 ### Socket.IO
 

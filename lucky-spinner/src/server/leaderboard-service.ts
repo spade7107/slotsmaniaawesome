@@ -75,6 +75,7 @@ export interface RankUpdate {
   metric: LeaderboardMetric;
   window: LeaderboardWindow;
   playerId: string;
+  username?: string;
   score: number;
   rank: number;
 }

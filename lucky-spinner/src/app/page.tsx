@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { RotateCcw, Sparkles, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AccountLinks } from "@/components/account-links";
 import {
   columnTargets,
   dozenTargets,
@@ -186,6 +187,7 @@ export default function Home() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <AccountLinks />
             <Link
               href="/arcade"
               className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2.5 text-xs font-semibold text-white/85 transition hover:border-[#67d8c6]/60 hover:bg-white/10"

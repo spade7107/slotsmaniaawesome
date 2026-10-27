@@ -9,6 +9,7 @@ import {
   type LeaderboardWindow,
   type RankUpdate,
 } from "./leaderboard-service";
+import { PlayerProfiles } from "./player-profiles";
 
 const MAX_EVENT_AGE_MS = 8 * 24 * 60 * 60 * 1000;
 const MAX_FUTURE_SKEW_MS = 60 * 1000;
@@ -118,6 +119,7 @@ export function createApp(
   publishUpdates: (updates: RankUpdate[]) => void,
 ) {
   const app = express();
+  const profiles = new PlayerProfiles(config.supabaseUrl, config.supabaseServiceRoleKey);
   app.disable("x-powered-by");
   app.use(setCorsHeaders(config));
   app.use(express.json({ limit: "16kb", strict: true }));
@@ -139,7 +141,15 @@ export function createApp(
       throw new HttpError(400, "limit must be an integer between 1 and 100");
     }
     const entries = await service.getTop(metric, window, requestedLimit);
-    response.json({ metric, window, entries });
+    const usernames = await profiles.usernamesFor(entries.map((entry) => entry.playerId));
+    response.json({
+      metric,
+      window,
+      entries: entries.map((entry) => ({
+        ...entry,
+        username: usernames.get(entry.playerId) ?? "Player",
+      })),
+    });
   });
 
   app.post("/v1/events/bets", async (request, response) => {
@@ -151,7 +161,9 @@ export function createApp(
     }
     const event = parseBetEvent(request.body);
     const result = await service.ingest(event);
-    if (result.updates.length > 0) publishUpdates(result.updates);
+    if (result.updates.length > 0) {
+      publishUpdates(result.updates);
+    }
     response.status(result.duplicate ? 200 : 202).json({
       accepted: true,
       duplicate: result.duplicate,

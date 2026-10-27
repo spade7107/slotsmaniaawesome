@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { EventEmitter } from "node:events";
 import { createServer } from "node:http";
 import { createApp } from "./src/server/app";

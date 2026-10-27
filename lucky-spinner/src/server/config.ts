@@ -3,6 +3,8 @@ export interface ServerConfig {
   redisUrl: string;
   allowedOrigins: string[];
   ingestionApiKey?: string;
+  supabaseUrl?: string;
+  supabaseServiceRoleKey?: string;
 }
 
 export function getConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
@@ -15,6 +17,14 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
   if (env.NODE_ENV === "production" && (!ingestionApiKey || Buffer.byteLength(ingestionApiKey) < 32)) {
     throw new Error("INGESTION_API_KEY must contain at least 32 bytes in production");
   }
+  const supabaseUrl = env.SUPABASE_URL?.trim() || undefined;
+  const supabaseServiceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY?.trim() || undefined;
+  if ((supabaseUrl && !supabaseServiceRoleKey) || (!supabaseUrl && supabaseServiceRoleKey)) {
+    throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be configured together");
+  }
+  if (env.NODE_ENV === "production" && (!supabaseUrl || !supabaseServiceRoleKey)) {
+    throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required in production");
+  }
 
   const allowedOrigins = (env.ALLOWED_ORIGINS ?? "http://localhost:3000")
     .split(",")
@@ -26,5 +36,7 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
     redisUrl: env.REDIS_URL ?? "redis://127.0.0.1:6379",
     allowedOrigins,
     ingestionApiKey,
+    supabaseUrl,
+    supabaseServiceRoleKey,
   };
 }
