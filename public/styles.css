@@ -1,253 +1,337 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1e1e2f, #2a2a40);
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    position: relative;
+@import "casino-theme.css";
+
+.landing-page {
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
 }
-a:link {
-  color: white;
-  text-decoration: none;
+
+.landing-content {
+  display: flex;
+  width: min(100%, 76rem);
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 5vh, 3rem);
+  text-align: center;
 }
-.home {
-    position: absolute;
-    top: 30px;
-    left: 40px;
-    font-size: 1.6rem;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 12px 24px;
-    border-radius: 10px;
-    border: 1px solid #555;
+
+.brand-title {
+  width: 100%;
+  margin: 0;
 }
-.stats {
-    position: absolute;
-    top: 30px;
-    right: 40px;
-    font-size: 1.6rem;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 12px 24px;
-    border-radius: 10px;
-    border: 1px solid #555;
-}
-/* Keep game artwork sized without affecting logos or other page images. */
-.game-image {
+
+.brand-title img {
   display: block;
-  width: 100%;       /* Adjust to fill the parent container */
-  max-width: 300px;  /* Cap the maximum size */
-  height: auto;      /* Automatically calculates height to maintain aspect ratio */
+  width: min(92vw, 68rem);
+  max-height: 62vh;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.play-button:link,
+.play-button:visited {
+  display: inline-flex;
+  min-height: 3.5rem;
+  width: min(80vw, 26rem);
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.5rem;
+  border: 1px solid rgba(103, 216, 198, 0.42);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary), #4cc2b4);
+  color: var(--primary-foreground);
+  font-size: clamp(1.15rem, 3vw, 1.5rem);
+  font-weight: 750;
+  text-decoration: none;
+  box-shadow: 0 12px 32px rgba(31, 185, 164, 0.2);
+  transition: filter 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.play-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px rgba(31, 185, 164, 0.27);
 }
 
 .games-page {
-    box-sizing: border-box;
-    min-height: 100vh;
-    min-height: 100svh;
-    height: auto;
-    padding: clamp(1rem, 4vw, 3rem);
-}
-
-.game-list {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    gap: clamp(1rem, 6vw, 6rem);
-    width: min(100%, 80rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(1.25rem, 5vw, 4rem);
 }
 
 .games-heading {
-    margin: 0 0 clamp(1.5rem, 5vh, 3rem);
-    color: #fff;
-    font-size: 2.75rem;
-    text-align: center;
+  margin: 0 0 clamp(1.5rem, 5vh, 3rem);
+  color: var(--foreground);
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  text-align: center;
+}
+
+.game-list {
+  display: grid;
+  width: min(100%, 76rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.8rem, 2vw, 1.5rem);
 }
 
 .game-card {
-    display: flex;
-    flex: 1 1 0;
-    justify-content: center;
-    min-width: 0;
-    text-align: center;
+  display: flex;
+  min-width: 0;
+  justify-content: center;
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
 }
 
 .game-card figure {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    margin: 0;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  padding: clamp(0.8rem, 1.7vw, 1.25rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, rgba(25, 38, 58, 0.88), rgba(17, 24, 39, 0.88));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
-.game-card .game-image {
-    max-width: min(300px, 38vw);
+.game-card:hover figure {
+  transform: translateY(-4px);
+  border-color: rgba(103, 216, 198, 0.55);
+  background: linear-gradient(160deg, rgba(33, 54, 73, 0.96), rgba(17, 24, 39, 0.96));
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.28);
+}
+
+.game-image {
+  display: block;
+  width: min(100%, 15rem);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.roulette-card-wheel,
+.prize-card-wheel {
+  display: grid;
+  width: min(100%, 15rem);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 8px solid var(--gold-soft);
+  border-radius: 50%;
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.35), inset 0 0 0 4px rgba(255, 255, 255, 0.4);
 }
 
 .roulette-card-wheel {
-    display: grid;
-    width: min(100%, 300px, 38vw);
-    aspect-ratio: 1;
-    place-items: center;
-    border: 10px solid #c9a964;
-    border-radius: 50%;
-    background: repeating-conic-gradient(#202622 0deg 9.73deg, #b83834 9.73deg 19.46deg);
-    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.35), inset 0 0 0 5px #f0dba5;
-    color: #f4ead0;
-}
-
-.roulette-card-wheel span {
-    display: grid;
-    width: 28%;
-    aspect-ratio: 1;
-    place-items: center;
-    border: 3px solid #e0c47b;
-    border-radius: 50%;
-    background: #101811;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 2rem;
-    font-weight: 700;
+  background: repeating-conic-gradient(var(--black) 0deg 9.73deg, var(--red) 9.73deg 19.46deg);
+  color: var(--foreground);
 }
 
 .prize-card-wheel {
-    display: grid;
-    width: min(100%, 300px, 38vw);
-    aspect-ratio: 1;
-    place-items: center;
-    border: 10px solid #d1aa48;
-    border-radius: 50%;
-    background: repeating-conic-gradient(#20a88b 0deg 30deg, #ed5b53 30deg 60deg, #268ec2 60deg 90deg, #e8a534 90deg 120deg);
-    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.35), inset 0 0 0 5px #fae296;
-    color: #f5d66e;
+  background: repeating-conic-gradient(#2a9d8f 0deg 30deg, #bd434b 30deg 60deg, #3584a5 60deg 90deg, #d7a643 90deg 120deg);
+  color: var(--gold);
 }
 
+.roulette-card-wheel span,
 .prize-card-wheel span {
-    display: grid;
-    width: 28%;
-    aspect-ratio: 1;
-    place-items: center;
-    border: 3px solid #f6db7b;
-    border-radius: 50%;
-    background: #111722;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 1.7rem;
-    font-weight: 700;
+  display: grid;
+  width: 29%;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 3px solid var(--gold);
+  border-radius: 50%;
+  background: var(--surface);
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  font-weight: 850;
 }
 
 .game-card figcaption {
-    box-sizing: border-box;
-    width: min(100%, 34rem);
-    padding: clamp(1rem, 3vh, 2rem) clamp(0.75rem, 2vw, 2rem);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    background: #ffcc00;
-    color: #111;
-    font-size: 1.8rem;
-    font-weight: 700;
-    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.3);
-    transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  width: 100%;
+  padding: 0.75rem 0.5rem 0.25rem;
+  color: var(--foreground);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 750;
 }
-
-.game-card:hover figcaption {
-    background: #ffd633;
-    transform: translateY(-3px);
-    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.38);
-}
-
-.game-card:focus-visible {
-    outline: 3px solid #fff;
-    outline-offset: 4px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .game-card figcaption {
-        transition: none;
-    }
-}
-
-@media (max-width: 700px) {
-    .game-list {
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .game-card .game-image,
-    .roulette-card-wheel,
-    .prize-card-wheel {
-        width: min(220px, 60vw);
-        max-width: 220px;
-    }
-
-    .games-heading { font-size: 2rem; }
-    .roulette-card-wheel span { font-size: 1.6rem; }
-    .prize-card-wheel span { font-size: 1.4rem; }
-    .game-card figcaption { font-size: 1.3rem; }
-}
-
-@media (min-width: 701px) and (max-width: 900px) {
-    .game-list { flex-wrap: wrap; gap: 1.5rem; }
-    .game-card { flex: 1 1 calc(50% - 1.5rem); }
-}
-
 
 .casino-container {
-    background: #222233;
-    padding: 40px 50px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-    text-align: center;
-    border: 4px solid #ffcc00;
+  width: min(calc(100% - 2rem), 36rem);
+  margin: 4.5rem auto 1.5rem;
+  padding: clamp(1rem, 4vw, 2rem);
+  border: 1px solid rgba(243, 204, 112, 0.32);
+  border-radius: calc(var(--radius) + 0.25rem);
+  background: linear-gradient(155deg, rgba(24, 37, 57, 0.97), rgba(15, 23, 38, 0.98));
+  box-shadow: var(--shadow);
+  text-align: center;
 }
+
 .casino-container h1 {
-    font-size: 2.5rem;
-    margin-top: 0;
+  margin: 0 0 1.25rem;
+  color: var(--foreground);
+  font-size: clamp(1.5rem, 5vw, 2.15rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
 }
-/* 3x3 Grid Layout */
+
 .slots-window {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    background: #111;
-    padding: 25px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    border: inset 6px #444;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.45rem, 2vw, 0.85rem);
+  margin-bottom: 1.2rem;
+  padding: clamp(0.55rem, 2vw, 1rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #080d17;
+  box-shadow: inset 0 8px 20px rgba(0, 0, 0, 0.35);
 }
+
 .reel {
-    font-size: 4rem;
-    width: 100px;
-    height: 110px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-    color: #000;
-    border-radius: 10px;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.4);
+  display: grid;
+  min-width: 0;
+  aspect-ratio: 0.92;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 0.75rem;
+  background: linear-gradient(155deg, #fff, #dce5ef);
+  color: #141c2b;
+  font-size: clamp(2.1rem, 9vw, 4rem);
+  line-height: 1;
+  box-shadow: inset 0 2px 8px rgba(15, 23, 42, 0.15), 0 4px 12px rgba(0, 0, 0, 0.18);
 }
-button {
-    background-color: #ffcc00;
-    color: #111;
-    border: none;
-    padding: 16px 40px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+
+#spinBtn {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.8rem 1.1rem;
+  border: 1px solid rgba(103, 216, 198, 0.5);
+  border-radius: 0.7rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 1.05rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: filter 150ms ease, transform 150ms ease;
 }
-button:hover {
-    background-color: #ffd633;
-    transform: scale(1.05);
+
+#spinBtn:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
-button:active {
-    transform: scale(0.95);
+
+#spinBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
+
 #message {
-    margin-top: 20px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    height: 35px;
+  min-height: 1.8em;
+  margin: 1rem 0 0;
+  color: var(--gold);
+  font-size: clamp(0.9rem, 3vw, 1.1rem);
+  font-weight: 750;
+}
+
+.home,
+.stats {
+  position: absolute;
+  z-index: 2;
+  top: 1.25rem;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: rgba(17, 24, 39, 0.88);
+  color: var(--foreground);
+  font-size: 0.9rem;
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+}
+
+.home {
+  left: 1.25rem;
+}
+
+.stats {
+  right: 1.25rem;
+  color: var(--muted);
+}
+
+.home a {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+.stats span {
+  margin-left: 0.25rem;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .game-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .games-page {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .game-list {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .game-card figure {
+    display: grid;
+    grid-template-columns: minmax(4.5rem, 5.5rem) 1fr;
+    gap: 1rem;
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+  }
+
+  .game-image,
+  .roulette-card-wheel,
+  .prize-card-wheel {
+    width: 5.5rem;
+  }
+
+  .roulette-card-wheel,
+  .prize-card-wheel {
+    border-width: 4px;
+  }
+
+  .game-card figcaption {
+    padding: 0;
+    font-size: 1rem;
+  }
+
+  .casino-container {
+    width: calc(100% - 1.25rem);
+    margin-top: 4rem;
+    padding: 1rem;
+  }
+
+  .home,
+  .stats {
+    top: 0.65rem;
+    min-height: 2.4rem;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .home {
+    left: 0.65rem;
+  }
+
+  .stats {
+    right: 0.65rem;
+  }
 }

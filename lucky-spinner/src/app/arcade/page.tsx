@@ -127,9 +127,9 @@ export default function ArcadePage() {
     <main
       className="min-h-screen px-4 py-5 text-white sm:px-6 sm:py-8"
       style={{
-        backgroundColor: "#080c16",
+        backgroundColor: "#090e19",
         backgroundImage:
-          "radial-gradient(ellipse at 50% 0%, rgba(34, 108, 119, 0.3), transparent 54%), repeating-linear-gradient(135deg, rgba(255,255,255,0.014) 0, rgba(255,255,255,0.014) 1px, transparent 1px, transparent 6px)",
+          "radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.2), transparent 52%), repeating-linear-gradient(135deg, rgba(255,255,255,0.012) 0, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 6px)",
       }}
     >
       <div className="mx-auto max-w-6xl">

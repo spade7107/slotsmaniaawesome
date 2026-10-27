@@ -1,0 +1,269 @@
+@import "casino-theme.css";
+
+body.blackjack-page {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+  font-family: Arial, Helvetica, sans-serif !important;
+  background:
+    radial-gradient(ellipse at 50% 5%, rgba(52, 126, 141, 0.2), transparent 48%),
+    linear-gradient(180deg, #0b1220 0%, var(--background) 72%) !important;
+  color: var(--foreground) !important;
+}
+
+.blackjack-page > .home,
+.blackjack-page > .balance {
+  position: absolute;
+  z-index: 5;
+  top: 0.85rem;
+  min-height: 2.6rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: rgba(17, 24, 39, 0.92);
+  color: var(--foreground);
+  font-size: 0.86rem;
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+}
+
+.blackjack-page > .home {
+  top: 0.85rem;
+  left: 1rem;
+}
+
+.blackjack-page > .balance {
+  top: 0.85rem;
+  right: 1rem;
+  border-color: rgba(243, 204, 112, 0.28);
+  color: var(--gold);
+}
+
+.blackjack-page > .home a {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+.blackjack-page > .balance p {
+  margin: 0;
+}
+
+.blackjack-page > header {
+  margin-top: 3.8rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: center;
+}
+
+.blackjack-page > header h1 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.blackjack-page > header p {
+  margin: 0.3rem 0 0;
+  color: var(--primary);
+  font-size: 0.75rem;
+}
+
+.blackjack-page > main {
+  display: grid;
+  width: min(100%, 46rem);
+  flex: 1 0 auto;
+  grid-template-rows: minmax(9rem, 1fr) auto minmax(9rem, 1fr);
+  align-content: center;
+  align-items: center;
+  justify-content: stretch;
+  gap: clamp(0.75rem, 2vh, 1.25rem);
+  margin: 0 auto;
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+}
+
+.blackjack-page > main > div:not(#message) {
+  width: 100%;
+  min-height: 9rem;
+  padding: clamp(0.75rem, 3vw, 1.25rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(17, 24, 39, 0.82) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.04), 0 12px 30px rgba(0, 0, 0, 0.16);
+  text-align: center;
+}
+
+.blackjack-page > main > div:not(#message) h2 {
+  margin: 0 0 0.65rem;
+  color: var(--primary) !important;
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.blackjack-page > main > #message {
+  min-height: 2rem;
+  margin: 0;
+  color: var(--gold) !important;
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  font-weight: 800;
+}
+
+#dealer-cards,
+#player-cards {
+  display: flex;
+  min-height: 6rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.35rem, 1.5vw, 0.75rem);
+}
+
+#dealer-cards > div,
+#player-cards > div {
+  position: relative;
+  width: clamp(3.2rem, 12vw, 4rem) !important;
+  height: auto !important;
+  aspect-ratio: 2 / 3;
+  flex: 0 1 auto;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  border-radius: 0.55rem;
+  background: #f8fafc !important;
+  color: #172033 !important;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.3);
+}
+
+#dealer-cards > div img,
+#player-cards > div img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#dealer-cards > div > div,
+#player-cards > div > div {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.25rem;
+  color: #172033;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+#dealer-cards > div > div.hidden,
+#player-cards > div > div.hidden,
+.blackjack-page .hidden {
+  display: none !important;
+}
+
+.blackjack-page > footer {
+  padding: 1rem max(1rem, env(safe-area-inset-left)) calc(1rem + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  background: rgba(12, 19, 32, 0.96) !important;
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.blackjack-page > footer > div {
+  width: min(100%, 34rem);
+}
+
+#betting-controls,
+#game-controls {
+  display: flex;
+  gap: 0.65rem;
+}
+
+#betting-controls button,
+#game-controls button {
+  flex: 1;
+}
+
+#betting-controls.hidden,
+#game-controls.hidden,
+#restart-btn.hidden {
+  display: none !important;
+}
+
+.blackjack-page button {
+  min-height: 3rem;
+  padding: 0.65rem clamp(0.5rem, 3vw, 1.25rem);
+  border: 1px solid var(--border) !important;
+  border-radius: 0.7rem !important;
+  background: var(--surface-raised) !important;
+  color: var(--foreground) !important;
+  font-size: clamp(0.9rem, 3.6vw, 1.1rem) !important;
+  font-weight: 750 !important;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: filter 150ms ease, transform 150ms ease;
+}
+
+#betting-controls button {
+  border-color: rgba(243, 204, 112, 0.4) !important;
+  background: rgba(243, 204, 112, 0.12) !important;
+  color: var(--gold) !important;
+}
+
+#hit-btn {
+  border-color: rgba(103, 216, 198, 0.45) !important;
+  background: rgba(103, 216, 198, 0.14) !important;
+  color: var(--primary) !important;
+}
+
+#stand-btn {
+  border-color: rgba(248, 113, 113, 0.42) !important;
+  background: rgba(248, 113, 113, 0.12) !important;
+  color: #fca5a5 !important;
+}
+
+#restart-btn {
+  width: 100%;
+  border-color: rgba(103, 216, 198, 0.45) !important;
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+.blackjack-page button:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .blackjack-page > .home,
+  .blackjack-page > .balance {
+    top: 0.55rem;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .blackjack-page > .home { left: 0.55rem; }
+  .blackjack-page > .balance { right: 0.55rem; }
+  .blackjack-page > header { margin-top: 3.1rem; padding: 0.75rem; }
+  .blackjack-page > main { grid-template-rows: minmax(7rem, 1fr) auto minmax(7rem, 1fr); gap: 0.65rem; padding: 0.65rem; }
+  .blackjack-page > main > div:not(#message) { min-height: 7rem; padding: 0.6rem; }
+  #dealer-cards, #player-cards { min-height: 4.7rem; gap: 0.3rem; }
+  #dealer-cards > div, #player-cards > div { width: clamp(2.7rem, 14vw, 3.4rem) !important; }
+  .blackjack-page > footer { padding-inline: 0.65rem; }
+  #betting-controls, #game-controls { gap: 0.45rem; }
+  .blackjack-page button { min-height: 2.8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-deal-player,
+  .animate-deal-dealer {
+    animation-duration: 0.01ms !important;
+  }
+}
