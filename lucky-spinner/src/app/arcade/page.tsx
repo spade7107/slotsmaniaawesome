@@ -172,19 +172,12 @@ export default function ArcadePage() {
             </div>
 
             <div className="relative mx-auto aspect-square w-full max-w-[440px] rounded-full border-[10px] border-[#d1aa48] bg-[#684e20] p-2 shadow-[0_16px_38px_rgba(0,0,0,0.52),inset_0_0_0_2px_#fae296]">
-              <div
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
+                disabled={isSpinning || balance < wager}
                 aria-label={isSpinning ? "Prize wheel is spinning" : "Spin the prize wheel"}
-                aria-disabled={isSpinning || balance < wager}
                 onClick={handleSpin}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    handleSpin();
-                  }
-                }}
-                className={`absolute inset-2 rounded-full border-[3px] border-[#f6db7b] transition-transform duration-[5200ms] ease-[cubic-bezier(0.12,0.83,0.2,1)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#61d4bf] focus-visible:ring-offset-4 focus-visible:ring-offset-[#121927] ${isSpinning || balance < wager ? "cursor-not-allowed" : "cursor-pointer"}`}
+                className="absolute inset-2 appearance-none rounded-full border-[3px] border-[#f6db7b] bg-transparent p-0 transition-transform duration-[5200ms] ease-[cubic-bezier(0.12,0.83,0.2,1)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#61d4bf] focus-visible:ring-offset-4 focus-visible:ring-offset-[#121927] disabled:cursor-not-allowed"
                 style={{ background: wheelGradient, transform: `rotate(${rotation}deg)` }}
               >
                 {wheelSlices.map((prize, index) => {
@@ -203,7 +196,7 @@ export default function ArcadePage() {
                       </span>
                     );
                   })}
-              </div>
+              </button>
               <div className="pointer-events-none absolute left-1/2 top-1 z-20 -translate-x-1/2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                 <div className="h-0 w-0 border-l-[14px] border-r-[14px] border-t-[25px] border-l-transparent border-r-transparent border-t-[#fff0a3]" />
               </div>
