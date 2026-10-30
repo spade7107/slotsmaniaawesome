@@ -17,6 +17,9 @@ export default function HomePage() {
       <Link className="play-button" href="/games">
         Try our games <span aria-hidden="true">→</span>
       </Link>
+      <Link className="play-button" href="/signup">
+        Create an account <span aria-hidden="true">→</span>
+      </Link>
     </main>
   );
 }
