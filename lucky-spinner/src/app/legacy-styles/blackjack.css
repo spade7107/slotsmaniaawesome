@@ -148,6 +148,36 @@ body.blackjack-page {
   object-fit: contain;
 }
 
+@keyframes deal-player-card {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes deal-dealer-card {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-deal-player {
+  animation: deal-player-card 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-deal-dealer {
+  animation: deal-dealer-card 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
 #dealer-cards > div > div,
 #player-cards > div > div {
   position: absolute;
