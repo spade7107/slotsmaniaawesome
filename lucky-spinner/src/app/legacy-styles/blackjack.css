@@ -151,31 +151,51 @@ body.blackjack-page {
 @keyframes deal-player-card {
   from {
     opacity: 0;
-    transform: translateY(1rem) scale(0.9);
+    transform: translate3d(-5rem, 1rem, 0) rotate(-10deg) scale(0.92);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
   }
 }
 
 @keyframes deal-dealer-card {
   from {
     opacity: 0;
-    transform: translateY(-1rem) scale(0.9);
+    transform: translate3d(5rem, -1rem, 0) rotate(10deg) scale(0.92);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
   }
 }
 
 .animate-deal-player {
-  animation: deal-player-card 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: deal-player-card 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .animate-deal-dealer {
-  animation: deal-dealer-card 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: deal-dealer-card 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+#player-cards > .animate-deal-player:nth-child(2),
+#dealer-cards > .animate-deal-dealer:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+#player-cards > .animate-deal-player:nth-child(3),
+#dealer-cards > .animate-deal-dealer:nth-child(3) {
+  animation-delay: 160ms;
+}
+
+#player-cards > .animate-deal-player:nth-child(4),
+#dealer-cards > .animate-deal-dealer:nth-child(4) {
+  animation-delay: 240ms;
+}
+
+#player-cards > .animate-deal-player:nth-child(5),
+#dealer-cards > .animate-deal-dealer:nth-child(5) {
+  animation-delay: 320ms;
 }
 
 #dealer-cards > div > div,
@@ -294,5 +314,6 @@ body.blackjack-page {
   .animate-deal-player,
   .animate-deal-dealer {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
   }
 }

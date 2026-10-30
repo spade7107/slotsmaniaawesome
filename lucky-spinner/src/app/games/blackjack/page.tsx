@@ -137,7 +137,7 @@ export default function BlackjackPage() {
           <div id="dealer-cards" className="flex justify-center gap-2 min-h-[96px] items-center">
             {currentRound?.dealerHand.map((card, index) => (
               card ? (
-                <div className="w-16 h-24 bg-white rounded-lg shadow-md overflow-hidden flex items-center justify-center p-1 border border-slate-200 relative animate-deal-dealer" key={`dealer-${index}`}>
+                <div className="w-16 h-24 bg-white rounded-lg shadow-md overflow-hidden flex items-center justify-center p-1 border border-slate-200 relative animate-deal-dealer" key={`dealer-${index}-${card.value}-${card.suit}`}>
                   <Image
                     unoptimized
                     width={64}
@@ -157,7 +157,7 @@ export default function BlackjackPage() {
                   </div>
                 </div>
               ) : (
-                <div className="w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 animate-deal-dealer" key={`dealer-${index}`}>🂠</div>
+                <div className="w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 animate-deal-dealer" key={`dealer-${index}-hidden`}>🂠</div>
               )
             ))}
           </div>
