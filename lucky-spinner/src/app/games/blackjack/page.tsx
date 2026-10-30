@@ -79,6 +79,7 @@ export default function BlackjackPage() {
   const [round, setRound] = useState<RoundView | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"hit" | "stand" | null>(null);
   const [message, setMessage] = useState("Place your bet to start");
   const requestId = useRef<string | null>(null);
   const remoteRound = activeBlackjack ? readRound(activeBlackjack.public_state) : null;
@@ -88,6 +89,7 @@ export default function BlackjackPage() {
   const runAction = async (action: "start" | "hit" | "stand", bet?: number) => {
     if (!ready || busy) return;
     setBusy(true);
+    setPendingAction(action === "hit" || action === "stand" ? action : null);
     setMessage(action === "start" ? "Dealing..." : action === "hit" ? "Drawing a card..." : "Dealer's turn...");
     const operationId = requestId.current ?? crypto.randomUUID();
     requestId.current = operationId;
@@ -104,6 +106,7 @@ export default function BlackjackPage() {
     } catch {
       setMessage(action === "start" ? "Could not place bet." : "Could not update this round.");
     } finally {
+      setPendingAction(null);
       setBusy(false);
     }
   };
@@ -157,7 +160,14 @@ export default function BlackjackPage() {
                   </div>
                 </div>
               ) : (
-                <div className="w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 animate-deal-dealer" key={`dealer-${index}-hidden`}>🂠</div>
+                <div
+                  className={`w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 animate-deal-dealer ${pendingAction === "stand" ? "pending-card" : ""}`}
+                  key={`dealer-${index}-hidden-${pendingAction === "stand" ? "stand" : "waiting"}`}
+                  role={pendingAction === "stand" ? "img" : undefined}
+                  aria-label={pendingAction === "stand" ? "Dealer is playing" : undefined}
+                >
+                  🂠
+                </div>
               )
             ))}
           </div>
@@ -195,6 +205,15 @@ export default function BlackjackPage() {
                 </div>
               </div>
             ))}
+            {pendingAction === "hit" && (
+              <div
+                className="w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 animate-deal-player pending-card"
+                role="img"
+                aria-label="Drawing a card"
+              >
+                🂠
+              </div>
+            )}
           </div>
         </div>
       </main>

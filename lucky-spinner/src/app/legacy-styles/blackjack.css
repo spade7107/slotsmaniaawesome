@@ -178,6 +178,30 @@ body.blackjack-page {
   animation: deal-dealer-card 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+@keyframes pending-card-pulse {
+  to {
+    filter: brightness(1.15);
+    box-shadow: 0 0 0 4px rgba(103, 216, 198, 0.22), 0 0 16px rgba(103, 216, 198, 0.55);
+  }
+}
+
+.animate-deal-player.pending-card {
+  animation:
+    deal-player-card 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both,
+    pending-card-pulse 800ms ease-in-out 520ms infinite alternate;
+}
+
+.animate-deal-dealer.pending-card {
+  animation:
+    deal-dealer-card 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both,
+    pending-card-pulse 800ms ease-in-out 520ms infinite alternate;
+}
+
+#player-cards > .pending-card,
+#dealer-cards > .pending-card {
+  animation-delay: 0ms, 520ms !important;
+}
+
 #player-cards > .animate-deal-player:nth-child(2),
 #dealer-cards > .animate-deal-dealer:nth-child(2) {
   animation-delay: 80ms;
@@ -315,5 +339,9 @@ body.blackjack-page {
   .animate-deal-dealer {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
+  }
+
+  .pending-card {
+    animation: none !important;
   }
 }
