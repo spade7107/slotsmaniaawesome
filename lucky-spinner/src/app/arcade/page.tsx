@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, Coins, Sparkles } from "lucide-react";
+import { Coins, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountLinks } from "@/components/account-links";
 import { useGameSession } from "@/hooks/use-game-session";
@@ -151,12 +150,6 @@ export default function ArcadePage() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <AccountLinks />
-            <Link
-              href="/roulette"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2.5 text-xs font-semibold text-white/85 transition hover:border-[#f0c85e]/60 hover:bg-white/10"
-            >
-              <ArrowLeft aria-hidden="true" className="h-4 w-4" /> Roulette table
-            </Link>
             <div className="flex items-center gap-3 rounded-lg border border-[#f0c85e]/25 bg-[#151d28]/90 px-4 py-2.5">
               <Coins aria-hidden="true" className="h-4 w-4 text-[#f0c85e]" />
               <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/55">Credits</span>

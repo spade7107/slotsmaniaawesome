@@ -130,7 +130,6 @@ export default function BlackjackPage() {
       </div>
       <header className="p-4 text-center bg-emerald-950 shadow-md">
         <h1 className="text-3xl font-bold tracking-wider">BLACKJACK</h1>
-        <p className="text-xs text-emerald-300 mt-1">Animated Boilerplate</p>
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-around p-4 max-w-xl mx-auto w-full">
