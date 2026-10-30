@@ -44,12 +44,6 @@ const wheelSlices = [
 const wagers = [5, 10, 25, 50];
 const wheelRadius = 128;
 const totalWheelAngle = prizes.reduce((total, prize) => total + prize.angle, 0);
-const payoutWeightedAngle = prizes.reduce(
-  (total, prize) => total + prize.angle * prize.multiplier,
-  0
-);
-const theoreticalRtp = payoutWeightedAngle / totalWheelAngle;
-const houseEdge = 1 - theoreticalRtp;
 const prizeCenters = wheelSlices.map((prize, index) =>
   wheelSlices.slice(0, index).reduce((angle, previousPrize) => angle + previousPrize.angle, 0) + prize.angle / 2
 );
@@ -243,11 +237,11 @@ export default function ArcadePage() {
                 </div>
                 <Sparkles aria-hidden="true" className="h-5 w-5 text-[#f5d66e]" />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {prizes.map((prize) => {
                   const chance = `${(prize.angle / totalWheelAngle * 100).toFixed(prize.angle < 10 ? 2 : prize.angle < 36 ? 1 : 0)}%`;
                   return (
-                    <div key={prize.label} className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2.5">
+                    <div key={prize.label} className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-black/15 px-4 py-[18px]">
                       <span className="h-3 w-3 shrink-0 rounded-sm" style={{ backgroundColor: prize.color, boxShadow: `0 0 10px ${prize.color}66` }} />
                       <span className="min-w-0 flex-1 text-sm font-semibold text-white/90">{prize.multiplier === 0 ? "No prize" : `${prize.multiplier}× payout`}</span>
                       <span className="font-mono text-xs tabular-nums text-white/45">{chance}</span>
@@ -255,26 +249,6 @@ export default function ArcadePage() {
                   );
                 })}
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
-                <div className="rounded-lg bg-black/15 p-3">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/45">Theoretical RTP</p>
-                  <p className="mt-1 font-mono text-lg font-bold tabular-nums text-[#61d4bf]">{(theoreticalRtp * 100).toFixed(2)}%</p>
-                </div>
-                <div className="rounded-lg bg-black/15 p-3">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/45">House edge</p>
-                  <p className="mt-1 font-mono text-lg font-bold tabular-nums text-[#f5d66e]">{(houseEdge * 100).toFixed(2)}%</p>
-                </div>
-                <div className="col-span-2 rounded-lg bg-black/15 p-3">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/45">Expected net per spin</p>
-                    <p className="font-mono text-sm font-bold tabular-nums text-[#f2a39b]">Player -{formatCredits(wager * houseEdge)} · House +{formatCredits(wager * houseEdge)}</p>
-                  </div>
-                  <p className="mt-1 text-[10px] text-white/35">{payoutWeightedAngle}° weighted return ÷ {totalWheelAngle}° total = {(theoreticalRtp * 100).toFixed(2)}% RTP</p>
-                </div>
-              </div>
-              <p className="mt-3 text-[10px] leading-relaxed text-white/40">
-                The miss chance is split across four wedges; the board shows their combined probability.
-              </p>
             </section>
 
             <section className="rounded-2xl border border-white/10 bg-[#121927]/85 p-5 sm:p-6">

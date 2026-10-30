@@ -106,7 +106,6 @@ export default function ClassicPrizeWheelPage() {
           <div><p className="eyebrow">Arcade mode</p><h1>Prize wheel</h1></div>
           <div className="header-actions">
             <Link className="back-link" href="/games">← All games</Link>
-            <Link className="back-link" href="/games/roulette">Roulette</Link>
             <div className="balance-display"><span>Play credits</span><strong>$<span>{formatCredits(balance)}</span></strong></div>
           </div>
         </header>
