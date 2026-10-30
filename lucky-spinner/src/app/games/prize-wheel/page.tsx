@@ -134,9 +134,7 @@ export default function ClassicPrizeWheelPage() {
                   );
                 })}
               </div>
-              <div className="wheel-hub" aria-hidden="true">
-                <span>{result ? "Last prize" : "Spin"}</span><strong>{result ? result.label : "GO!"}</strong>
-              </div>
+              <div className="wheel-hub" aria-hidden="true" />
             </div>
             <p className="game-status" aria-live="polite">{error || status}</p>
             <button className="spin-button" type="button" disabled={spinning || !ready || balance < wager} onClick={() => void spin()}>
