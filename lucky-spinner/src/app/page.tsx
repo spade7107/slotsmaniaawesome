@@ -10,6 +10,7 @@ export default function HomePage() {
           alt="Gambling Mania"
           width={1200}
           height={500}
+          unoptimized
           priority
         />
       </h1>
