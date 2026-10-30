@@ -69,6 +69,12 @@ export default function LeaderboardsPage() {
             <Link href="/" className="text-sm text-[#67d8c6] hover:underline">← Back to games</Link>
             <h1 className="mt-3 text-3xl font-black text-[#fff7e5] sm:text-4xl">Leaderboards</h1>
             <p className="mt-1 text-sm text-white/55">Live standings from the games room</p>
+            <p className="mt-2 max-w-xl text-sm text-white/65">
+              To appear in these standings, create an account and sign in before playing.{" "}
+              <Link href="/signup" className="font-semibold text-[#67d8c6] hover:underline">
+                Sign up
+              </Link>
+            </p>
           </div>
           <AccountLinks />
         </header>
