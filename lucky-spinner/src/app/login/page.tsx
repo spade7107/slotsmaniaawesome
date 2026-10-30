@@ -35,7 +35,7 @@ export default function LoginPage() {
         <h1 className="mt-2 text-3xl font-black text-[#fff7e5]">Welcome back</h1>
         {!supabase ? (
           <p role="alert" className="mt-6 rounded-lg border border-amber-300/30 bg-amber-400/10 p-4 text-sm text-amber-100">
-            Sign-in is not configured yet. Add the public Supabase URL and anon key to the app environment.
+            Sign-in is not configured yet. Add the public Supabase URL and publishable key to the app environment.
           </p>
         ) : (
           <form onSubmit={submit} className="mt-7 space-y-4">

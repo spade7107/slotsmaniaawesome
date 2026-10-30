@@ -1,4 +1,10 @@
 @import "tailwindcss";
+@import "./legacy-styles/casino-theme.css";
+@import "./legacy-styles/styles.css";
+@import "./legacy-styles/blackjack.css";
+@import "./legacy-styles/roulette.css";
+@import "./legacy-styles/prize-wheel.css";
+@import "./legacy-styles/blank.css";
 
 :root {
   --background: #090e19;

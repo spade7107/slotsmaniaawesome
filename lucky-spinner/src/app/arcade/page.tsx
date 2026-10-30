@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Coins, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountLinks } from "@/components/account-links";
+import { useGameSession } from "@/hooks/use-game-session";
 
 type Prize = {
   label: string;
@@ -66,21 +67,8 @@ const wheelGradient = (() => {
   return `conic-gradient(${stops.join(", ")})`;
 })();
 
-function pickPrize() {
-  const roll = Math.random() * 360;
-  let end = 0;
-
-  for (const prize of wheelSlices) {
-    end += prize.angle;
-    if (roll < end) return { prize, center: end - prize.angle / 2 };
-  }
-
-  const lastPrize = wheelSlices[wheelSlices.length - 1];
-  return { prize: lastPrize, center: 360 - lastPrize.angle / 2 };
-}
-
 export default function ArcadePage() {
-  const [balance, setBalance] = useState(1000);
+  const { balance, ready, error, act } = useGameSession();
   const [wager, setWager] = useState(10);
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
@@ -88,6 +76,7 @@ export default function ArcadePage() {
   const [returned, setReturned] = useState(0);
   const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
   const resultDialogRef = useRef<HTMLDialogElement>(null);
+  const pendingSpinId = useRef<string | null>(null);
 
   useEffect(() => {
     const dialog = resultDialogRef.current;
@@ -100,25 +89,39 @@ export default function ArcadePage() {
     }
   }, [isResultDialogOpen]);
 
-  const handleSpin = () => {
-    if (isSpinning || balance < wager) return;
-
-    const selection = pickPrize();
-    const currentOffset = ((rotation % 360) + 360) % 360;
-    const alignment = (360 - ((selection.center + currentOffset) % 360)) % 360;
-    const targetRotation = rotation + 360 * 7 + alignment;
-
-    setBalance((currentBalance) => currentBalance - wager);
+  const handleSpin = async () => {
+    if (isSpinning || !ready || balance < wager) return;
     setIsSpinning(true);
     setIsResultDialogOpen(false);
     setResult(null);
+    const operationId = pendingSpinId.current ?? crypto.randomUUID();
+    pendingSpinId.current = operationId;
+    let response: Awaited<ReturnType<typeof act>>;
+    try {
+      response = await act({ game: "prize-wheel", operationId, wager });
+      pendingSpinId.current = null;
+    } catch {
+      setIsSpinning(false);
+      return;
+    }
+
+    const sliceIndex = Number(response.result?.sliceIndex);
+    const selectedPrize = wheelSlices[sliceIndex];
+    if (!selectedPrize) {
+      setIsSpinning(false);
+      return;
+    }
+    const currentOffset = ((rotation % 360) + 360) % 360;
+    const center = Number(response.result?.center);
+    const alignment = (360 - ((center + currentOffset) % 360)) % 360;
+    const targetRotation = rotation + 360 * 7 + alignment;
+
     setRotation(targetRotation);
 
     window.setTimeout(() => {
-      const prizeReturn = wager * selection.prize.multiplier;
-      setResult(selection.prize);
+      const prizeReturn = Number(response.result?.payout ?? 0);
+      setResult(selectedPrize);
       setReturned(prizeReturn);
-      setBalance((currentBalance) => currentBalance + prizeReturn);
       setIsSpinning(false);
       setIsResultDialogOpen(true);
     }, 5200);
@@ -149,7 +152,7 @@ export default function ArcadePage() {
           <div className="flex flex-wrap items-center gap-3">
             <AccountLinks />
             <Link
-              href="/"
+              href="/roulette"
               className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-2.5 text-xs font-semibold text-white/85 transition hover:border-[#f0c85e]/60 hover:bg-white/10"
             >
               <ArrowLeft aria-hidden="true" className="h-4 w-4" /> Roulette table
@@ -161,6 +164,7 @@ export default function ArcadePage() {
             </div>
           </div>
         </header>
+        {error && <p role="alert" className="mb-4 text-sm text-red-300">{error}</p>}
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)]">
           <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121927]/85 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.35)] sm:p-7">
@@ -233,15 +237,6 @@ export default function ArcadePage() {
                     {amount}
                   </button>
                 ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setBalance(1000)}
-                  disabled={isSpinning || balance >= 5}
-                  className="ml-auto border-white/15 bg-white/5 text-white/80 hover:bg-white/10"
-                >
-                  <Coins aria-hidden="true" /> Refill
-                </Button>
               </div>
             </div>
           </section>

@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "tsx --test test/game-engine.test.ts",
     "server:dev": "tsx watch server.ts",
     "server:build": "tsc -p tsconfig.server.json",
     "server:start": "node dist-server/server.js"

@@ -4,31 +4,12 @@
     "lucky-spinner": {
       "root": "lucky-spinner",
       "framework": "nextjs"
-    },
-    "public": {
-      "root": "public",
-      "runtime": "container",
-      "entrypoint": "Dockerfile"
     }
   },
   "rewrites": [
     {
-      "source": "/lucky-spinner",
-      "destination": {
-        "service": "lucky-spinner"
-      }
-    },
-    {
-      "source": "/lucky-spinner/(.*)",
-      "destination": {
-        "service": "lucky-spinner"
-      }
-    },
-    {
       "source": "/(.*)",
-      "destination": {
-        "service": "public"
-      }
+      "destination": { "service": "lucky-spinner" }
     }
   ]
 }

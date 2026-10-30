@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import { createApp } from "./src/server/app";
 import { getConfig } from "./src/server/config";
 import { createLeaderboardService } from "./src/server/leaderboard-service";
+import { LeaderboardOutboxWorker } from "./src/server/leaderboard-outbox";
 import { createLeaderboardSocket } from "./src/server/socket";
 
 async function main(): Promise<void> {
@@ -15,6 +16,14 @@ async function main(): Promise<void> {
   const server = createServer(app);
   const sockets = await createLeaderboardSocket(server, config.allowedOrigins, config.redisUrl);
   updateBus.on("updates", sockets.emitUpdates);
+  const outbox = config.supabaseUrl && config.supabaseServiceRoleKey
+    ? new LeaderboardOutboxWorker(
+      leaderboard,
+      sockets.emitUpdates,
+      { supabaseUrl: config.supabaseUrl, serviceRoleKey: config.supabaseServiceRoleKey },
+    )
+    : null;
+  outbox?.start();
 
   server.listen(config.port, () => {
     console.info(`Leaderboard API listening on port ${config.port}`);
@@ -25,7 +34,7 @@ async function main(): Promise<void> {
     if (shuttingDown) return;
     shuttingDown = true;
     console.info(`Received ${signal}; shutting down leaderboard API`);
-    void sockets.close().then(
+    void Promise.all([sockets.close(), outbox?.close()]).then(
       () => leaderboard.close(),
     ).then(
       () => process.exit(process.exitCode ?? 0),

@@ -1,94 +1,114 @@
-This is a [Next.js](https://nextjs.org) game frontend with a separately deployable TypeScript leaderboard API.
+# Slots Mania
 
-## Getting Started
+The website is a single Next.js app served at the domain root. It contains the home page, game directory, account pages, leaderboard, and all games. Game balances and outcomes are server-authoritative; Supabase Postgres stores signed-in balances and game state, while the separate Express service and Redis continue to serve live leaderboards.
 
-First, run the development server:
+## Local setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Install dependencies and configure environment values:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   npm ci
+   copy .env.example .env.local
+   copy .env.example .env
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   Next.js reads `.env.local`; the Express service reads `.env`. Use the same Supabase server credentials in both. `NEXT_PUBLIC_*` and `GUEST_SESSION_SECRET` are frontend-only; keep `SUPABASE_SERVICE_ROLE_KEY` and `INGESTION_API_KEY` on servers only. In production, `GUEST_SESSION_SECRET` must have at least 32 bytes.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. In Supabase, run the migrations in order:
 
-## Learn More
+   - `supabase/migrations/20261027000000_profiles.sql`
+   - `supabase/migrations/20261029000000_game_accounts.sql`
 
-To learn more about Next.js, take a look at the following resources:
+   The first migration creates public usernames. The second creates protected wallets, temporary guest sessions, game-round storage, blackjack state, and the durable leaderboard outbox.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   Set the Supabase Auth Site URL to the website origin and allow that origin in its redirect URL settings so email-confirmed sign-ups can return to the app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Start Redis and the leaderboard service, then start Next.js in another terminal:
 
-## Real-time leaderboard backend
+   ```bash
+   npm run server:dev
+   npm run dev
+   ```
 
-The Express service in `server.ts` is independent of the Next.js web server. It stores balances and biggest-win scores in Redis sorted sets, updates them atomically through a Lua script, and distributes Socket.IO updates across API instances through the Socket.IO Redis adapter. It does not write bet events to the game database.
+   Open `http://localhost:3000`. The website uses same-origin `/api/game` requests; `NEXT_PUBLIC_LEADERBOARD_API_URL` points to the separate leaderboard API.
 
-Scores are non-negative integer credits (for example, cents or the game's smallest credit unit); never send floating-point currency. Bet events must carry a stable, unique `eventId` so short-term retries are deduplicated, and a per-player monotonic `balanceVersion` so out-of-order events cannot overwrite a newer balance. Event IDs are retained for ten minutes; the balance version and per-player maximum win scores make repeated state updates idempotent beyond that interval. `occurredAt` must be an ISO-8601 timestamp no more than eight days old or one minute in the future. Use opaque player IDs, not emails or other personal data. The upstream game/settlement service is responsible for authenticating its event source and sending the authoritative balance, balance version, and win amount.
+## Pages and old URLs
 
-Configure the backend environment:
+| Page | Route |
+| --- | --- |
+| Landing page | `/` |
+| Game directory | `/games` |
+| Slots | `/games/slots` |
+| Blackjack | `/games/blackjack` |
+| Classic roulette design | `/games/roulette` |
+| Classic prize-wheel design | `/games/prize-wheel` |
+| Existing Next.js roulette design | `/roulette` |
+| Existing Next.js prize-wheel design | `/arcade` |
+| Leaderboard, sign-in, sign-up | `/leaderboards`, `/login`, `/signup` |
 
-| Variable | Default | Description |
+Both roulette designs and both prize-wheel designs remain available with their existing visual treatments. Legacy `.html` URLs redirect to their new routes. The previous Next.js root route at `/lucky-spinner` redirects to `/roulette`.
+
+The static source files in the repository's top-level `public/` directory are retained as migration references; Vercel no longer deploys them as a second website or uses `public/server.js` for gameplay.
+
+## Accounts, balances, and game actions
+
+Configure these for the Next.js deployment:
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL used by the browser auth client |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Browser-safe Supabase publishable key |
+| `SUPABASE_URL` | Supabase project URL used by server-side game requests |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key for protected wallet and game operations |
+| `GUEST_SESSION_SECRET` | HMAC key for temporary, HTTP-only guest-session cookies |
+| `NEXT_PUBLIC_LEADERBOARD_API_URL` | Browser-reachable base URL for the Express leaderboard API |
+
+Signed-in accounts receive 1,000 credits the first time their wallet is initialized. Credits persist in Supabase; there is no automatic refill or client-side reset. Guests can play with a temporary server-managed balance, but their balance is not attached to an account and their results are excluded from leaderboards.
+
+`GET /api/game` initializes or reads the caller's balance and returns an active blackjack round when one exists. `POST /api/game` accepts game actions for slots, roulette, prize wheels, or blackjack. The server validates wagers, generates random outcomes, computes payouts, and updates balances atomically. Clients cannot submit a balance, score, or game outcome as authoritative data. Blackjack cards and deck state remain server-side.
+
+Game actions require a UUID `operationId`; retries with the same operation ID are idempotent. Roulette sends the selected target IDs and chip amounts; the server validates them and chooses the winning number. The biggest-win leaderboard uses net profit after the wager, not the gross payout including returned stake.
+
+## Leaderboard service
+
+The long-running TypeScript Express service in `server.ts` remains separate from the Next.js deployment. Redis stores current balance and biggest-win sorted sets; Socket.IO publishes live updates. Supabase usernames are resolved from `profiles`.
+
+Game results for signed-in accounts write durable outbox records in the same Postgres transaction as the wallet change. The Express service claims and acknowledges those records and applies them to Redis idempotently; if Redis is unavailable, the outbox retries. Guest game results never enter the outbox.
+
+Configure the API service:
+
+| Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | `4000` | HTTP and Socket.IO port |
-| `REDIS_URL` | `redis://127.0.0.1:6379` | Redis connection URL |
-| `INGESTION_API_KEY` | unset | Required bearer token for bet event ingestion; at least 32 bytes and required at startup in production |
-| `ALLOWED_ORIGINS` | `http://localhost:3000` | Comma-separated browser origins for HTTP and Socket.IO |
-| `SUPABASE_URL` | unset | Supabase project URL, required for profile names and in production |
-| `SUPABASE_SERVICE_ROLE_KEY` | unset | Server-only Supabase service role key; never expose to browser code |
-| `NEXT_PUBLIC_SUPABASE_URL` | unset | Supabase project URL used by the browser auth client |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | unset | Supabase publishable key for browser auth; the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY` name is also accepted |
-| `NEXT_PUBLIC_LEADERBOARD_API_URL` | `http://localhost:4000` | Public base URL of the leaderboard API |
+| `REDIS_URL` | `redis://127.0.0.1:6379` | Shared Redis connection |
+| `ALLOWED_ORIGINS` | `http://localhost:3000` | Comma-separated web origins |
+| `SUPABASE_URL` | unset | Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | unset | Server-only key for username lookup and outbox delivery |
+| `INGESTION_API_KEY` | unset | Bearer key for the existing trusted event-ingestion endpoint; at least 32 bytes in production |
 
-### Accounts and usernames
+Production API startup requires `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and an `INGESTION_API_KEY` of at least 32 bytes. Never put a service-role or ingestion key in browser code or any `NEXT_PUBLIC_*` variable.
 
-The app uses Supabase Auth for email/password sign-up and sign-in, and Supabase Postgres for public usernames. Copy `.env.example` to `.env` (or `.env.local` for Next.js, and `.env` for the API), configure the public Supabase URL and publishable key for Next.js, and set `SUPABASE_URL` plus `SUPABASE_SERVICE_ROLE_KEY` for the Express API. The browser client uses `@supabase/ssr` for cookie-based session storage. Apply `supabase/migrations/20261027000000_profiles.sql` to the Supabase project before enabling sign-up (for example, run it in the Supabase SQL Editor). Never put the service role key in a `NEXT_PUBLIC_*` variable or browser code.
+HTTP API:
 
-The migration creates a profile row from signup metadata, enforces unique usernames regardless of letter case, and lets the browser read usernames while preventing browser-side profile writes. Usernames are 3–20 letters, digits, or underscores. The leaderboard API batch-resolves Redis player IDs to usernames and caches resolved profiles briefly; entries without a matching account are shown as “Player”. Use the Supabase Auth confirmation and password policies appropriate for your deployment.
+- `GET /healthz` — Redis readiness.
+- `GET /v1/leaderboards/balance/all-time?limit=50` — current balances.
+- `GET /v1/leaderboards/biggest-win/{daily|weekly|all-time}?limit=50` — largest net win per player in the UTC period.
+- `POST /v1/events/bets` — existing trusted upstream-ingestion API; requires the configured bearer key.
 
-The current roulette and prize-wheel pages are client-only demos and do not submit authoritative results. Until a trusted game/settlement service posts events to `POST /v1/events/bets`, the leaderboard will correctly remain empty. Do not expose `INGESTION_API_KEY` in the browser or accept client-provided balances/wins as authoritative.
+The API accepts leaderboard limits from 1 to 100. Socket.IO clients subscribe with `leaderboard:subscribe` and `{ "metric": "biggest-win", "window": "daily" }`. On `leaderboard:update`, refetch the HTTP leaderboard because other players' ranks may have shifted.
 
-Start Redis, configure the environment as above, then run the backend in development:
+Run the API locally or build its production output:
 
 ```bash
 npm run server:dev
-```
-
-Compile and run the production server:
-
-```bash
 npm run server:build
 npm run server:start
 ```
 
-### HTTP API
+Use persistent, backed-up Redis with TLS and network isolation in production. All API instances must share the same Redis deployment.
 
-- `POST /v1/events/bets` — JSON body containing `eventId`, `playerId`, `balance`, `balanceVersion`, `winAmount`, and `occurredAt`. Send the configured API key as a bearer token in the `Authorization` header. Duplicate event IDs seen within ten minutes return `200`; newly accepted events return `202`.
-- `GET /v1/leaderboards/balance/all-time?limit=50` — current player balances with usernames.
-- `GET /v1/leaderboards/biggest-win/{daily|weekly|all-time}?limit=50` — each player's highest win in that UTC period, with usernames.
-- `GET /healthz` — Redis readiness check.
+## Vercel deployment
 
-The `balance` metric supports only the `all-time` window. Daily keys expire after the period plus eight days; weekly keys expire after the period plus eight days. All-time scores are retained. The API accepts limits from 1 to 100.
+The root `vercel.json` sends all site paths to the single Next.js service rooted at `lucky-spinner`; the separate static-site container has been removed. Configure the Supabase public URL/key, server-only service role key, guest-session secret, and leaderboard API URL in the Next.js service environment. Configure the API's secrets separately and set `ALLOWED_ORIGINS` to the exact public website origin.
 
-The browser leaderboard page is available at `/leaderboards`; sign-up and sign-in are at `/signup` and `/login`. Set `NEXT_PUBLIC_LEADERBOARD_API_URL` to the API's browser-reachable URL and include that web origin in `ALLOWED_ORIGINS`.
-
-### Socket.IO
-
-Connect to the backend and emit `leaderboard:subscribe` with `{ "metric": "biggest-win", "window": "daily" }` (or another supported metric/window). The server emits `leaderboard:update` events containing the changed player's `playerId`, `score`, and current `rank`. Refetch the HTTP leaderboard when a changed rank may have shifted other players' positions. Use `leaderboard:unsubscribe` with the same subscription object to leave a room.
-
-Run multiple API instances behind a load balancer with sticky sessions enabled if Socket.IO long-polling is used. All instances must share the same Redis deployment and ingestion API key. Redis is the authoritative leaderboard store; provision it for the required write throughput, persistence, backups, and high availability. Use TLS and network isolation for Redis and the ingestion endpoint in production.
-
-## Deploy the frontend on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+After deployment, verify sign-up and sign-in, a guest game, an authenticated game, and the resulting leaderboard entry/live update. The API/Redis service must be deployed and reachable before leaderboard reads or event delivery can work.
