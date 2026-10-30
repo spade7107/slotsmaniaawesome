@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useGameSession } from "@/hooks/use-game-session";
 
 interface Card {
@@ -88,9 +89,11 @@ export default function BlackjackPage() {
 
   const runAction = async (action: "start" | "hit" | "stand", bet?: number) => {
     if (!ready || busy) return;
-    setBusy(true);
-    setPendingAction(action === "hit" || action === "stand" ? action : null);
-    setMessage(action === "start" ? "Dealing..." : action === "hit" ? "Drawing a card..." : "Dealer's turn...");
+    flushSync(() => {
+      setBusy(true);
+      setPendingAction(action === "hit" || action === "stand" ? action : null);
+      setMessage(action === "start" ? "Dealing..." : action === "hit" ? "Drawing a card..." : "Dealer's turn...");
+    });
     const operationId = requestId.current ?? crypto.randomUUID();
     requestId.current = operationId;
     try {
@@ -237,8 +240,8 @@ export default function BlackjackPage() {
           )}
           {active && (
             <div id="game-controls" className="flex gap-3">
-              <button id="hit-btn" type="button" onClick={() => void runAction("hit")} disabled={busy} className="flex-1 bg-blue-600 hover:bg-blue-500 font-semibold text-2xl py-4 rounded transition">Hit</button>
-              <button id="stand-btn" type="button" onClick={() => void runAction("stand")} disabled={busy} className="flex-1 bg-red-600 hover:bg-red-500 font-semibold text-2xl py-4 rounded transition">Stand</button>
+              <button id="hit-btn" type="button" onClick={() => void runAction("hit")} disabled={busy} className="flex-1 bg-blue-600 hover:bg-blue-500 font-semibold text-2xl py-4 rounded transition">{pendingAction === "hit" ? "Drawing…" : "Hit"}</button>
+              <button id="stand-btn" type="button" onClick={() => void runAction("stand")} disabled={busy} className="flex-1 bg-red-600 hover:bg-red-500 font-semibold text-2xl py-4 rounded transition">{pendingAction === "stand" ? "Dealer playing…" : "Stand"}</button>
             </div>
           )}
           {roundComplete && (
