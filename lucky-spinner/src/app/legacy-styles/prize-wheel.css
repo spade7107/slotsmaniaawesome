@@ -290,21 +290,11 @@ body.prize-page {
 
 .prize-board { padding: clamp(1rem, 2vw, 1.5rem); }
 .sparkle-mark { color: var(--gold); font-size: 1.4rem; }
-.prize-list { display: grid; gap: 6px; margin-top: 1rem; }
-.prize-row { display: flex; min-height: 40px; align-items: center; gap: 11px; padding: 7px 10px; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 0.55rem; background: rgba(8, 13, 23, 0.45); }
+.prize-list { display: grid; gap: 8px; margin-top: 1rem; }
+.prize-row { display: flex; min-height: 58px; align-items: center; gap: 11px; padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 0.55rem; background: rgba(8, 13, 23, 0.45); }
 .prize-swatch { width: 12px; height: 12px; flex: 0 0 auto; border-radius: 3px; box-shadow: 0 0 10px currentColor; }
 .prize-name { flex: 1; color: rgba(255, 255, 255, 0.9); font-size: 0.8rem; font-weight: 700; }
 .prize-chance { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.72rem; font-variant-numeric: tabular-nums; }
-.metrics-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-.metric { min-width: 0; padding: 11px; border-radius: 0.6rem; background: rgba(8, 13, 23, 0.45); }
-.metric > span { display: block; color: var(--muted); font-size: 0.59rem; font-weight: 800; text-transform: uppercase; }
-.metric strong { display: block; margin-top: 6px; color: var(--primary); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
-.metric:nth-child(2) strong { color: var(--gold); }
-.metric-wide { grid-column: 1 / -1; }
-.metric-wide strong { color: #f2a39b; font-size: 0.9rem; }
-.metric small { display: block; margin-top: 5px; color: rgba(255, 255, 255, 0.48); font-size: 0.65rem; }
-.board-note { margin: 12px 0 0; color: rgba(255, 255, 255, 0.5); font-size: 0.68rem; line-height: 1.5; }
-
 .result-dialog {
   width: min(calc(100% - 32px), 380px);
   padding: 0;

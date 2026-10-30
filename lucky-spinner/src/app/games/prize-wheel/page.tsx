@@ -24,9 +24,6 @@ const wheelSlices = [
 ];
 const wagers = [5, 10, 25, 50];
 const totalAngle = prizes.reduce((total, prize) => total + prize.angle, 0);
-const weightedAngle = prizes.reduce((total, prize) => total + prize.angle * prize.multiplier, 0);
-const rtp = weightedAngle / totalAngle;
-const houseEdge = 1 - rtp;
 const prizeCenters = wheelSlices.map((prize, index) =>
   wheelSlices.slice(0, index).reduce((angle, previous) => angle + previous.angle, 0) + prize.angle / 2,
 );
@@ -179,15 +176,6 @@ export default function ClassicPrizeWheelPage() {
                 </div>
               ))}
             </div>
-            <div className="metrics-grid">
-              <div className="metric"><span>Theoretical RTP</span><strong>{(rtp * 100).toFixed(2)}%</strong></div>
-              <div className="metric"><span>House edge</span><strong>{(houseEdge * 100).toFixed(2)}%</strong></div>
-              <div className="metric metric-wide">
-                <span>Expected net per spin</span><strong>-{formatCredits(wager * houseEdge)} credits</strong>
-                <small>{weightedAngle} weighted return / {totalAngle} total = {(rtp * 100).toFixed(2)}% RTP</small>
-              </div>
-            </div>
-            <p className="board-note">The miss chance is split across four wedges; the board shows their combined probability.</p>
           </aside>
         </div>
       </main>
