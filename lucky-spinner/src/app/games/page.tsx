@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const games = [
+const skillGames = [
   { href: "/games/blackjack", title: "Play Blackjack!", image: "/legacy-assets/black-jack-poker.svg", alt: "Blackjack" },
-  { href: "/games/slots", title: "Play Slots!", image: "/legacy-assets/slot.svg", alt: "Slots" },
 ];
 
 export default function GamesPage() {
@@ -26,27 +25,58 @@ export default function GamesPage() {
           </Link>
         </nav>
       </header>
-      <main className="game-list">
-        {games.map((game) => (
-          <Link className="game-card" href={game.href} key={game.href}>
-            <figure>
-              <Image className="game-image" src={game.image} alt={game.alt} width={240} height={240} />
-              <figcaption>{game.title}</figcaption>
-            </figure>
-          </Link>
-        ))}
-        <Link className="game-card" href="/games/roulette">
-          <figure>
-            <div className="roulette-card-wheel" role="img" aria-label="European roulette wheel preview"><span>0</span></div>
-            <figcaption>Play Roulette!</figcaption>
-          </figure>
-        </Link>
-        <Link className="game-card" href="/games/prize-wheel">
-          <figure>
-            <div className="prize-card-wheel" role="img" aria-label="Prize wheel preview"><span>GO</span></div>
-            <figcaption>Play Prize Wheel!</figcaption>
-          </figure>
-        </Link>
+      <main className="w-full max-w-[76rem] space-y-10">
+        <section aria-labelledby="skill-games-heading">
+          <div className="mb-5">
+            <h2 id="skill-games-heading" className="text-2xl font-black text-[#fff7e5]">
+              Skill-based games
+            </h2>
+            <p className="mt-1 text-sm text-white/55">
+              Your choices and strategy shape how each round plays out.
+            </p>
+          </div>
+          <div className="game-list">
+            {skillGames.map((game) => (
+              <Link className="game-card" href={game.href} key={game.href}>
+                <figure>
+                  <Image className="game-image" src={game.image} alt={game.alt} width={240} height={240} />
+                  <figcaption>{game.title}</figcaption>
+                </figure>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section aria-labelledby="rng-games-heading">
+          <div className="mb-5">
+            <h2 id="rng-games-heading" className="text-2xl font-black text-[#fff7e5]">
+              RNG-based games
+            </h2>
+            <p className="mt-1 text-sm text-white/55">
+              Results are determined by chance each time you play.
+            </p>
+          </div>
+          <div className="game-list">
+            <Link className="game-card" href="/games/slots">
+              <figure>
+                <Image className="game-image" src="/legacy-assets/slot.svg" alt="Slots" width={240} height={240} />
+                <figcaption>Play Slots!</figcaption>
+              </figure>
+            </Link>
+            <Link className="game-card" href="/games/roulette">
+              <figure>
+                <div className="roulette-card-wheel" role="img" aria-label="European roulette wheel preview"><span>0</span></div>
+                <figcaption>Play Roulette!</figcaption>
+              </figure>
+            </Link>
+            <Link className="game-card" href="/games/prize-wheel">
+              <figure>
+                <div className="prize-card-wheel" role="img" aria-label="Prize wheel preview"><span>GO</span></div>
+                <figcaption>Play Prize Wheel!</figcaption>
+              </figure>
+            </Link>
+          </div>
+        </section>
       </main>
     </>
   );
