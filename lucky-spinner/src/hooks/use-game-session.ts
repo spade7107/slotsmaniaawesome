@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import type { ActiveBoost } from "@/lib/boosts";
 
 export interface GameActionResponse {
   balance: number;
   balanceVersion: number;
   authenticated?: boolean;
+  activeBoost?: ActiveBoost | null;
   activeBlackjack?: {
     id: string;
     version: number;
@@ -24,6 +26,7 @@ export function useGameSession() {
   const [balance, setBalance] = useState(0);
   const [balanceVersion, setBalanceVersion] = useState(0);
   const [authenticated, setAuthenticated] = useState(false);
+  const [activeBoost, setActiveBoost] = useState<ActiveBoost | null>(null);
   const [activeBlackjack, setActiveBlackjack] =
     useState<GameActionResponse["activeBlackjack"]>(null);
   const [ready, setReady] = useState(false);
@@ -36,6 +39,7 @@ export function useGameSession() {
     setBalance(data.balance);
     setBalanceVersion(data.balanceVersion);
     setAuthenticated(Boolean(data.authenticated));
+    setActiveBoost(data.activeBoost ?? null);
     setActiveBlackjack(data.activeBlackjack ?? null);
     setError("");
     setReady(true);
@@ -52,6 +56,7 @@ export function useGameSession() {
         setBalance(data.balance);
         setBalanceVersion(data.balanceVersion);
         setAuthenticated(Boolean(data.authenticated));
+        setActiveBoost(data.activeBoost ?? null);
         setActiveBlackjack(data.activeBlackjack ?? null);
         setReady(true);
       })
@@ -80,6 +85,9 @@ export function useGameSession() {
     }
     if (typeof data.balance === "number") setBalance(data.balance);
     if (typeof data.balanceVersion === "number") setBalanceVersion(data.balanceVersion);
+    if (Object.prototype.hasOwnProperty.call(data, "activeBoost")) {
+      setActiveBoost(data.activeBoost ?? null);
+    }
     if (body.game === "blackjack") {
       setActiveBlackjack(data.complete ? null : {
         id: data.gameId ?? "",
@@ -95,6 +103,7 @@ export function useGameSession() {
     balance,
     balanceVersion,
     authenticated,
+    activeBoost,
     activeBlackjack,
     ready,
     error,

@@ -9,6 +9,8 @@ import {
   startBlackjack,
   type BlackjackState,
 } from "@/server/game-engine";
+import { getActivePlayerBoost } from "@/server/boosts";
+import { isBoostWagerAllowed, type ActiveBoost } from "@/lib/boosts";
 import { getSupabaseAdmin } from "@/server/supabase-admin";
 
 class GameApiError extends Error {
@@ -63,12 +65,16 @@ export async function GET() {
   let actor: GameActor | null = null;
   try {
     actor = await getGameActor();
-    const activeBlackjack = await getActiveBlackjack(actor);
+    const [activeBlackjack, activeBoost] = await Promise.all([
+      getActiveBlackjack(actor),
+      getActivePlayerBoost(actor.userId),
+    ]);
     return response({
       balance: actor.balance,
       balanceVersion: actor.balanceVersion,
       authenticated: Boolean(actor.userId),
       activeBlackjack,
+      activeBoost,
     }, actor);
   } catch (error) {
     console.error("Could not load game session", error);
@@ -174,13 +180,62 @@ export async function POST(request: NextRequest) {
       throw new GameApiError(400, "operationId must be a UUID");
     }
 
-    const outcome = body.game === "slots"
-      ? resolveSlots()
-      : body.game === "roulette"
-        ? resolveRoulette(body.bets)
-        : body.game === "prize-wheel"
-          ? resolvePrizeWheel(body.wager)
-          : null;
+    if (body.game === "slots" || body.game === "prize-wheel") {
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const activeBoost: ActiveBoost | null = await getActivePlayerBoost(actor.userId);
+        const outcome = body.game === "slots"
+          ? resolveSlots(activeBoost ? { tier: activeBoost.tier } : undefined)
+          : resolvePrizeWheel(
+            body.wager,
+            activeBoost ? { tier: activeBoost.tier } : undefined,
+          );
+        if (activeBoost && !isBoostWagerAllowed(outcome.wager, activeBoost)) {
+          throw new GameApiError(
+            400,
+            `This boost allows a maximum bet of ${activeBoost.maxBet} credits`,
+          );
+        }
+
+        const { data, error } = actor.userId
+          ? await admin.rpc("apply_game_round_with_boost", {
+            p_user_id: actor.userId,
+            p_operation_id: body.operationId,
+            p_game: body.game,
+            p_wager: outcome.wager,
+            p_payout: outcome.payout,
+            p_result: outcome.result,
+            p_expected_boost_id: activeBoost?.id ?? null,
+          })
+          : await admin.rpc("apply_game_round", {
+            ...actorParams(actor),
+            p_operation_id: body.operationId,
+            p_game: body.game,
+            p_wager: outcome.wager,
+            p_payout: outcome.payout,
+            p_result: outcome.result,
+          });
+        if (error?.message.includes("Active boost changed")) {
+          if (attempt === 0) continue;
+          throw new GameApiError(409, "Your active boost changed. Please try that spin again.");
+        }
+        if (error) {
+          if (error.message.includes("Insufficient credits")) {
+            throw new GameApiError(409, "Not enough credits for that wager");
+          }
+          if (error.message.includes("Wager exceeds the active boost limit")) {
+            throw new GameApiError(400, error.message);
+          }
+          if (error.message.includes("expired")) {
+            throw new GameApiError(401, "Your guest session expired. Reload to start a new one.");
+          }
+          throw new Error(`Could not record game result: ${error.message}`);
+        }
+        return response(data, actor);
+      }
+      throw new GameApiError(409, "Your active boost changed. Please try that spin again.");
+    }
+
+    const outcome = body.game === "roulette" ? resolveRoulette(body.bets) : null;
     if (!outcome) throw new GameApiError(400, "Choose a supported game");
 
     const { data, error } = await admin.rpc("apply_game_round", {
@@ -207,7 +262,8 @@ export async function POST(request: NextRequest) {
       error.message.includes("Choose a valid") ||
       error.message.includes("Place between") ||
       error.message.includes("Invalid roulette") ||
-      error.message.includes("wager exceeds")
+      error.message.includes("wager exceeds") ||
+      error.message.includes("Choose a valid prize-wheel")
     )) {
       return response({ error: error.message }, actor, 400);
     }

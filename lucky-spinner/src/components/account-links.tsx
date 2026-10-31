@@ -53,6 +53,12 @@ export function AccountLinks() {
   return (
     <div className="flex items-center gap-2">
       <Link
+        href="/shop"
+        className="rounded-lg border border-[#f3cc70]/30 bg-[#f3cc70]/[0.07] px-3 py-2.5 text-xs font-bold text-[#f3cc70] transition hover:bg-[#f3cc70]/15"
+      >
+        Shop
+      </Link>
+      <Link
         href="/leaderboards"
         className="rounded-lg border border-white/15 bg-white/5 px-3 py-2.5 text-xs font-semibold text-white/85 transition hover:border-[#67d8c6]/60 hover:bg-white/10"
       >

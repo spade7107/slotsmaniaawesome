@@ -18,8 +18,9 @@ The website is a single Next.js app served at the domain root. It contains the h
 
    - `supabase/migrations/20261027000000_profiles.sql`
    - `supabase/migrations/20261029000000_game_accounts.sql`
+   - `supabase/migrations/20261030000000_credit_shop.sql`
 
-   The first migration creates public usernames. The second creates protected wallets, temporary guest sessions, game-round storage, blackjack state, and the durable leaderboard outbox.
+   The first migration creates public usernames. The second creates protected wallets, temporary guest sessions, game-round storage, blackjack state, and the durable leaderboard outbox. The third adds account-owned boost inventory and atomic purchase, activation, and round-settlement operations.
 
    Set the Supabase Auth Site URL to the website origin and allow that origin in its redirect URL settings so email-confirmed sign-ups can return to the app.
 
@@ -38,6 +39,7 @@ The website is a single Next.js app served at the domain root. It contains the h
 | --- | --- |
 | Landing page | `/` |
 | Game directory | `/games` |
+| Credit boost shop | `/shop` |
 | Slots | `/games/slots` |
 | Blackjack | `/games/blackjack` |
 | Classic roulette design | `/games/roulette` |
@@ -68,6 +70,8 @@ Signed-in accounts receive 1,000 credits the first time their wallet is initiali
 `GET /api/game` initializes or reads the caller's balance and returns an active blackjack round when one exists. `POST /api/game` accepts game actions for slots, roulette, prize wheels, or blackjack. The server validates wagers, generates random outcomes, computes payouts, and updates balances atomically. Clients cannot submit a balance, score, or game outcome as authoritative data. Blackjack cards and deck state remain server-side.
 
 Game actions require a UUID `operationId`; retries with the same operation ID are idempotent. Roulette sends the selected target IDs and chip amounts; the server validates them and chooses the winning number. The biggest-win leaderboard uses net profit after the wager, not the gross payout including returned stake.
+
+Signed-in players can purchase Basic (100 credits), Plus (250), and Premium (500) boosts from `/shop`. Each item is saved to the account inventory and must be activated; only one boost can be active at a time. An active boost affects slots and the prize wheel for 25 completed spins, with +5, +10, or +15 percentage points added to the chance of a profitable result and a tier wager cap of 10, 50, or 100 credits. The cap applies only while a boost is active; current game limits remain unchanged otherwise. Roulette and blackjack are not boosted. Guest players can view the shop but must sign in to purchase or activate items.
 
 ## Leaderboard service
 

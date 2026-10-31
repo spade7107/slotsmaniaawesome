@@ -24,7 +24,8 @@ export default function LoginPage() {
       setError(loginError.message);
       return;
     }
-    router.push("/leaderboards");
+    const next = new URLSearchParams(window.location.search).get("next");
+    router.push(next === "/shop" ? next : "/leaderboards");
   };
 
   return (

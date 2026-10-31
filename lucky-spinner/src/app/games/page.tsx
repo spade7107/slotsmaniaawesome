@@ -11,12 +11,20 @@ export default function GamesPage() {
     <>
       <header className="mb-[clamp(1.5rem,5vh,3rem)] flex w-full max-w-[76rem] flex-wrap items-center justify-between gap-4">
         <h1 className="games-heading !mb-0 text-left">Choose a game</h1>
-        <Link
-          href="/"
-          className="rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-[#67d8c6]/60 hover:bg-white/10"
-        >
-          ← Home
-        </Link>
+        <nav className="flex items-center gap-2">
+          <Link
+            href="/shop"
+            className="rounded-lg border border-[#f3cc70]/30 bg-[#f3cc70]/[0.07] px-4 py-2.5 text-sm font-bold text-[#f3cc70] transition hover:bg-[#f3cc70]/15"
+          >
+            Boost shop
+          </Link>
+          <Link
+            href="/"
+            className="rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:border-[#67d8c6]/60 hover:bg-white/10"
+          >
+            ← Home
+          </Link>
+        </nav>
       </header>
       <main className="game-list">
         {games.map((game) => (

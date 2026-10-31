@@ -6,6 +6,7 @@ import {
   outsideTargets,
   type BetTarget,
 } from "../lib/roulette";
+import { getBoostTier, type BoostTierId } from "../lib/boosts";
 
 const slotSymbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"] as const;
 const rouletteTargets = new Map<string, BetTarget>(
@@ -37,11 +38,64 @@ export interface GameOutcome {
   result: Record<string, unknown>;
 }
 
+export interface WinRateBoost {
+  tier: BoostTierId;
+}
+
+// Exact profitable-result frequencies for the current slot board and wheel slices.
+const slotsProfitableProbability = 549_585 / 1_953_125;
+const prizeWheelProfitableProbability = 380 / 2_880;
+const probabilityResolution = 2 ** 32;
+
+export function getLossConversionProbability(
+  winRateIncrease: number,
+  baselineWinProbability: number,
+): number {
+  if (
+    !Number.isFinite(winRateIncrease) ||
+    winRateIncrease <= 0 ||
+    !Number.isFinite(baselineWinProbability) ||
+    baselineWinProbability < 0 ||
+    baselineWinProbability >= 1
+  ) {
+    throw new Error("Invalid boost probability");
+  }
+  return Math.min(1, winRateIncrease / 100 / (1 - baselineWinProbability));
+}
+
+function applyWinRateBoost(
+  outcome: GameOutcome,
+  boost: WinRateBoost,
+  baselineWinProbability: number,
+  sampleProfitableOutcome: () => GameOutcome,
+): GameOutcome {
+  const tier = getBoostTier(boost.tier);
+  if (!tier) throw new Error("Unknown boost tier");
+
+  const conversionChance = getLossConversionProbability(
+    tier.winRateIncrease,
+    baselineWinProbability,
+  );
+  const boosted = outcome.netProfit <= 0 &&
+    randomInt(probabilityResolution) < conversionChance * probabilityResolution;
+  const result = boosted ? sampleProfitableOutcome() : outcome;
+
+  return {
+    ...result,
+    result: {
+      ...result.result,
+      boostApplied: boosted,
+      boostTier: tier.id,
+      boostWinRateIncrease: tier.winRateIncrease,
+    },
+  };
+}
+
 function isWholeCreditAmount(value: unknown): value is number {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
 
-export function resolveSlots(): GameOutcome {
+function randomSlotsOutcome(): GameOutcome {
   const wager = 10;
   const grid = Array.from({ length: 3 }, () =>
     Array.from({ length: 3 }, () => slotSymbols[randomInt(slotSymbols.length)]),
@@ -67,6 +121,16 @@ export function resolveSlots(): GameOutcome {
     netProfit: payout - wager,
     result: { grid, winningLines, payout },
   };
+}
+
+export function resolveSlots(boost?: WinRateBoost): GameOutcome {
+  const outcome = randomSlotsOutcome();
+  if (!boost) return outcome;
+  return applyWinRateBoost(outcome, boost, slotsProfitableProbability, () => {
+    let winningOutcome = randomSlotsOutcome();
+    while (winningOutcome.netProfit <= 0) winningOutcome = randomSlotsOutcome();
+    return winningOutcome;
+  });
 }
 
 export function resolveRoulette(rawBets: unknown): GameOutcome {
@@ -108,11 +172,7 @@ export function resolveRoulette(rawBets: unknown): GameOutcome {
   };
 }
 
-export function resolvePrizeWheel(wager: unknown): GameOutcome {
-  if (typeof wager !== "number" || ![5, 10, 25, 50].includes(wager)) {
-    throw new Error("Choose a valid prize-wheel wager");
-  }
-  const safeWager = wager;
+function randomPrizeWheelOutcome(wager: number): GameOutcome {
   const roll = randomInt(2_880);
   let cursor = 0;
   const selectedIndex = wheelSlices.findIndex((item) => {
@@ -121,13 +181,26 @@ export function resolvePrizeWheel(wager: unknown): GameOutcome {
   });
   const prize = wheelSlices[selectedIndex] ?? wheelSlices[0];
   const center = cursor / 8 - prize.angle / 2;
-  const payout = Math.floor(safeWager * prize.multiplier);
+  const payout = Math.floor(wager * prize.multiplier);
   return {
-    wager: safeWager,
+    wager,
     payout,
-    netProfit: payout - safeWager,
+    netProfit: payout - wager,
     result: { label: prize.label, multiplier: prize.multiplier, payout, center, sliceIndex: selectedIndex },
   };
+}
+
+export function resolvePrizeWheel(wager: unknown, boost?: WinRateBoost): GameOutcome {
+  if (typeof wager !== "number" || ![5, 10, 25, 50].includes(wager)) {
+    throw new Error("Choose a valid prize-wheel wager");
+  }
+  const outcome = randomPrizeWheelOutcome(wager);
+  if (!boost) return outcome;
+  return applyWinRateBoost(outcome, boost, prizeWheelProfitableProbability, () => {
+    let winningOutcome = randomPrizeWheelOutcome(wager);
+    while (winningOutcome.netProfit <= 0) winningOutcome = randomPrizeWheelOutcome(wager);
+    return winningOutcome;
+  });
 }
 
 export interface BlackjackCard {

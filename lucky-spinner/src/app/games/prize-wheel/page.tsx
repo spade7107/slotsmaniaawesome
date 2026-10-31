@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { ActiveBoostStatus } from "@/components/active-boost-status";
 import { useGameSession } from "@/hooks/use-game-session";
 
 const prizes = [
@@ -39,12 +40,13 @@ const gradient = (() => {
 })();
 
 export default function ClassicPrizeWheelPage() {
-  const { balance, ready, error, act } = useGameSession();
+  const { balance, ready, error, activeBoost, act } = useGameSession();
   const [wager, setWager] = useState(10);
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<(typeof wheelSlices)[number] | null>(null);
   const [returned, setReturned] = useState(0);
+  const [boostApplied, setBoostApplied] = useState(false);
   const [status, setStatus] = useState("Choose your wager, then spin.");
   const [dialogOpen, setDialogOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -58,7 +60,7 @@ export default function ClassicPrizeWheelPage() {
   }, [dialogOpen]);
 
   const spin = async () => {
-    if (spinning || !ready || balance < wager) return;
+    if (spinning || !ready || balance < wager || (activeBoost && wager > activeBoost.maxBet)) return;
     setSpinning(true);
     setDialogOpen(false);
     setStatus("Wheel in motion...");
@@ -88,6 +90,7 @@ export default function ClassicPrizeWheelPage() {
       const payout = Number(response.result?.payout ?? 0);
       setResult(selected);
       setReturned(payout);
+      setBoostApplied(response.result?.boostApplied === true);
       setStatus(payout > 0
         ? `${selected.label} landed. ${formatCredits(payout)} credits returned.`
         : "No prize this time. Choose a wager and try again.");
@@ -106,6 +109,9 @@ export default function ClassicPrizeWheelPage() {
             <div className="balance-display"><span>Play credits</span><strong>$<span>{formatCredits(balance)}</span></strong></div>
           </div>
         </header>
+        <div className="mb-4">
+          <ActiveBoostStatus boost={activeBoost} />
+        </div>
 
         <div className="prize-layout">
           <section className="wheel-panel" aria-label="Prize wheel">
@@ -137,7 +143,7 @@ export default function ClassicPrizeWheelPage() {
               <div className="wheel-hub" aria-hidden="true" />
             </div>
             <p className="game-status" aria-live="polite">{error || status}</p>
-            <button className="spin-button" type="button" disabled={spinning || !ready || balance < wager} onClick={() => void spin()}>
+            <button className="spin-button" type="button" disabled={spinning || !ready || balance < wager || Boolean(activeBoost && wager > activeBoost.maxBet)} onClick={() => void spin()}>
               {spinning ? "Spinning..." : "Spin the wheel"}
             </button>
             <div className="wager-panel">
@@ -148,7 +154,7 @@ export default function ClassicPrizeWheelPage() {
                     className="wager-button"
                     key={amount}
                     type="button"
-                    disabled={spinning || !ready || balance < amount}
+                    disabled={spinning || !ready || balance < amount || Boolean(activeBoost && amount > activeBoost.maxBet)}
                     aria-label={`Wager ${amount} credits`}
                     aria-pressed={wager === amount}
                     onClick={() => setWager(amount)}
@@ -185,6 +191,7 @@ export default function ClassicPrizeWheelPage() {
           <p className="dialog-subtitle">You landed on</p>
           <div className="dialog-prize">{result?.label ?? "MISS"}</div>
           <p className="dialog-message">{returned > wager ? `You won ${formatCredits(returned)} credits` : returned > 0 ? `${formatCredits(returned)} credits returned` : "No prize this time"}</p>
+          {boostApplied && <p className="dialog-note text-[#f3cc70]">Your boost turned this spin into a win!</p>}
           <p className="dialog-note">{returned > 0 ? `Your ${formatCredits(wager)} credit wager is included` : `${formatCredits(wager)} credits wagered`}</p>
           <button className="spin-button" type="button" onClick={() => dialogRef.current?.close()}>Spin again</button>
         </div>

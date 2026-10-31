@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { ActiveBoostStatus } from "@/components/active-boost-status";
 import { useGameSession } from "@/hooks/use-game-session";
 
 const symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
@@ -11,7 +12,7 @@ function randomSymbol() {
 }
 
 export default function SlotsPage() {
-  const { balance, ready, error, act } = useGameSession();
+  const { balance, ready, error, activeBoost, act } = useGameSession();
   const [grid, setGrid] = useState(() => Array.from({ length: 9 }, (_, index) => symbols[index % symbols.length]));
   const [message, setMessage] = useState("");
   const [spinning, setSpinning] = useState(false);
@@ -53,9 +54,11 @@ export default function SlotsPage() {
         setGrid(finalGrid.flat() as string[]);
         const wins = Number(response.result?.winningLines ?? 0);
         const payout = Number(response.result?.payout ?? 0);
-        setMessage(wins > 0
-          ? `WIN! ${wins} winning line(s)! (+$${payout})`
-          : "Try again!");
+        setMessage(response.result?.boostApplied
+          ? `BOOSTED WIN! ${wins} winning line(s)! (+$${payout})`
+          : wins > 0
+            ? `WIN! ${wins} winning line(s)! (+$${payout})`
+            : "Try again!");
         setSpinning(false);
       }
     }, 60);
@@ -68,6 +71,9 @@ export default function SlotsPage() {
       </div>
       <div className="stats">
         Balance: $<span id="balance">{ready ? balance : "…"}</span>
+      </div>
+      <div className="mx-auto mb-4 w-full max-w-[500px] px-4">
+        <ActiveBoostStatus boost={activeBoost} />
       </div>
       <main className="casino-container">
         <h1>3x3 Slot Machine</h1>

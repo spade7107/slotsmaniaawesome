@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Coins, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AccountLinks } from "@/components/account-links";
+import { ActiveBoostStatus } from "@/components/active-boost-status";
 import { useGameSession } from "@/hooks/use-game-session";
 
 type Prize = {
@@ -61,12 +62,13 @@ const wheelGradient = (() => {
 })();
 
 export default function ArcadePage() {
-  const { balance, ready, error, act } = useGameSession();
+  const { balance, ready, error, activeBoost, act } = useGameSession();
   const [wager, setWager] = useState(10);
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [result, setResult] = useState<Prize | null>(null);
   const [returned, setReturned] = useState(0);
+  const [boostApplied, setBoostApplied] = useState(false);
   const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
   const resultDialogRef = useRef<HTMLDialogElement>(null);
   const pendingSpinId = useRef<string | null>(null);
@@ -83,7 +85,7 @@ export default function ArcadePage() {
   }, [isResultDialogOpen]);
 
   const handleSpin = async () => {
-    if (isSpinning || !ready || balance < wager) return;
+    if (isSpinning || !ready || balance < wager || (activeBoost && wager > activeBoost.maxBet)) return;
     setIsSpinning(true);
     setIsResultDialogOpen(false);
     setResult(null);
@@ -115,6 +117,7 @@ export default function ArcadePage() {
       const prizeReturn = Number(response.result?.payout ?? 0);
       setResult(selectedPrize);
       setReturned(prizeReturn);
+      setBoostApplied(response.result?.boostApplied === true);
       setIsSpinning(false);
       setIsResultDialogOpen(true);
     }, 5200);
@@ -152,6 +155,9 @@ export default function ArcadePage() {
           </div>
         </header>
         {error && <p role="alert" className="mb-4 text-sm text-red-300">{error}</p>}
+        <div className="mb-5">
+          <ActiveBoostStatus boost={activeBoost} />
+        </div>
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)]">
           <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121927]/85 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.35)] sm:p-7">
@@ -167,7 +173,7 @@ export default function ArcadePage() {
             <div className="relative mx-auto aspect-square w-full max-w-[440px] rounded-full border-[10px] border-[#d1aa48] bg-[#684e20] p-2 shadow-[0_16px_38px_rgba(0,0,0,0.52),inset_0_0_0_2px_#fae296]">
               <button
                 type="button"
-                disabled={isSpinning || balance < wager}
+                disabled={isSpinning || balance < wager || Boolean(activeBoost && wager > activeBoost.maxBet)}
                 aria-label={isSpinning ? "Prize wheel is spinning" : "Spin the prize wheel"}
                 onClick={handleSpin}
                 className="absolute inset-2 appearance-none rounded-full border-[3px] border-[#f6db7b] bg-transparent p-0 transition-transform duration-[5200ms] ease-[cubic-bezier(0.12,0.83,0.2,1)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#61d4bf] focus-visible:ring-offset-4 focus-visible:ring-offset-[#121927] disabled:cursor-not-allowed"
@@ -217,7 +223,7 @@ export default function ArcadePage() {
                     key={amount}
                     type="button"
                     onClick={() => setWager(amount)}
-                    disabled={isSpinning || balance < amount}
+                    disabled={isSpinning || balance < amount || Boolean(activeBoost && amount > activeBoost.maxBet)}
                     aria-pressed={wager === amount}
                     className={`min-w-14 rounded-lg border px-4 py-2 font-mono text-sm font-bold tabular-nums transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5d66e] disabled:cursor-not-allowed disabled:opacity-40 ${wager === amount ? "border-[#f5d66e] bg-[#f5d66e] text-[#17202a] shadow-[0_0_18px_rgba(245,214,110,0.2)]" : "border-white/15 bg-white/5 text-white/80 hover:bg-white/10"}`}
                   >
@@ -284,6 +290,7 @@ export default function ArcadePage() {
               <p className="mt-4 text-lg font-bold text-white">
                 {returned > wager ? `You won ${formatCredits(returned)} credits` : returned > 0 ? `${formatCredits(returned)} credits returned` : "No prize this time"}
               </p>
+              {boostApplied && <p className="mt-2 text-sm font-bold text-[#f3cc70]">Your boost turned this spin into a win!</p>}
               <p className="mt-1 text-xs text-white/45">
                 {returned > 0 ? `Your ${formatCredits(wager)} credit wager is included` : `${formatCredits(wager)} credits wagered`}
               </p>
