@@ -3,6 +3,7 @@ import Link from "next/link";
 
 const skillGames = [
   { href: "/games/blackjack", title: "Play Blackjack!", image: "/legacy-assets/black-jack-poker.svg", alt: "Blackjack" },
+  { href: "/games/roulette", title: "Play Roulette!" },
 ];
 
 export default function GamesPage() {
@@ -39,7 +40,11 @@ export default function GamesPage() {
             {skillGames.map((game) => (
               <Link className="game-card" href={game.href} key={game.href}>
                 <figure>
-                  <Image className="game-image" src={game.image} alt={game.alt} width={240} height={240} />
+                  {game.image && game.alt ? (
+                    <Image className="game-image" src={game.image} alt={game.alt} width={240} height={240} />
+                  ) : (
+                    <div className="roulette-card-wheel" role="img" aria-label="European roulette wheel preview"><span>0</span></div>
+                  )}
                   <figcaption>{game.title}</figcaption>
                 </figure>
               </Link>
@@ -61,12 +66,6 @@ export default function GamesPage() {
               <figure>
                 <Image className="game-image" src="/legacy-assets/slot.svg" alt="Slots" width={240} height={240} />
                 <figcaption>Play Slots!</figcaption>
-              </figure>
-            </Link>
-            <Link className="game-card" href="/games/roulette">
-              <figure>
-                <div className="roulette-card-wheel" role="img" aria-label="European roulette wheel preview"><span>0</span></div>
-                <figcaption>Play Roulette!</figcaption>
               </figure>
             </Link>
             <Link className="game-card" href="/games/prize-wheel">
