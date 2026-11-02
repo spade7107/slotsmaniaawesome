@@ -25,7 +25,11 @@ export default function LoginPage() {
       return;
     }
     const next = new URLSearchParams(window.location.search).get("next");
-    router.push(next === "/shop" ? next : "/leaderboards");
+    router.push(
+      next === "/shop" || next === "/leaderboards" || next === "/dashboard"
+        ? next
+        : "/dashboard",
+    );
   };
 
   return (

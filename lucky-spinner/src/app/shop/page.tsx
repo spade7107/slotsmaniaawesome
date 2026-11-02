@@ -161,7 +161,7 @@ export default function ShopPage() {
               <p className="mt-1 font-mono text-3xl font-black tabular-nums text-[#f3cc70]">
                 {loading ? "…" : shop ? formatCredits(shop.balance) : "—"}
               </p>
-              <p className="text-xs text-white/45">play credits</p>
+              <p className="text-xs text-white/45">Gold Coins (GC)</p>
             </div>
           </div>
           {shop?.activeBoost && (
@@ -232,7 +232,7 @@ export default function ShopPage() {
                   <h3 className="mt-1 text-2xl font-black text-white">{tier.description}</h3>
                   <div className="mt-6 flex items-end gap-2">
                     <span className="font-mono text-4xl font-black tabular-nums text-[#fff7e5]">{formatCredits(tier.price)}</span>
-                    <span className="mb-1.5 text-xs font-semibold text-white/45">credits</span>
+                    <span className="mb-1.5 text-xs font-semibold text-white/45">GC</span>
                   </div>
 
                   <div className="mt-6 space-y-3 border-t border-white/10 pt-5">
@@ -242,7 +242,7 @@ export default function ShopPage() {
                     </div>
                     <div className="flex items-center justify-between gap-3 text-sm">
                       <span className="text-white/55">Maximum bet while active</span>
-                      <strong className="font-mono tabular-nums text-white">{tier.maxBet} credits</strong>
+                      <strong className="font-mono tabular-nums text-white">{tier.maxBet} GC</strong>
                     </div>
                     <div className="flex items-center justify-between gap-3 text-sm">
                       <span className="text-white/55">Boost duration</span>
@@ -259,7 +259,7 @@ export default function ShopPage() {
                         className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-black text-[#0b111b] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45"
                         style={{ backgroundColor: tier.accent }}
                       >
-                        {busyAction === `purchase-${tier.id}` ? "Adding to inventory…" : (shop?.balance ?? 0) < tier.price ? "Not enough credits" : "Add to inventory"}
+                        {busyAction === `purchase-${tier.id}` ? "Adding to inventory…" : (shop?.balance ?? 0) < tier.price ? "Not enough GC" : "Add to inventory"}
                         <ArrowDownRight aria-hidden="true" className="h-4 w-4" />
                       </button>
                     ) : shop ? (
@@ -289,7 +289,7 @@ export default function ShopPage() {
           </p>
         </section>
 
-        <section className="mt-12 pb-12">
+        <section id="inventory" className="mt-12 scroll-mt-24 pb-12">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#67d8c6]">Saved for your next session</p>
@@ -331,7 +331,7 @@ export default function ShopPage() {
                           ? `${shop.activeBoost?.remainingPlays ?? item.remaining_plays} of 25 plays left`
                           : exhausted
                             ? "All 25 plays used"
-                            : `+${tier.winRateIncrease} points · max ${tier.maxBet} credits per bet`}
+                            : `+${tier.winRateIncrease} points · max ${tier.maxBet} GC per bet`}
                       </p>
                     </div>
                     {item.status === "available" && (

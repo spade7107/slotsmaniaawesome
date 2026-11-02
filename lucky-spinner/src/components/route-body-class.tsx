@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 const BODY_CLASS_BY_PATH: Record<string, string> = {
   "/": "landing-page",
+  "/dashboard": "dashboard-page",
   "/games": "games-page",
   "/games/slots": "slots-page",
   "/games/blackjack": "blackjack-page",
@@ -19,6 +20,7 @@ export function RouteBodyClass() {
     const body = document.body;
     body.classList.remove(
       "landing-page",
+      "dashboard-page",
       "games-page",
       "slots-page",
       "blackjack-page",

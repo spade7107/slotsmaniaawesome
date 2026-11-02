@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       });
       if (error) {
         if (error.message.includes("Insufficient credits")) {
-          throw new ShopApiError(409, "You do not have enough credits for this boost");
+          throw new ShopApiError(409, "You do not have enough GC for this boost");
         }
         throw new Error(`Could not purchase boost: ${error.message}`);
       }

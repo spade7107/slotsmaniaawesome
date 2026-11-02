@@ -163,7 +163,7 @@ export default function Home() {
         type="button"
         onClick={() => handlePlaceBet(target)}
         disabled={isSpinning || !ready || balance - totalWager < selectedChip}
-        aria-label={`Bet on ${target.label}${wager ? `, ${wager} credits already placed` : ""}`}
+        aria-label={`Bet on ${target.label}${wager ? `, ${wager} GC already placed` : ""}`}
         className={`relative flex min-h-11 items-center justify-center border border-[#c8ab6e]/45 font-semibold transition hover:brightness-125 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f1d28a] disabled:cursor-not-allowed disabled:opacity-55 ${tone} ${extraClasses}`}
       >
         <span>{target.label}</span>
@@ -210,7 +210,7 @@ export default function Home() {
             </Link>
             <div className="flex items-center gap-3 rounded-lg border border-[#f3cc70]/25 bg-[#111827]/90 px-4 py-2.5">
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#a9b4a9]">
-                Play credits
+                Play GC
               </span>
               <span className="font-mono text-xl font-bold tabular-nums text-[#f3cc70]">
                 {formatCredits(Math.max(0, balance - totalWager))}
@@ -332,7 +332,7 @@ export default function Home() {
                     onClick={() => setSelectedChip(chip.value)}
                     disabled={isSpinning}
                     aria-pressed={selectedChip === chip.value}
-                    aria-label={`Select ${chip.value} credit chip`}
+                    aria-label={`Select ${chip.value} GC chip`}
                     className={`grid h-12 w-12 place-items-center rounded-full border-[3px] font-mono text-sm font-black shadow-[0_3px_6px_rgba(0,0,0,0.35)] transition hover:-translate-y-0.5 disabled:opacity-60 ${selectedChip === chip.value ? "scale-110 ring-2 ring-[#67d8c6] ring-offset-2 ring-offset-[#111827]" : "opacity-80"}`}
                     style={{ backgroundColor: chip.color, color: chip.value === 1 ? "#172018" : "#fff", borderColor: chip.value === 1 ? "#fff9df" : "rgba(255,255,255,0.75)" }}
                   >
@@ -433,7 +433,7 @@ export default function Home() {
                 {result.number}
               </div>
               <p className="mt-4 text-lg font-bold text-[#fff7e5]">
-                {result.returned > 0 ? `You won ${formatCredits(result.returned)} credits` : "No winning bets this round"}
+                {result.returned > 0 ? `You won ${formatCredits(result.returned)} GC` : "No winning bets this round"}
               </p>
               {result.returned > 0 && (
                 <p className="mt-1 text-xs text-[#98a79a]">Includes returned winning stakes</p>

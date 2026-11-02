@@ -187,7 +187,7 @@ export default function SlotsPage() {
         if (result.payout > 0) {
           const winLabel = result.wins.length === 1 ? "payline" : "paylines";
           setStatus(
-            `${result.boostApplied ? "BOOSTED WIN!" : "WIN!"} ${formatCredits(result.payout)} credits · `
+            `${result.boostApplied ? "BOOSTED WIN!" : "WIN!"} ${formatCredits(result.payout)} GC · `
             + `${result.wins.length} winning ${winLabel}.`,
           );
         } else {
@@ -207,10 +207,10 @@ export default function SlotsPage() {
     const nextTotalBet = value * activePaylineCount;
     setStatus(
       activeBoost && nextTotalBet > activeBoost.maxBet
-        ? `This boost allows a maximum total bet of ${formatCredits(activeBoost.maxBet)} credits.`
+        ? `This boost allows a maximum total bet of ${formatCredits(activeBoost.maxBet)} GC.`
         : balance < nextTotalBet
-          ? `Not enough credits. This spin costs ${formatCredits(nextTotalBet)}.`
-          : `Ready to spin for ${formatCredits(nextTotalBet)} credits.`,
+          ? `Not enough GC. This spin costs ${formatCredits(nextTotalBet)}.`
+          : `Ready to spin for ${formatCredits(nextTotalBet)} GC.`,
     );
   };
 
@@ -219,10 +219,10 @@ export default function SlotsPage() {
     const nextTotalBet = betPerLine * value;
     setStatus(
       activeBoost && nextTotalBet > activeBoost.maxBet
-        ? `This boost allows a maximum total bet of ${formatCredits(activeBoost.maxBet)} credits.`
+        ? `This boost allows a maximum total bet of ${formatCredits(activeBoost.maxBet)} GC.`
         : balance < nextTotalBet
-          ? `Not enough credits. This spin costs ${formatCredits(nextTotalBet)}.`
-          : `Ready to spin for ${formatCredits(nextTotalBet)} credits.`,
+          ? `Not enough GC. This spin costs ${formatCredits(nextTotalBet)}.`
+          : `Ready to spin for ${formatCredits(nextTotalBet)} GC.`,
     );
   };
 
@@ -243,11 +243,11 @@ export default function SlotsPage() {
           </div>
           <div className="rounded-xl border border-[#48f7df]/25 bg-[#11152a]/90 px-4 py-3 text-right">
             <span className="text-[10px] font-bold uppercase tracking-[0.17em] text-[#99a6c1]">
-              Play credits
+              Play GC
             </span>
             <strong className="mt-0.5 flex items-baseline justify-end gap-2 font-mono text-2xl tabular-nums text-[#fff16b]">
               {ready ? formatCredits(balance) : "…"}
-              <small className="text-[10px] tracking-widest text-[#aab4ca]">CR</small>
+              <small className="text-[10px] tracking-widest text-[#aab4ca]">GC</small>
             </strong>
           </div>
         </header>
@@ -301,7 +301,7 @@ export default function SlotsPage() {
                   <button
                     key={amount}
                     type="button"
-                    aria-label={`${amount} credits per line`}
+                    aria-label={`${amount} GC per line`}
                     aria-pressed={betPerLine === amount}
                     disabled={spinning || retryPendingSpin || !ready}
                     onClick={() => selectBet(amount)}
@@ -331,7 +331,7 @@ export default function SlotsPage() {
                       type="button"
                       aria-label={`${count} active paylines`}
                       aria-pressed={activePaylineCount === count}
-                      title={overLimit ? `Active boost limit: ${activeBoost?.maxBet} credits per spin` : undefined}
+                      title={overLimit ? `Active boost limit: ${activeBoost?.maxBet} GC per spin` : undefined}
                       disabled={spinning || retryPendingSpin || !ready || overLimit}
                       onClick={() => selectLines(count)}
                       className={`min-h-11 rounded-lg border px-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#48f7df] disabled:cursor-not-allowed disabled:opacity-45 ${
@@ -350,7 +350,7 @@ export default function SlotsPage() {
             <div className="mt-5 flex items-center justify-between border-t border-white/10 py-4">
               <span className="text-xs font-bold uppercase tracking-wider text-[#9aa8c3]">Total bet</span>
               <strong className="font-mono text-xl font-black tabular-nums text-[#fff16b]">
-                {formatCredits(totalBet)} <small className="text-[10px] tracking-widest text-[#aab4ca]">CR</small>
+                {formatCredits(totalBet)} <small className="text-[10px] tracking-widest text-[#aab4ca]">GC</small>
               </strong>
             </div>
 
@@ -365,9 +365,9 @@ export default function SlotsPage() {
             </button>
             <p aria-live="polite" className="mt-3 min-h-10 text-center text-sm text-[#b8c2d7]">
               {exceedsBoostLimit
-                ? `This boost allows a maximum total bet of ${formatCredits(activeBoost?.maxBet ?? 0)} credits.`
+                ? `This boost allows a maximum total bet of ${formatCredits(activeBoost?.maxBet ?? 0)} GC.`
                 : hasInsufficientBalance
-                  ? `Not enough credits for this bet. You need ${formatCredits(totalBet)}.`
+                  ? `Not enough GC for this bet. You need ${formatCredits(totalBet)}.`
                   : !sceneReady
                     ? "Loading the reels…"
                     : status}
@@ -376,7 +376,7 @@ export default function SlotsPage() {
 
           <section className="rounded-2xl border border-[#776cb7]/30 bg-[#11152a]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:p-5">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#48f7df]">Line pays · Per credit bet</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#48f7df]">Line pays · Per GC bet</p>
               <h2 className="mt-1 text-xl font-black text-[#f5f2ff]">Signal values</h2>
             </div>
             <div className="mt-4 overflow-x-auto">

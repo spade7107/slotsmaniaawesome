@@ -19,6 +19,7 @@ The website is a single Next.js app served at the domain root. It contains the h
    - `supabase/migrations/20261027000000_profiles.sql`
    - `supabase/migrations/20261029000000_game_accounts.sql`
    - `supabase/migrations/20261030000000_credit_shop.sql`
+   - `supabase/migrations/20261102000000_dashboard_features.sql`
 
    The first migration creates public usernames. The second creates protected wallets, temporary guest sessions, game-round storage, blackjack state, and the durable leaderboard outbox. The third adds account-owned boost inventory and atomic purchase, activation, and round-settlement operations.
 
@@ -37,8 +38,9 @@ The website is a single Next.js app served at the domain root. It contains the h
 
 | Page | Route |
 | --- | --- |
-| Landing page | `/` |
-| Game directory | `/games` |
+| Public landing page | `/` (signed-in players go to `/dashboard`) |
+| Game dashboard and catalog | `/dashboard` |
+| Retired game directory | `/games` (redirects to `/dashboard`) |
 | Credit boost shop | `/shop` |
 | Slots | `/games/slots` |
 | Blackjack | `/games/blackjack` |
@@ -49,6 +51,8 @@ The website is a single Next.js app served at the domain root. It contains the h
 | Leaderboard, sign-in, sign-up | `/leaderboards`, `/login`, `/signup` |
 
 Both roulette designs and both prize-wheel designs remain available with their existing visual treatments. Legacy `.html` URLs redirect to their new routes. The previous Next.js root route at `/lucky-spinner` redirects to `/roulette`.
+
+The dashboard combines game discovery with the signed-in player overview. Guests can browse and play the four existing games with a temporary balance; profile progression, daily rewards, quests, store, and inventory are account-only. `/games` remains as a compatibility redirect. Social/friend activity and promotional slides are not shown until supported data or assets are provided.
 
 The static source files in the repository's top-level `public/` directory are retained as migration references; Vercel no longer deploys them as a second website or uses `public/server.js` for gameplay.
 
@@ -65,13 +69,15 @@ Configure these for the Next.js deployment:
 | `GUEST_SESSION_SECRET` | HMAC key for temporary, HTTP-only guest-session cookies |
 | `NEXT_PUBLIC_LEADERBOARD_API_URL` | Browser-reachable base URL for the Express leaderboard API |
 
-Signed-in accounts receive 1,000 credits the first time their wallet is initialized. Credits persist in Supabase; there is no automatic refill or client-side reset. Guests can play with a temporary server-managed balance, but their balance is not attached to an account and their results are excluded from leaderboards.
+Signed-in accounts receive 1,000 Gold Coins (GC) the first time their wallet is initialized. GC persist in Supabase; there is no automatic refill or client-side reset. Guests can play with a temporary server-managed balance, but their balance is not attached to an account and their results are excluded from leaderboards. Game, shop, and leaderboard interfaces label balances and wagers as GC.
 
 `GET /api/game` initializes or reads the caller's balance and returns an active blackjack round when one exists. `POST /api/game` accepts game actions for slots, roulette, prize wheels, or blackjack. The server validates wagers, generates random outcomes, computes payouts, and updates balances atomically. Clients cannot submit a balance, score, or game outcome as authoritative data. Blackjack cards and deck state remain server-side.
 
 Game actions require a UUID `operationId`; retries with the same operation ID are idempotent. Roulette sends the selected target IDs and chip amounts; the server validates them and chooses the winning number. The biggest-win leaderboard uses net profit after the wager, not the gross payout including returned stake.
 
-Signed-in players can purchase Basic (100 credits), Plus (250), and Premium (500) boosts from `/shop`. Each item is saved to the account inventory and must be activated; only one boost can be active at a time. An active boost affects slots and the prize wheel for 25 completed spins, with +5, +10, or +15 percentage points added to the chance of a profitable result and a tier wager cap of 10, 50, or 100 credits. The cap applies only while a boost is active; current game limits remain unchanged otherwise. Roulette and blackjack are not boosted. Guest players can view the shop but must sign in to purchase or activate items.
+Signed-in players can purchase Basic (100 GC), Plus (250 GC), and Premium (500 GC) boosts from `/shop`. Each item is saved to the account inventory and must be activated; only one boost can be active at a time. An active boost affects slots and the prize wheel for 25 completed spins, with +5, +10, or +15 percentage points added to the chance of a profitable result and a tier wager cap of 10, 50, or 100 GC. The cap applies only while a boost is active; current game limits remain unchanged otherwise. Roulette and blackjack are not boosted. Guest players can view the shop but must sign in to purchase or activate items.
+
+The dashboard backfills lifetime rounds, wager totals, net results, and XP from stored completed game records. A completed round awards `ceil(wager / 10)` XP, capped at 100; each next level requires 100 times the current level in additional XP. Cosmetic badges unlock at levels 5, 10, and 20. The daily bonus (100 GC) and two daily round-count quests (3 rounds for 50 GC, 5 for 100 GC) reset at 00:00 UTC and are granted transactionally. Session timing, reminders, favorites, audio, and reduced-motion preferences are browser-local. Responsible-play reminders do not block access to games.
 
 ## Leaderboard service
 

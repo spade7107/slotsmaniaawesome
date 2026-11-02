@@ -96,7 +96,7 @@ export default function ClassicRoulettePage() {
       setReturned(payout);
       setRecent((previous) => [{ number: winningNumber, color }, ...previous].slice(0, 8));
       setStatus(payout > 0
-        ? `Number ${winningNumber} landed. ${formatCredits(payout)} credits returned.`
+        ? `Number ${winningNumber} landed. ${formatCredits(payout)} GC returned.`
         : `Number ${winningNumber} landed. No winning bets this round.`);
       setBets([]);
       setSpinning(false);
@@ -118,7 +118,7 @@ export default function ClassicRoulettePage() {
         type="button"
         className={`bet-target ${extraClass} ${colorClass}`}
         disabled={spinning || !ready || balance - totalWager < selectedChip}
-        aria-label={`Bet on ${target.label}${amount ? `, ${amount} credits already placed` : ""}`}
+        aria-label={`Bet on ${target.label}${amount ? `, ${amount} GC already placed` : ""}`}
         onClick={() => placeBet(target)}
       >
         <span>{target.label}</span>
@@ -138,8 +138,8 @@ export default function ClassicRoulettePage() {
           <div className="header-actions">
             <Link className="back-link" href="/games">← All games</Link>
             <div className="balance-display" aria-live="polite">
-              <span>Play credits</span>
-              <strong>$<span>{formatCredits(Math.max(0, balance - totalWager))}</span></strong>
+              <span>Play GC</span>
+              <strong><span>{formatCredits(Math.max(0, balance - totalWager))}</span> GC</strong>
             </div>
           </div>
         </header>
@@ -196,7 +196,7 @@ export default function ClassicRoulettePage() {
                   <button
                     className="chip-button"
                     data-value={chip}
-                    aria-label={`Select ${chip} credit chip`}
+                    aria-label={`Select ${chip} GC chip`}
                     aria-pressed={selectedChip === chip}
                     disabled={spinning || !ready || balance - totalWager < chip}
                     key={chip}
@@ -241,7 +241,7 @@ export default function ClassicRoulettePage() {
           <p id="result-title" className="eyebrow">Round complete</p>
           <p className="dialog-subtitle">The ball landed on</p>
           <div className={`dialog-number bet-${result === null ? "green" : getNumberColor(result)}`}>{result ?? 0}</div>
-          <p className="dialog-message">{returned > 0 ? `You won ${formatCredits(returned)} credits` : "No winning bets this round"}</p>
+          <p className="dialog-message">{returned > 0 ? `You won ${formatCredits(returned)} GC` : "No winning bets this round"}</p>
           <p className="dialog-note">{returned > 0 ? "Includes returned winning stakes" : ""}</p>
           <button className="spin-button" type="button" onClick={() => dialogRef.current?.close()}>Keep playing</button>
         </div>

@@ -92,7 +92,7 @@ export default function ClassicPrizeWheelPage() {
       setReturned(payout);
       setBoostApplied(response.result?.boostApplied === true);
       setStatus(payout > 0
-        ? `${selected.label} landed. ${formatCredits(payout)} credits returned.`
+        ? `${selected.label} landed. ${formatCredits(payout)} GC returned.`
         : "No prize this time. Choose a wager and try again.");
       setSpinning(false);
       setDialogOpen(true);
@@ -106,7 +106,7 @@ export default function ClassicPrizeWheelPage() {
           <div><p className="eyebrow">Arcade mode</p><h1>Prize wheel</h1></div>
           <div className="header-actions">
             <Link className="back-link" href="/games">← All games</Link>
-            <div className="balance-display"><span>Play credits</span><strong>$<span>{formatCredits(balance)}</span></strong></div>
+            <div className="balance-display"><span>Play GC</span><strong><span>{formatCredits(balance)}</span></strong></div>
           </div>
         </header>
         <div className="mb-4">
@@ -147,7 +147,7 @@ export default function ClassicPrizeWheelPage() {
               {spinning ? "Spinning..." : "Spin the wheel"}
             </button>
             <div className="wager-panel">
-              <div><p className="eyebrow">Your wager</p><strong><span>{formatCredits(wager)}</span> credits</strong></div>
+              <div><p className="eyebrow">Your wager</p><strong><span>{formatCredits(wager)}</span> GC</strong></div>
               <div className="wager-selector" role="group" aria-label="Wager amount">
                 {wagers.map((amount) => (
                   <button
@@ -155,7 +155,7 @@ export default function ClassicPrizeWheelPage() {
                     key={amount}
                     type="button"
                     disabled={spinning || !ready || balance < amount || Boolean(activeBoost && amount > activeBoost.maxBet)}
-                    aria-label={`Wager ${amount} credits`}
+                    aria-label={`Wager ${amount} GC`}
                     aria-pressed={wager === amount}
                     onClick={() => setWager(amount)}
                   >{amount}</button>
@@ -190,9 +190,9 @@ export default function ClassicPrizeWheelPage() {
           <p id="result-title" className="eyebrow">Wheel complete</p>
           <p className="dialog-subtitle">You landed on</p>
           <div className="dialog-prize">{result?.label ?? "MISS"}</div>
-          <p className="dialog-message">{returned > wager ? `You won ${formatCredits(returned)} credits` : returned > 0 ? `${formatCredits(returned)} credits returned` : "No prize this time"}</p>
+          <p className="dialog-message">{returned > wager ? `You won ${formatCredits(returned)} GC` : returned > 0 ? `${formatCredits(returned)} GC returned` : "No prize this time"}</p>
           {boostApplied && <p className="dialog-note text-[#f3cc70]">Your boost turned this spin into a win!</p>}
-          <p className="dialog-note">{returned > 0 ? `Your ${formatCredits(wager)} credit wager is included` : `${formatCredits(wager)} credits wagered`}</p>
+          <p className="dialog-note">{returned > 0 ? `Your ${formatCredits(wager)} GC wager is included` : `${formatCredits(wager)} GC wagered`}</p>
           <button className="spin-button" type="button" onClick={() => dialogRef.current?.close()}>Spin again</button>
         </div>
       </dialog>

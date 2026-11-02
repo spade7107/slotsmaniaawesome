@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
         });
         if (error) {
           if (error.message.includes("Insufficient credits")) {
-            throw new GameApiError(409, "Not enough credits for that bet");
+            throw new GameApiError(409, "Not enough GC for that bet");
           }
           if (error.message.includes("active")) {
             throw new GameApiError(409, "Finish your current blackjack round first");
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
         if (activeBoost && !isBoostWagerAllowed(outcome.wager, activeBoost)) {
           throw new GameApiError(
             400,
-            `This boost allows a maximum bet of ${activeBoost.maxBet} credits`,
+            `This boost allows a maximum bet of ${activeBoost.maxBet} GC`,
           );
         }
 
@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
         }
         if (error) {
           if (error.message.includes("Insufficient credits")) {
-            throw new GameApiError(409, "Not enough credits for that wager");
+            throw new GameApiError(409, "Not enough GC for that wager");
           }
           if (error.message.includes("Wager exceeds the active boost limit")) {
             throw new GameApiError(400, error.message);
@@ -252,7 +252,7 @@ export async function POST(request: NextRequest) {
     });
     if (error) {
       if (error.message.includes("Insufficient credits")) {
-        throw new GameApiError(409, "Not enough credits for that wager");
+        throw new GameApiError(409, "Not enough GC for that wager");
       }
       if (error.message.includes("expired")) {
         throw new GameApiError(401, "Your guest session expired. Reload to start a new one.");

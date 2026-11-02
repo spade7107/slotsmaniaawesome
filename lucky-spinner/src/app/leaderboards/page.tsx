@@ -154,7 +154,7 @@ export default function LeaderboardsPage() {
                 </table>
               </div>
             )}
-            <p className="mt-4 text-center text-xs text-white/35">Live updates · amounts shown in credits</p>
+            <p className="mt-4 text-center text-xs text-white/35">Live updates · amounts shown in GC</p>
           </div>
         </section>
       </div>

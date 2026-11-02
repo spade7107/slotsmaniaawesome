@@ -126,7 +126,7 @@ export default function BlackjackPage() {
         <Link href="/">Home</Link>
       </div>
       <div className="balance">
-        <p>Balance: $<span id="balance">{ready ? balance : "…"}</span></p>
+        <p>Balance: <span id="balance">{ready ? balance.toLocaleString("en-US") : "…"}</span> GC</p>
       </div>
       <header className="p-4 text-center bg-emerald-950 shadow-md">
         <h1 className="text-3xl font-bold tracking-wider">BLACKJACK</h1>
@@ -250,7 +250,7 @@ export default function BlackjackPage() {
               onClick={() => {
                 setRound(null);
                 setGameId(null);
-                setMessage(balance > 0 ? "Place your bet to start" : "You're out of credits.");
+                setMessage(balance > 0 ? "Place your bet to start" : "You're out of GC.");
               }}
               className="w-full bg-emerald-700 hover:bg-emerald-600 font-semibold text-2xl py-4 rounded transition"
             >

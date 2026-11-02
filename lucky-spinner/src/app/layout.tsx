@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { RouteBodyClass } from "@/components/route-body-class";
+import { ResponsiblePlayProvider } from "@/components/dashboard/responsible-play-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,8 +16,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className="h-full antialiased"
     >
       <body className="min-h-full">
-        <RouteBodyClass />
-        {children}
+        <ResponsiblePlayProvider>
+          <RouteBodyClass />
+          {children}
+        </ResponsiblePlayProvider>
       </body>
     </html>
   );

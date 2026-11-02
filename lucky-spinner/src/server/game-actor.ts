@@ -47,7 +47,7 @@ export function setGuestCookie(response: NextResponse, value: string | null): vo
   });
 }
 
-async function authenticatedUserId(): Promise<string | null> {
+export async function getAuthenticatedUserId(): Promise<string | null> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
   const publishableKey =
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
@@ -72,7 +72,7 @@ async function authenticatedUserId(): Promise<string | null> {
 }
 
 export async function getGameActor(): Promise<GameActor> {
-  const userId = await authenticatedUserId();
+  const userId = await getAuthenticatedUserId();
   const admin = getSupabaseAdmin();
 
   if (userId) {
@@ -82,14 +82,14 @@ export async function getGameActor(): Promise<GameActor> {
         onConflict: "player_id",
         ignoreDuplicates: true,
       });
-    if (createError) throw new Error(`Could not initialize player credits: ${createError.message}`);
+    if (createError) throw new Error(`Could not initialize player GC: ${createError.message}`);
 
     const { data, error } = await admin
       .from("player_wallets")
       .select("balance,balance_version")
       .eq("player_id", userId)
       .single();
-    if (error) throw new Error(`Could not load player credits: ${error.message}`);
+    if (error) throw new Error(`Could not load player GC: ${error.message}`);
     return {
       userId,
       guestSessionId: null,
@@ -108,7 +108,7 @@ export async function getGameActor(): Promise<GameActor> {
       .eq("id", guestSessionId)
       .gt("expires_at", new Date().toISOString())
       .maybeSingle();
-    if (error) throw new Error(`Could not load guest credits: ${error.message}`);
+    if (error) throw new Error(`Could not load guest GC: ${error.message}`);
     if (data) {
       return {
         userId: null,

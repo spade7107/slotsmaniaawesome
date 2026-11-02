@@ -149,7 +149,7 @@ export default function ArcadePage() {
             <AccountLinks />
             <div className="flex items-center gap-3 rounded-lg border border-[#f0c85e]/25 bg-[#151d28]/90 px-4 py-2.5">
               <Coins aria-hidden="true" className="h-4 w-4 text-[#f0c85e]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/55">Credits</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/55">GC</span>
               <span className="font-mono text-xl font-bold tabular-nums text-[#f5d66e]">{formatCredits(balance)}</span>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function ArcadePage() {
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/55">Your wager</p>
-                  <p className="mt-0.5 font-mono text-xl font-bold tabular-nums text-[#f5d66e]">{formatCredits(wager)} credits</p>
+                  <p className="mt-0.5 font-mono text-xl font-bold tabular-nums text-[#f5d66e]">{formatCredits(wager)} GC</p>
                 </div>
                 <p aria-live="polite" className="text-right text-xs font-semibold text-[#61d4bf]">
                   {isSpinning ? "Wheel in motion..." : "Tap the wheel to play"}
@@ -261,7 +261,7 @@ export default function ArcadePage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#61d4bf]">How to play</p>
-                  <p className="mt-2 text-sm leading-relaxed text-white/65">Pick your wager, then tap the wheel. Land on a multiplier to add credits to your balance.</p>
+                  <p className="mt-2 text-sm leading-relaxed text-white/65">Pick your wager, then tap the wheel. Land on a multiplier to add GC to your balance.</p>
                 </div>
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#61d4bf]/25 bg-[#61d4bf]/10 font-mono font-black text-[#61d4bf]">×</div>
               </div>
@@ -288,11 +288,11 @@ export default function ArcadePage() {
                 {result.multiplier === 0 ? "MISS" : result.label}
               </div>
               <p className="mt-4 text-lg font-bold text-white">
-                {returned > wager ? `You won ${formatCredits(returned)} credits` : returned > 0 ? `${formatCredits(returned)} credits returned` : "No prize this time"}
+                {returned > wager ? `You won ${formatCredits(returned)} GC` : returned > 0 ? `${formatCredits(returned)} GC returned` : "No prize this time"}
               </p>
               {boostApplied && <p className="mt-2 text-sm font-bold text-[#f3cc70]">Your boost turned this spin into a win!</p>}
               <p className="mt-1 text-xs text-white/45">
-                {returned > 0 ? `Your ${formatCredits(wager)} credit wager is included` : `${formatCredits(wager)} credits wagered`}
+                {returned > 0 ? `Your ${formatCredits(wager)} GC wager is included` : `${formatCredits(wager)} GC wagered`}
               </p>
             </>
           )}

@@ -5,6 +5,7 @@
 @import "./legacy-styles/roulette.css";
 @import "./legacy-styles/prize-wheel.css";
 @import "./legacy-styles/blank.css";
+@import "./dashboard.css";
 
 :root {
   --background: #090e19;
