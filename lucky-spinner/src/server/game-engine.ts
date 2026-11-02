@@ -46,12 +46,12 @@ export interface WinRateBoost {
   tier: BoostTierId;
 }
 
-// Estimated with 700,000 simulated results for each configured payline count.
+// One-line profitability is exact; multi-line probabilities are estimated with 3,000,000 spins.
 const slotsProfitableProbabilityByLines: Record<number, number> = {
-  1: 0.0667,
-  5: 0.0803,
-  10: 0.0903,
-  20: 0.0879,
+  1: 1 / 15,
+  5: 0.2009,
+  10: 0.2554,
+  20: 0.2713,
 };
 const prizeWheelProfitableProbability = 380 / 2_880;
 const probabilityResolution = 2 ** 32;

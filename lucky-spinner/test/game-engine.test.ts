@@ -51,6 +51,34 @@ test("configured paylines award the themed five-symbol payout for each winning l
   assert.ok(result.wins.every((win) => win.cells.length === SLOT_COLUMNS));
 });
 
+test("slots payout math targets an 85 percent theoretical return", () => {
+  const probabilityBySymbolAndReel = cyberpunkSlotsTheme.symbols.map((symbol, symbolIndex) =>
+    cyberpunkSlotsTheme.reelWeights.map((weights) =>
+      weights[symbolIndex] / weights.reduce((sum, weight) => sum + weight, 0),
+    ),
+  );
+  const expectedReturnPerLineBet = probabilityBySymbolAndReel.reduce(
+    (total, reelProbabilities, symbolIndex) => {
+      const [first, second, third, fourth, fifth] = reelProbabilities;
+      const symbolPayouts = cyberpunkSlotsTheme.payouts[cyberpunkSlotsTheme.symbols[symbolIndex].id];
+      return total
+        + (symbolPayouts[3] ?? 0) * first * second * third * (1 - fourth)
+        + (symbolPayouts[4] ?? 0) * first * second * third * fourth * (1 - fifth)
+        + (symbolPayouts[5] ?? 0) * first * second * third * fourth * fifth;
+    },
+    0,
+  );
+
+  assert.ok(expectedReturnPerLineBet >= 0.8499 && expectedReturnPerLineBet <= 0.8501);
+  for (const betPerLine of cyberpunkSlotsTheme.betPerLineOptions) {
+    for (const activePaylineCount of cyberpunkSlotsTheme.activePaylineOptions) {
+      const expectedWager = betPerLine * activePaylineCount;
+      const expectedReturn = expectedWager * expectedReturnPerLineBet;
+      assert.ok(Math.abs(expectedReturn / expectedWager - expectedReturnPerLineBet) < 1e-12);
+    }
+  }
+});
+
 test("slots server settles every configured bet and payline combination", () => {
   for (const betPerLine of cyberpunkSlotsTheme.betPerLineOptions) {
     for (const activePaylineCount of cyberpunkSlotsTheme.activePaylineOptions) {
@@ -69,8 +97,10 @@ test("slots server settles every configured bet and payline combination", () => 
 
 test("boost conversion probability adds the configured absolute win-rate points", () => {
   for (const [winRateIncrease, baseline] of [
-    [5, 0.0803],
-    [10, 0.0903],
+    [5, 1 / 15],
+    [5, 0.2009],
+    [10, 0.2554],
+    [10, 0.2713],
     [15, 380 / 2_880],
   ]) {
     const conversionChance = getLossConversionProbability(winRateIncrease, baseline);
