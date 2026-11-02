@@ -1,0 +1,439 @@
+.slot-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% -18%, rgba(255, 69, 200, 0.16), transparent 42%),
+    radial-gradient(ellipse at 90% 40%, rgba(72, 247, 223, 0.07), transparent 32%),
+    linear-gradient(160deg, #0d1022 0%, #080b18 60%, #090b17 100%);
+  color: #eef8ff;
+}
+
+.slot-shell {
+  width: min(100% - 2rem, 72rem);
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 2.75rem) 0;
+}
+
+.slot-header,
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.slot-header {
+  margin-bottom: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(115, 113, 170, 0.28);
+}
+
+.slot-brand {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.back-link {
+  width: fit-content;
+  color: #48f7df;
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #a7fff5;
+}
+
+.slot-eyebrow {
+  margin: 0;
+  color: #48f7df;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.slot-brand h1,
+.panel-heading h2 {
+  margin: 0.15rem 0 0;
+  color: #f5f2ff;
+  font-weight: 900;
+  letter-spacing: -0.035em;
+}
+
+.slot-brand h1 {
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+  text-shadow: 0 0 22px rgba(255, 69, 200, 0.3);
+}
+
+.panel-heading h2 {
+  font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+}
+
+.credit-panel,
+.machine-panel,
+.control-panel,
+.paytable-panel {
+  border: 1px solid rgba(119, 108, 183, 0.32);
+  border-radius: 1rem;
+  background: linear-gradient(155deg, rgba(20, 23, 48, 0.97), rgba(13, 16, 34, 0.98));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.credit-panel {
+  min-width: 10rem;
+  padding: 0.75rem 1rem;
+  border-color: rgba(72, 247, 223, 0.24);
+  text-align: right;
+}
+
+.credit-panel > span,
+.wager-summary > span {
+  display: block;
+  color: #99a6c1;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.credit-panel strong {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  color: #fff16b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.credit-panel small,
+.wager-summary small {
+  color: #aab4ca;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+}
+
+.machine-panel,
+.control-panel,
+.paytable-panel {
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.machine-panel {
+  border-color: rgba(255, 69, 200, 0.28);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 69, 200, 0.08), transparent 48%),
+    linear-gradient(155deg, rgba(20, 23, 48, 0.97), rgba(13, 16, 34, 0.98));
+}
+
+.machine-tag,
+.control-chip {
+  flex: 0 0 auto;
+  border: 1px solid rgba(72, 247, 223, 0.28);
+  border-radius: 0.45rem;
+  background: rgba(72, 247, 223, 0.06);
+  color: #48f7df;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.machine-tag {
+  padding: 0.45rem 0.6rem;
+}
+
+.control-chip {
+  padding: 0.38rem 0.5rem;
+}
+
+.slot-stage {
+  width: 100%;
+  height: clamp(17rem, 42vw, 31rem);
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(72, 247, 223, 0.17);
+  border-radius: 0.8rem;
+  background: #080b18;
+  box-shadow: inset 0 0 35px rgba(72, 247, 223, 0.05), 0 0 26px rgba(255, 69, 200, 0.06);
+}
+
+.slot-stage canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.payline-note,
+.paytable-footnote {
+  margin: 0.8rem 0 0;
+  color: #9aa8c3;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.slot-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.92fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.compact-heading {
+  margin-bottom: 1.2rem;
+}
+
+.choice-group {
+  min-width: 0;
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.choice-group legend {
+  margin-bottom: 0.55rem;
+  color: #9aa8c3;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.choice-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.choice-button {
+  min-height: 2.8rem;
+  padding: 0.55rem 0.4rem;
+  border: 1px solid rgba(130, 139, 173, 0.25);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.035);
+  color: #c4cce0;
+  font-size: 0.9rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.choice-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(72, 247, 223, 0.62);
+  color: #fff;
+}
+
+.choice-button[aria-pressed="true"] {
+  border-color: #48f7df;
+  background: rgba(72, 247, 223, 0.12);
+  color: #83fff2;
+  box-shadow: 0 0 16px rgba(72, 247, 223, 0.09);
+}
+
+.choice-button:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
+}
+
+.wager-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.15rem 0 0.7rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid rgba(130, 139, 173, 0.18);
+}
+
+.wager-summary strong {
+  color: #fff16b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.spin-button {
+  display: flex;
+  width: 100%;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 1px solid #48f7df;
+  border-radius: 0.75rem;
+  background: linear-gradient(110deg, #48f7df, #7dffe3);
+  color: #07151a;
+  font-size: 1rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 0 24px rgba(72, 247, 223, 0.14);
+  cursor: pointer;
+  transition: filter 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.spin-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow: 0 0 30px rgba(72, 247, 223, 0.28);
+}
+
+.spin-button:disabled {
+  border-color: rgba(72, 247, 223, 0.25);
+  background: #283c49;
+  color: #8396a4;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.spin-button > span:first-child {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.game-status {
+  min-height: 2.5em;
+  margin: 0.8rem 0 0;
+  color: #b8c2d7;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.game-status[data-state="win"] {
+  color: #fff16b;
+  font-weight: 850;
+}
+
+.game-status[data-state="error"] {
+  color: #ff829b;
+}
+
+.paytable-scroll {
+  overflow-x: auto;
+}
+
+.paytable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.paytable th,
+.paytable td {
+  padding: 0.72rem 0.5rem;
+  border-bottom: 1px solid rgba(130, 139, 173, 0.16);
+}
+
+.paytable th {
+  color: #8f9db8;
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.paytable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.paytable td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #d7dced;
+  font-weight: 750;
+  text-align: left;
+}
+
+.paytable-symbol {
+  width: 1.4rem;
+  font-size: 1.15rem;
+  text-align: center;
+}
+
+.paytable td:not(:first-child) {
+  color: #48f7df;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 850;
+}
+
+.paytable td.jackpot-value {
+  color: #fff16b;
+}
+
+.paytable-footnote {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 700px) {
+  .slot-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .slot-shell {
+    width: min(100% - 1rem, 72rem);
+    padding-top: 0.7rem;
+  }
+
+  .slot-header {
+    align-items: flex-end;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+
+  .credit-panel {
+    min-width: auto;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .credit-panel > span {
+    font-size: 0.56rem;
+    letter-spacing: 0.06em;
+  }
+
+  .credit-panel strong {
+    font-size: 1.35rem;
+  }
+
+  .machine-tag {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.52rem;
+    letter-spacing: 0.07em;
+  }
+
+  .slot-stage {
+    height: 17rem;
+  }
+
+  .choice-button {
+    min-height: 2.65rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice-button,
+  .spin-button {
+    transition: none;
+  }
+}

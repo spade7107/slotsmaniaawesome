@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "build": "esbuild slots/main.mjs --bundle --minify --platform=browser --target=es2020 --outfile=dist/slots.js",
+    "start": "npm run build && node server.js",
+    "test": "node --test slots/*.test.mjs"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
   }
 }

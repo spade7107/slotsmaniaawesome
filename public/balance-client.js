@@ -35,3 +35,6 @@ function initBalanceDisplay(elementId, fallback = STARTING_BALANCE) {
   }
   return Promise.resolve(value);
 }
+
+window.adjustBalance = adjustBalance;
+window.initBalanceDisplay = initBalanceDisplay;

@@ -3,39 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3x3 Slot Machine</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="theme-color" content="#080b18">
+    <title>Neon Afterdark | Slots</title>
+    <link rel="stylesheet" href="casino-theme.css">
+    <link rel="stylesheet" href="slot-machine.css">
 </head>
-<body>
-    <div class = "home">
-        <a href = "index.html" style = "color: white;">Home</a>
-    </div>
-    <div class="stats">
-        Balance: $<span id="balance">1000</span>
-    </div>
+<body class="slot-page">
+    <main class="slot-shell">
+        <header class="slot-header">
+            <div class="slot-brand">
+                <a class="back-link" href="games.html">← All games</a>
+                <p class="slot-eyebrow">Slots Mania · Cyber district</p>
+                <h1>Neon Afterdark</h1>
+            </div>
+            <div class="credit-panel" aria-live="polite">
+                <span>Shared play credits</span>
+                <strong><span id="balance">1,000</span><small>CR</small></strong>
+            </div>
+        </header>
 
-    <div class="casino-container">
-        <h1>3x3 Slot Machine</h1>
-        
-        <div class="slots-window">
-            <!-- Row 1 -->
-            <div id="r0c0" class="reel">🍒</div>
-            <div id="r0c1" class="reel">🍋</div>
-            <div id="r0c2" class="reel">🔔</div>
-            <!-- Row 2 -->
-            <div id="r1c0" class="reel">⭐</div>
-            <div id="r1c1" class="reel">7️⃣</div>
-            <div id="r1c2" class="reel">🍒</div>
-            <!-- Row 3 -->
-            <div id="r2c0" class="reel">🍋</div>
-            <div id="r2c1" class="reel">🔔</div>
-            <div id="r2c2" class="reel">⭐</div>
+        <section class="machine-panel" aria-labelledby="machine-title">
+            <div class="panel-heading">
+                <div>
+                    <p class="slot-eyebrow">Night market · Neon city</p>
+                    <h2 id="machine-title">Jack into the reels</h2>
+                </div>
+                <span class="machine-tag">3 ROWS / 5 REELS</span>
+            </div>
+            <div id="slot-stage" class="slot-stage" role="img" aria-label="Cyberpunk slot machine with three rows and five reels">
+                <span class="sr-only">The slot machine reels animate during a spin. Use the controls below to select a bet and spin.</span>
+            </div>
+            <p class="payline-note">Wins match from the left across the selected fixed paylines.</p>
+        </section>
+
+        <div class="slot-layout">
+            <section class="control-panel" aria-labelledby="controls-title">
+                <div class="panel-heading compact-heading">
+                    <div>
+                        <p class="slot-eyebrow">Configure your run</p>
+                        <h2 id="controls-title">Wager controls</h2>
+                    </div>
+                    <span class="control-chip">CREDITS ONLY</span>
+                </div>
+
+                <fieldset class="choice-group">
+                    <legend>Bet per line</legend>
+                    <div id="bet-options" class="choice-buttons" role="group" aria-label="Bet per line"></div>
+                </fieldset>
+
+                <fieldset class="choice-group">
+                    <legend>Active paylines</legend>
+                    <div id="line-options" class="choice-buttons" role="group" aria-label="Active paylines"></div>
+                </fieldset>
+
+                <div class="wager-summary">
+                    <span>Total bet</span>
+                    <strong><span id="total-bet">5</span> <small>CR</small></strong>
+                </div>
+
+                <button id="spin-button" class="spin-button" type="button" disabled>
+                    <span aria-hidden="true">⟲</span>
+                    <span>Spin the reels</span>
+                </button>
+                <p id="game-status" class="game-status" role="status" aria-live="polite">
+                    Choose your bet and active paylines to begin.
+                </p>
+            </section>
+
+            <section class="paytable-panel" aria-labelledby="paytable-title">
+                <div class="panel-heading compact-heading">
+                    <div>
+                        <p class="slot-eyebrow">Line pays · Per credit bet</p>
+                        <h2 id="paytable-title">Signal values</h2>
+                    </div>
+                    <span class="control-chip">3+ MATCH</span>
+                </div>
+                <div class="paytable-scroll">
+                    <table class="paytable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Symbol</th>
+                                <th scope="col">3</th>
+                                <th scope="col">4</th>
+                                <th scope="col">5</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paytable-body"></tbody>
+                    </table>
+                </div>
+                <p class="paytable-footnote">Multiplier × bet per line. Each active line is evaluated once per spin.</p>
+            </section>
         </div>
+    </main>
 
-        <button id="spinBtn" onclick="spin()">SPIN ($10)</button>
-        <div id="message"></div>
-    </div>
     <script src="balance-client.js"></script>
-    <script src="script.js" defer></script>
+    <script src="dist/slots.js" defer></script>
 </body>
 </html>
