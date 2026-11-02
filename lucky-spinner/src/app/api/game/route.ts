@@ -184,7 +184,11 @@ export async function POST(request: NextRequest) {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const activeBoost: ActiveBoost | null = await getActivePlayerBoost(actor.userId);
         const outcome = body.game === "slots"
-          ? resolveSlots(activeBoost ? { tier: activeBoost.tier } : undefined)
+          ? resolveSlots(
+            body.betPerLine,
+            body.activePaylineCount,
+            activeBoost ? { tier: activeBoost.tier } : undefined,
+          )
           : resolvePrizeWheel(
             body.wager,
             activeBoost ? { tier: activeBoost.tier } : undefined,

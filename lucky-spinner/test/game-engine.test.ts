@@ -10,22 +10,67 @@ import {
   startBlackjack,
 } from "../src/server/game-engine";
 import { isBoostWagerAllowed } from "../src/lib/boosts";
+import {
+  cyberpunkSlotsTheme,
+  evaluateSlotLines,
+  SLOT_COLUMNS,
+  SLOT_ROWS,
+} from "../src/lib/slots";
 
-test("slots server result has a three by three grid and settled integer payout", () => {
-  const outcome = resolveSlots();
+test("slots server result has a three by five grid and settles selected paylines", () => {
+  const outcome = resolveSlots(5, 10);
   const result = outcome.result;
-  assert.equal(outcome.wager, 10);
+  assert.equal(outcome.wager, 50);
   assert.ok(Number.isSafeInteger(outcome.payout));
   assert.equal(outcome.netProfit, outcome.payout - outcome.wager);
   assert.ok(Array.isArray(result.grid));
   assert.equal(result.grid.length, 3);
-  assert.ok(result.grid.every((row) => Array.isArray(row) && row.length === 3));
+  assert.ok(result.grid.every((row) => Array.isArray(row) && row.length === 5));
+  assert.ok(Array.isArray(result.winningLines));
+  assert.equal(result.activePaylineCount, 10);
+  assert.equal(result.betPerLine, 5);
+  assert.equal(
+    result.payout,
+    result.winningLines.reduce((total, win) => total + Number(win.payout), 0),
+  );
+});
+
+test("slots accepts only configured bet and payline options", () => {
+  assert.throws(() => resolveSlots(2, 5), /valid slots bet/);
+  assert.throws(() => resolveSlots(5, 3), /valid slots bet/);
+  assert.throws(() => resolveSlots("5", 5), /valid slots bet/);
+});
+
+test("configured paylines award the themed five-symbol payout for each winning line", () => {
+  const grid = Array.from({ length: SLOT_ROWS }, () =>
+    Array.from({ length: SLOT_COLUMNS }, () => "seven"),
+  );
+  const result = evaluateSlotLines(grid, 20, 1);
+  assert.equal(result.wins.length, 20);
+  assert.equal(result.totalPayout, 20 * cyberpunkSlotsTheme.payouts.seven[5]);
+  assert.ok(result.wins.every((win) => win.cells.length === SLOT_COLUMNS));
+});
+
+test("slots server settles every configured bet and payline combination", () => {
+  for (const betPerLine of cyberpunkSlotsTheme.betPerLineOptions) {
+    for (const activePaylineCount of cyberpunkSlotsTheme.activePaylineOptions) {
+      const outcome = resolveSlots(betPerLine, activePaylineCount);
+      assert.equal(outcome.wager, betPerLine * activePaylineCount);
+      assert.equal(outcome.result.betPerLine, betPerLine);
+      assert.equal(outcome.result.activePaylineCount, activePaylineCount);
+      assert.ok(Array.isArray(outcome.result.winningLines));
+      assert.equal(
+        outcome.payout,
+        outcome.result.winningLines.reduce((total, win) => total + win.payout, 0),
+      );
+    }
+  }
 });
 
 test("boost conversion probability adds the configured absolute win-rate points", () => {
   for (const [winRateIncrease, baseline] of [
-    [5, 549_585 / 1_953_125],
-    [10, 549_585 / 1_953_125],
+    [5, 0.0803],
+    [10, 0.0903],
     [15, 380 / 2_880],
   ]) {
     const conversionChance = getLossConversionProbability(winRateIncrease, baseline);
@@ -45,7 +90,7 @@ test("active boost bet limits include the boundary and reject larger wagers", ()
 });
 
 test("active boosts label slots and prize-wheel results without affecting other games", () => {
-  const slots = resolveSlots({ tier: "basic" });
+  const slots = resolveSlots(1, 5, { tier: "basic" });
   assert.equal(slots.result.boostTier, "basic");
   assert.equal(slots.result.boostWinRateIncrease, 5);
   assert.equal(typeof slots.result.boostApplied, "boolean");

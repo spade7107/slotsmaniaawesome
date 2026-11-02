@@ -7,8 +7,12 @@ import {
   type BetTarget,
 } from "../lib/roulette";
 import { getBoostTier, type BoostTierId } from "../lib/boosts";
+import {
+  cyberpunkSlotsTheme,
+  evaluateSlotLines,
+  generateSlotGrid,
+} from "../lib/slots";
 
-const slotSymbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"] as const;
 const rouletteTargets = new Map<string, BetTarget>(
   [...numberTargets, ...dozenTargets, ...columnTargets, ...outsideTargets].map((target) => [
     target.id,
@@ -42,8 +46,13 @@ export interface WinRateBoost {
   tier: BoostTierId;
 }
 
-// Exact profitable-result frequencies for the current slot board and wheel slices.
-const slotsProfitableProbability = 549_585 / 1_953_125;
+// Estimated with 700,000 simulated results for each configured payline count.
+const slotsProfitableProbabilityByLines: Record<number, number> = {
+  1: 0.0667,
+  5: 0.0803,
+  10: 0.0903,
+  20: 0.0879,
+};
 const prizeWheelProfitableProbability = 380 / 2_880;
 const probabilityResolution = 2 ** 32;
 
@@ -95,42 +104,60 @@ function isWholeCreditAmount(value: unknown): value is number {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 }
 
-function randomSlotsOutcome(): GameOutcome {
-  const wager = 10;
-  const grid = Array.from({ length: 3 }, () =>
-    Array.from({ length: 3 }, () => slotSymbols[randomInt(slotSymbols.length)]),
+function randomSlotsOutcome(betPerLine: number, activePaylineCount: number): GameOutcome {
+  const wager = betPerLine * activePaylineCount;
+  const grid = generateSlotGrid(
+    cyberpunkSlotsTheme,
+    () => randomInt(probabilityResolution) / probabilityResolution,
   );
-  let payout = 0;
-  let winningLines = 0;
-  const payLine = (line: readonly string[], diagonal: boolean) => {
-    if (line[0] !== line[1] || line[1] !== line[2]) return;
-    winningLines += 1;
-    payout += diagonal ? 15 : line[0] === "7️⃣" ? 100 : 30;
-  };
-
-  for (const row of grid) payLine(row, false);
-  for (let column = 0; column < 3; column += 1) {
-    payLine(grid.map((row) => row[column]), false);
-  }
-  payLine([grid[0][0], grid[1][1], grid[2][2]], true);
-  payLine([grid[0][2], grid[1][1], grid[2][0]], true);
-
+  const { totalPayout: payout, wins } = evaluateSlotLines(grid, activePaylineCount, betPerLine);
   return {
     wager,
     payout,
     netProfit: payout - wager,
-    result: { grid, winningLines, payout },
+    result: {
+      grid,
+      winningLines: wins,
+      winningLineCount: wins.length,
+      betPerLine,
+      activePaylineCount,
+      payout,
+    },
   };
 }
 
-export function resolveSlots(boost?: WinRateBoost): GameOutcome {
-  const outcome = randomSlotsOutcome();
+export function resolveSlots(
+  betPerLine: unknown,
+  activePaylineCount: unknown,
+  boost?: WinRateBoost,
+): GameOutcome {
+  if (
+    typeof betPerLine !== "number"
+    || !cyberpunkSlotsTheme.betPerLineOptions.includes(
+      betPerLine as (typeof cyberpunkSlotsTheme.betPerLineOptions)[number],
+    )
+    || typeof activePaylineCount !== "number"
+    || !cyberpunkSlotsTheme.activePaylineOptions.includes(
+      activePaylineCount as (typeof cyberpunkSlotsTheme.activePaylineOptions)[number],
+    )
+  ) {
+    throw new Error("Choose a valid slots bet and number of paylines");
+  }
+
+  const outcome = randomSlotsOutcome(betPerLine, activePaylineCount);
   if (!boost) return outcome;
-  return applyWinRateBoost(outcome, boost, slotsProfitableProbability, () => {
-    let winningOutcome = randomSlotsOutcome();
-    while (winningOutcome.netProfit <= 0) winningOutcome = randomSlotsOutcome();
-    return winningOutcome;
-  });
+  return applyWinRateBoost(
+    outcome,
+    boost,
+    slotsProfitableProbabilityByLines[activePaylineCount],
+    () => {
+      let winningOutcome = randomSlotsOutcome(betPerLine, activePaylineCount);
+      while (winningOutcome.netProfit <= 0) {
+        winningOutcome = randomSlotsOutcome(betPerLine, activePaylineCount);
+      }
+      return winningOutcome;
+    },
+  );
 }
 
 export function resolveRoulette(rawBets: unknown): GameOutcome {
