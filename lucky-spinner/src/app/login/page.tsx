@@ -11,6 +11,8 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -18,6 +20,21 @@ export default function LoginPage() {
     if (!supabase) return;
     setLoading(true);
     setError("");
+    setMessage("");
+
+    if (isResettingPassword) {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      setLoading(false);
+      if (resetError) {
+        setError(resetError.message);
+        return;
+      }
+      setMessage("If an account exists for that email, a password reset link is on its way.");
+      return;
+    }
+
     const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (loginError) {
@@ -55,30 +72,69 @@ export default function LoginPage() {
                 className="mt-2 w-full rounded-lg border border-white/15 bg-black/20 px-3 py-3 outline-none focus:border-[#67d8c6]"
               />
             </label>
-            <label className="block text-sm font-medium text-white/80">
-              Password
-              <input
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                className="mt-2 w-full rounded-lg border border-white/15 bg-black/20 px-3 py-3 outline-none focus:border-[#67d8c6]"
-              />
-            </label>
+            {isResettingPassword ? (
+              <p className="text-sm text-white/60">
+                Enter your email and we’ll send you a link to reset your password.
+              </p>
+            ) : (
+              <>
+                <label className="block text-sm font-medium text-white/80">
+                  Password
+                  <input
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="mt-2 w-full rounded-lg border border-white/15 bg-black/20 px-3 py-3 outline-none focus:border-[#67d8c6]"
+                  />
+                </label>
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsResettingPassword(true);
+                      setError("");
+                      setMessage("");
+                    }}
+                    className="text-sm text-[#67d8c6] hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              </>
+            )}
             {error && <p role="alert" className="text-sm text-red-300">{error}</p>}
+            {message && <p role="status" className="text-sm text-[#67d8c6]">{message}</p>}
             <button
               type="submit"
               disabled={loading}
               className="w-full rounded-lg bg-[#67d8c6] px-4 py-3 font-bold text-[#07151a] transition hover:brightness-110 disabled:opacity-60"
             >
-              {loading ? "Signing in…" : "Sign in"}
+              {loading
+                ? (isResettingPassword ? "Sending link…" : "Signing in…")
+                : (isResettingPassword ? "Send reset link" : "Sign in")}
             </button>
+            {isResettingPassword && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsResettingPassword(false);
+                  setError("");
+                  setMessage("");
+                }}
+                className="w-full text-sm text-white/60 hover:text-white"
+              >
+                Back to sign in
+              </button>
+            )}
           </form>
         )}
-        <p className="mt-6 text-center text-sm text-white/60">
-          New here? <Link href="/signup" className="font-semibold text-[#67d8c6] hover:underline">Create an account</Link>
-        </p>
+        {!isResettingPassword && (
+          <p className="mt-6 text-center text-sm text-white/60">
+            New here? <Link href="/signup" className="font-semibold text-[#67d8c6] hover:underline">Create an account</Link>
+          </p>
+        )}
       </section>
     </main>
   );
