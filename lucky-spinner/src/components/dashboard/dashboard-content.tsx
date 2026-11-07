@@ -95,7 +95,7 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className="flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
+      className="dashboard-rounded flex min-h-12 items-center gap-3 px-3 text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
     >
       <Icon aria-hidden="true" className="h-[18px] w-[18px] shrink-0" />
       <span>{label}</span>
@@ -276,10 +276,11 @@ export function DashboardContent() {
         <Link
           href="/leaderboards"
           onClick={playClick}
-          className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-[#67d8c6] hover:text-white"
+          className="group inline-flex min-h-11 items-center gap-2 text-sm font-bold text-[#67d8c6] transition-colors hover:text-white hover:underline"
         >
           <Trophy aria-hidden="true" className="h-4 w-4" />
           View leaderboards
+          <ChevronRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </Link>
       ) : (
         <Link
@@ -295,7 +296,7 @@ export function DashboardContent() {
   return (
     <div className="dashboard-root min-h-screen text-white">
       <header className="dashboard-topbar sticky top-0 z-30 border-b border-white/[0.08] bg-[#09111d]/90 px-3 py-3 backdrop-blur-xl sm:px-5 lg:px-7">
-        <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-2">
+        <div className="mx-auto flex max-w-[1680px] items-center justify-between gap-2">
           <Link href="/dashboard#lobby" className="dashboard-brand shrink-0 text-sm font-black tracking-[0.12em] text-[#fff7e5] sm:text-base">
             SLOTS <span className="dashboard-brand-extra text-[#67d8c6]">MANIA</span>
           </Link>
@@ -330,10 +331,10 @@ export function DashboardContent() {
             </button>
 
             <div
-              className="dashboard-balance-pill flex min-h-11 items-center gap-1.5 rounded-full border border-[#f3cc70]/25 bg-[#f3cc70]/[0.07] px-3 text-sm font-black tabular-nums text-[#f3cc70]"
+              className="dashboard-balance-pill flex min-h-11 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3 text-sm font-bold tabular-nums text-white/75"
               aria-label={`${balanceText} Gold Coins`}
             >
-              <Coins aria-hidden="true" className="h-4 w-4 shrink-0" />
+              <Coins aria-hidden="true" className="h-4 w-4 shrink-0 text-white/60" />
               <span className="max-w-[5.5rem] truncate">{balanceText}</span>
               <span className="text-[10px] tracking-wide">GC</span>
             </div>
@@ -351,7 +352,7 @@ export function DashboardContent() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1800px] px-3 pb-24 pt-4 sm:px-5 lg:px-7">
+      <div className="mx-auto max-w-[1680px] px-3 pb-24 pt-4 sm:px-5 lg:px-7">
         {(loadError || actionError || actionMessage) && (
           <div className="mb-4 space-y-2" aria-live="polite">
             {loadError && (
@@ -383,7 +384,7 @@ export function DashboardContent() {
                   setQuestsDrawerOpen(true);
                   playClick();
                 }}
-                className="flex min-h-12 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white"
+                className="dashboard-rounded flex min-h-12 w-full items-center gap-3 px-3 text-left text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
               >
                 <Trophy aria-hidden="true" className="h-[18px] w-[18px] shrink-0" />
                 <span>Leaderboards &amp; quests</span>
@@ -396,7 +397,7 @@ export function DashboardContent() {
               )}
             </nav>
 
-            <section id="daily-bonus-sidebar" className="dashboard-sidebar-bonus mt-auto rounded-2xl border border-[#f3cc70]/20 bg-[linear-gradient(145deg,rgba(243,204,112,.1),rgba(17,24,39,.75))] p-4">
+            <section id="daily-bonus-sidebar" className="dashboard-sidebar-bonus dashboard-frame mt-auto bg-[linear-gradient(145deg,rgba(243,204,112,.1),rgba(17,24,39,.75))] p-4">
               <div className="flex items-center gap-2 text-[#f3cc70]">
                 <Gift aria-hidden="true" className="h-4 w-4" />
                 <h2 className="text-xs font-black uppercase tracking-wider">Daily bonus</h2>
@@ -410,7 +411,7 @@ export function DashboardContent() {
                     type="button"
                     disabled={!bonusAvailable || claimingId === "bonus"}
                     onClick={() => void claim("claim-bonus")}
-                    className="mt-3 min-h-11 w-full rounded-lg bg-[#f3cc70] px-3 text-xs font-black text-[#17202a] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/40"
+                    className="mt-3 min-h-11 w-full rounded-lg border border-transparent bg-[#f3cc70] px-3 text-xs font-black text-[#17202a] transition hover:brightness-110 disabled:cursor-not-allowed disabled:border-[#67d8c6]/15 disabled:bg-[#67d8c6]/[0.07] disabled:text-[#a5b1c2]"
                   >
                     {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "Claim 100 GC" : "Claimed today"}
                   </button>
@@ -429,10 +430,10 @@ export function DashboardContent() {
           <main id="lobby" className="dashboard-main min-w-0 scroll-mt-24">
             <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#67d8c6]">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#a5b1c2]">
                   {authenticated ? "Welcome back" : "Welcome to Slots Mania"}
                 </p>
-                <h1 className="mt-1 text-2xl font-black text-[#fff7e5] sm:text-3xl">
+                <h1 className="dashboard-welcome-title mt-1 text-[#fff7e5]">
                   {authenticated ? username : "Find your next game"}
                 </h1>
               </div>
@@ -449,7 +450,7 @@ export function DashboardContent() {
                     type="button"
                     onClick={() => setRightRailCollapsed((value) => !value)}
                     aria-expanded={!rightRailCollapsed}
-                    className="hidden min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-bold text-white/60 transition hover:text-white xl:inline-flex"
+                    className="hidden min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-[#111b2b] px-3 text-xs font-bold text-white/70 transition hover:border-[#67d8c6]/35 hover:bg-[#17263a] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] xl:inline-flex"
                   >
                     {rightRailCollapsed ? <ChevronLeft aria-hidden="true" className="h-4 w-4" /> : <ChevronRight aria-hidden="true" className="h-4 w-4" />}
                     {rightRailCollapsed ? "Show quests" : "Hide quests"}
@@ -469,7 +470,7 @@ export function DashboardContent() {
             <section
               id="daily-bonus"
               aria-labelledby="daily-bonus-heading"
-              className="mb-5 rounded-2xl border border-[#f3cc70]/20 bg-[#f3cc70]/[0.055] p-4 md:hidden"
+              className="dashboard-frame mb-5 bg-[#f3cc70]/[0.055] p-4 md:hidden"
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -483,9 +484,9 @@ export function DashboardContent() {
                     type="button"
                     disabled={!bonusAvailable || claimingId === "bonus"}
                     onClick={() => void claim("claim-bonus")}
-                    className="min-h-11 shrink-0 rounded-xl bg-[#f3cc70] px-4 text-xs font-black text-[#17202a] disabled:bg-white/10 disabled:text-white/40"
+                    className="min-h-11 shrink-0 rounded-xl border border-transparent bg-[#f3cc70] px-4 text-xs font-black text-[#17202a] disabled:border-[#67d8c6]/15 disabled:bg-[#67d8c6]/[0.07] disabled:text-[#a5b1c2]"
                   >
-                    {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "CLAIM!" : formatCountdown(dashboard?.dailyBonus.resetsAt)}
+                    {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "CLAIM!" : "Claimed today"}
                   </button>
                 ) : (
                   <Link href="/login" className="min-h-11 rounded-xl bg-[#f3cc70] px-4 py-3 text-xs font-black text-[#17202a]">
@@ -519,7 +520,7 @@ export function DashboardContent() {
           </main>
 
           {authenticated && (
-            <aside className="dashboard-utility-rail rounded-2xl border border-white/[0.08] bg-[#0e1725]/70 p-4" aria-label="Quick quests">
+            <aside className="dashboard-utility-rail dashboard-frame rounded-2xl bg-[#0e1725]/70 p-4" aria-label="Quick quests">
               <div className="mb-4 flex items-center justify-between gap-2">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#67d8c6]">Daily goals</p>

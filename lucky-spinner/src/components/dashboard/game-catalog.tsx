@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Heart, Search, X } from "lucide-react";
 import { DashboardModal } from "./modal";
 
@@ -90,9 +90,9 @@ function GameArtwork({
             <rect x="93" y="32" width="84" height="116" rx="9" transform="rotate(-12 93 32)" fill="#f3f6fb" stroke="#a5b1c2" />
             <rect x="146" y="35" width="84" height="116" rx="9" transform="rotate(10 146 35)" fill="#f3f6fb" stroke="#a5b1c2" />
             <text x="113" y="64" fill="#172235" fontSize="24" fontWeight="700">A</text>
-            <path d="M121 71c-9-10-19 2 0 16 19-14 9-26 0-16Z" fill="#bd434b" stroke="#bd434b" />
+            <path d="M121 71c-9-10-19 2 0 16 19-14 9-26 0-16Z" fill="#67d8c6" stroke="#67d8c6" />
             <text x="190" y="68" fill="#172235" fontSize="24" fontWeight="700">K</text>
-            <path d="m205 78 11 11-11 11-11-11 11-11Z" fill="#bd434b" stroke="#bd434b" />
+            <path d="m205 78 11 11-11 11-11-11 11-11Z" fill="#f3cc70" stroke="#f3cc70" />
           </g>
         ) : game.wheel === "roulette" ? (
           <g strokeWidth="2">
@@ -110,11 +110,11 @@ function GameArtwork({
           <g strokeWidth="2">
             <circle cx="160" cy="91" r="63" fill="#17283c" stroke="#f3cc70" />
             <path d="M160 91V28A63 63 0 0 1 214.6 59.5Z" fill="#67d8c6" stroke="#0d1117" />
-            <path d="M160 91 214.6 59.5A63 63 0 0 1 214.6 122.5Z" fill="#3584a5" stroke="#0d1117" />
+            <path d="M160 91 214.6 59.5A63 63 0 0 1 214.6 122.5Z" fill="#2a9d8f" stroke="#0d1117" />
             <path d="M160 91 214.6 122.5A63 63 0 0 1 160 154Z" fill="#f3cc70" stroke="#0d1117" />
-            <path d="M160 91 160 154A63 63 0 0 1 105.4 122.5Z" fill="#bd434b" stroke="#0d1117" />
-            <path d="M160 91 105.4 122.5A63 63 0 0 1 105.4 59.5Z" fill="#d7a643" stroke="#0d1117" />
-            <path d="M160 91 105.4 59.5A63 63 0 0 1 160 28Z" fill="#2a9d8f" stroke="#0d1117" />
+            <path d="M160 91 160 154A63 63 0 0 1 105.4 122.5Z" fill="#355b63" stroke="#0d1117" />
+            <path d="M160 91 105.4 122.5A63 63 0 0 1 105.4 59.5Z" fill="#b8954f" stroke="#0d1117" />
+            <path d="M160 91 105.4 59.5A63 63 0 0 1 160 28Z" fill="#3c9c91" stroke="#0d1117" />
             <circle cx="160" cy="91" r="15" fill="#0d1117" stroke="#f3f6fb" />
             <path d="m149 18 11-14 11 14Z" fill="#f3f6fb" stroke="#f3f6fb" />
           </g>
@@ -122,7 +122,7 @@ function GameArtwork({
       </svg>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0d1117] to-transparent" />
       {showBoostBadge && game.boostEligible && (
-        <span className="absolute right-3 top-3 inline-flex h-6 items-center rounded-full border border-[#f3cc70]/30 bg-[#111827]/90 px-2.5 text-[11px] font-bold text-[#f3cc70]">
+        <span className="absolute right-3 top-3 z-[3] inline-flex h-6 items-center rounded-full border border-[#67d8c6]/40 bg-[#0d1117]/95 px-2.5 text-[11px] font-bold text-[#67d8c6]">
             Boost eligible
         </span>
       )}
@@ -146,6 +146,23 @@ export function GameCatalog({
   const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [selectedGame, setSelectedGame] = useState<DashboardGame | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleSearchShortcut = (event: KeyboardEvent) => {
+      if (event.key.toLocaleLowerCase() !== "k" || !(event.metaKey || event.ctrlKey)) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && (
+        target.isContentEditable || target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement
+      )) return;
+      event.preventDefault();
+      searchInputRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", handleSearchShortcut);
+    return () => window.removeEventListener("keydown", handleSearchShortcut);
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -209,7 +226,7 @@ export function GameCatalog({
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#67d8c6]">
             Find your next game
           </p>
-          <h2 id="games-heading" className="mt-1 text-lg font-bold text-[#fff7e5]">
+          <h2 id="games-heading" className="dashboard-game-heading mt-1 text-[#fff7e5]">
             Game room
           </h2>
         </div>
@@ -217,11 +234,15 @@ export function GameCatalog({
           <span className="sr-only">Search games</span>
           <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
           <input
+            ref={searchInputRef}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search games"
-            className="min-h-11 w-full rounded-xl border border-white/10 bg-[#111b2b] pl-10 pr-3 text-sm text-white outline-none transition placeholder:text-white/35 focus:border-[#67d8c6]/60"
+            className="dashboard-frame dashboard-surface min-h-11 w-full py-2 pl-10 pr-16 text-sm text-white outline-none transition placeholder:text-white/55 focus:border-[#67d8c6]/70 focus:ring-2 focus:ring-[#67d8c6]/25"
           />
+          <kbd aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[10px] text-white/55">
+            Ctrl K
+          </kbd>
         </label>
       </div>
 
@@ -236,7 +257,7 @@ export function GameCatalog({
                 if (soundEnabled) onSound();
               }}
               aria-pressed={category === item.id}
-              className={`min-h-11 shrink-0 rounded-full border px-4 text-xs font-bold transition ${category === item.id ? "border-[#67d8c6]/50 bg-[#67d8c6] text-[#07151a]" : "border-white/10 bg-white/[0.035] text-white/65 hover:border-white/25 hover:text-white"}`}
+              className={`min-h-11 shrink-0 rounded-full border px-4 py-2 text-xs font-bold transition ${category === item.id ? "border-[#67d8c6]/50 bg-[#67d8c6] text-[#07151a]" : "border-white/10 bg-white/[0.035] text-white/65 hover:border-white/25 hover:text-white"}`}
             >
               {item.label}
             </button>
@@ -247,7 +268,7 @@ export function GameCatalog({
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value === "name" ? "name" : "popular")}
-            className="min-h-11 rounded-xl border border-white/10 bg-[#111b2b] px-3 text-xs font-bold text-white outline-none focus:border-[#67d8c6]/60"
+            className="dashboard-frame dashboard-surface min-h-11 px-3 text-xs font-bold text-white outline-none focus:border-[#67d8c6]/70 focus:ring-2 focus:ring-[#67d8c6]/25"
           >
             <option value="popular">Popular</option>
             <option value="name">Name A–Z</option>
@@ -263,27 +284,27 @@ export function GameCatalog({
           </p>
         </div>
       ) : (
-        <div className="mt-3 grid grid-cols-12 gap-4">
+        <div className="dashboard-game-grid mt-3 grid gap-4">
           {visibleGames.map((game) => {
             const isFavorite = favorites.includes(game.id);
             return (
               <article
                 key={game.id}
-                className="group relative col-span-12 aspect-video overflow-hidden rounded-2xl border border-white/10 bg-[#101a29]/90 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)] sm:col-span-6 2xl:col-span-4"
+                className="dashboard-frame group relative aspect-video overflow-hidden bg-[#101a29]/90 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)]"
               >
                 <GameArtwork game={game} showBoostBadge={authenticated} className="absolute inset-0 h-full w-full" />
                 <div className="pointer-events-none absolute inset-x-6 bottom-6 z-[1] pr-2">
                   <h3 className="font-bold text-white">{game.title}</h3>
-                  <p className="mt-1 text-white/75">{game.description}</p>
+                  <p className="dashboard-game-description mt-1 line-clamp-2 text-[#a5b1c2]">{game.description}</p>
                 </div>
                 <button
                   type="button"
                   aria-label={`${isFavorite ? "Remove" : "Add"} ${game.title} ${isFavorite ? "from" : "to"} favorites`}
                   aria-pressed={isFavorite}
                   onClick={() => toggleFavorite(game.id)}
-                  className="absolute left-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/20 bg-[#0d1117]/85 text-white/80 backdrop-blur transition hover:border-[#67d8c6]/60 hover:text-[#67d8c6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
+                  className="absolute left-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/20 bg-[#0d1117]/90 text-white/80 backdrop-blur transition hover:border-[#67d8c6]/60 hover:text-[#67d8c6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
                 >
-                  <Heart aria-hidden="true" className={`h-5 w-5 ${isFavorite ? "fill-[#67d8c6] text-[#67d8c6]" : ""}`} />
+                  <Heart aria-hidden="true" className={`h-5 w-5 ${isFavorite ? "fill-[#67d8c6] stroke-[#67d8c6]" : "fill-none stroke-white"}`} />
                 </button>
                 <button
                   type="button"

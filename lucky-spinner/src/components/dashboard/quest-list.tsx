@@ -18,11 +18,11 @@ export function QuestList({
   return (
     <div className="space-y-3">
       {quests.map((quest) => (
-        <article key={quest.id} className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
+        <article key={quest.id} className="dashboard-frame dashboard-surface p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h3 className="text-sm font-bold text-white/90">{quest.title}</h3>
-              <p className="mt-1 text-xs leading-relaxed text-white/50">{quest.description}</p>
+              <p className="mt-1 text-xs leading-relaxed text-[#a5b1c2]">{quest.description}</p>
             </div>
             <span className="shrink-0 rounded-lg bg-[#f3cc70]/10 px-2 py-1 font-mono text-xs font-bold tabular-nums text-[#f3cc70]">
               +{quest.reward} GC
@@ -42,20 +42,24 @@ export function QuestList({
             />
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="font-mono text-xs font-semibold tabular-nums text-white/55">
-              {quest.progress}/{quest.target} rounds
-            </span>
             {quest.claimed ? (
-              <span className="text-xs font-bold text-[#67d8c6]">Claimed</span>
+              <span className="rounded-md border border-[#67d8c6]/15 bg-[#67d8c6]/[0.07] px-2 py-1 text-xs font-bold text-[#a5b1c2]">
+                Claimed
+              </span>
             ) : (
-              <button
-                type="button"
-                disabled={!quest.claimable || claimingId === quest.id}
-                onClick={() => onClaim(quest)}
-                className="min-h-11 rounded-lg bg-[#67d8c6] px-3 text-xs font-black text-[#07151a] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
-              >
-                {claimingId === quest.id ? "Claiming…" : quest.claimable ? "Claim GC" : "In progress"}
-              </button>
+              <>
+                <span className="font-mono text-xs font-semibold tabular-nums text-white/55">
+                  {quest.progress}/{quest.target} rounds
+                </span>
+                <button
+                  type="button"
+                  disabled={!quest.claimable || claimingId === quest.id}
+                  onClick={() => onClaim(quest)}
+                  className="min-h-11 rounded-lg bg-[#67d8c6] px-3 text-xs font-black text-[#07151a] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
+                >
+                  {claimingId === quest.id ? "Claiming…" : quest.claimable ? "Claim GC" : "In progress"}
+                </button>
+              </>
             )}
           </div>
         </article>

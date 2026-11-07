@@ -4,9 +4,51 @@ body.dashboard-page {
 }
 
 .dashboard-root {
+  --dashboard-radius: 0.75rem;
+  --dashboard-border: rgba(255, 255, 255, 0.1);
+  --dashboard-surface: #111b2b;
   background:
     radial-gradient(ellipse at 50% -18%, rgba(52, 126, 141, 0.16), transparent 54%),
     linear-gradient(180deg, #101821 0%, #0d1117 72%);
+}
+
+.dashboard-frame {
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius);
+}
+
+.dashboard-rounded {
+  border-radius: var(--dashboard-radius);
+}
+
+.dashboard-surface {
+  background-color: var(--dashboard-surface);
+}
+
+.dashboard-game-description {
+  color: #a5b1c2;
+  line-height: 1.25;
+}
+
+.dashboard-game-heading {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+}
+
+.dashboard-welcome-title {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+}
+
+.dashboard-game-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(17.5rem, calc((100% - 1rem) / 2))), 1fr));
+}
+
+@media (min-width: 640px) {
+  .dashboard-welcome-title {
+    font-size: 1.25rem !important;
+  }
 }
 
 .dashboard-layout {
@@ -138,7 +180,7 @@ body.dashboard-page {
     min-height: calc(100dvh - 6.5rem);
     flex-direction: column;
     gap: 1.25rem;
-    padding: 0.25rem 0;
+    padding: 1rem 0 0;
   }
 
   .dashboard-main {
@@ -180,11 +222,11 @@ body.dashboard-page {
   }
 
   .dashboard-main {
-    grid-column: span 7;
+    grid-column: span 6;
   }
 
   .dashboard-utility-rail {
-    grid-column: span 3;
+    grid-column: span 4;
   }
 
   .dashboard-layout--collapsed,
