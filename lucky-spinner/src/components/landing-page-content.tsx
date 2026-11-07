@@ -43,8 +43,8 @@ export function LandingPageContent() {
         <AccountLinks />
       </header>
 
-      <div className="mx-auto grid w-full max-w-5xl content-center gap-10 py-12 lg:min-h-[calc(100vh-7rem)] lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:py-16">
-        <section className="text-center lg:text-left">
+      <div className="mx-auto grid w-full max-w-5xl grid-cols-12 content-center gap-4 py-12 lg:min-h-[calc(100vh-7rem)] lg:items-center lg:py-16">
+        <section className="col-span-12 text-center lg:col-span-7 lg:text-left">
           <Image
             src="/legacy-assets/logo4.png"
             alt="Gambling Mania"
@@ -73,7 +73,7 @@ export function LandingPageContent() {
 
         <section
           aria-labelledby="balance-heading"
-          className="rounded-2xl border border-white/10 bg-[#111827]/85 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)] sm:p-8"
+          className="col-span-12 rounded-2xl border border-white/10 bg-[#111827]/85 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)] sm:p-8 lg:col-span-5"
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#67d8c6]">
             Your account

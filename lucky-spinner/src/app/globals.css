@@ -8,8 +8,10 @@
 @import "./dashboard.css";
 
 :root {
-  --background: #090e19;
+  --background: #0d1117;
   --foreground: #f3f6fb;
+  --muted: #a5b1c2;
+  --muted-foreground: #a5b1c2;
   --card: #111827;
   --card-foreground: #f3f6fb;
   --popover: #111827;
@@ -18,8 +20,6 @@
   --primary-foreground: #07151a;
   --secondary: #172235;
   --secondary-foreground: #f8fafc;
-  --muted: #9ba9bc;
-  --muted-foreground: #9ba9bc;
   --accent: #f3cc70;
   --accent-foreground: #17202a;
   --destructive: #f87171;
@@ -41,13 +41,72 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.2), transparent 52%),
-    linear-gradient(180deg, #0b1220 0%, var(--background) 72%);
+    radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.16), transparent 52%),
+    linear-gradient(180deg, #101821 0%, var(--background) 72%);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
 }
 
 button,
 input {
   font: inherit;
+}
+
+h1 {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  line-height: 1.35;
+}
+
+h3 {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.35;
+}
+
+p:not(.font-mono) {
+  font-size: 14px !important;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+:is(
+  [class~="text-white/30"],
+  [class~="text-white/35"],
+  [class~="text-white/40"],
+  [class~="text-white/45"],
+  [class~="text-white/50"],
+  [class~="text-white/55"],
+  [class~="text-white/60"],
+  [class~="text-white/65"],
+  [class~="text-white/70"]
+) {
+  color: var(--muted);
+}
+
+:is(
+  [class~="placeholder:text-white/30"],
+  [class~="placeholder:text-white/35"],
+  [class~="placeholder:text-white/40"],
+  [class~="placeholder:text-white/45"],
+  [class~="placeholder:text-white/50"],
+  [class~="placeholder:text-white/55"],
+  [class~="placeholder:text-white/60"],
+  [class~="placeholder:text-white/65"],
+  [class~="placeholder:text-white/70"]
+)::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.eyebrow,
+[class*="uppercase"][class*="tracking-"] {
+  letter-spacing: normal !important;
 }

@@ -63,21 +63,21 @@
 .games-heading {
   margin: 0 0 clamp(1.5rem, 5vh, 3rem);
   color: var(--foreground);
-  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-size: 1.5rem;
   font-weight: 800;
-  letter-spacing: -0.035em;
   text-align: center;
 }
 
 .game-list {
   display: grid;
   width: min(100%, 76rem);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(0.8rem, 2vw, 1.5rem);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .game-card {
   display: flex;
+  grid-column: span 3;
   min-width: 0;
   justify-content: center;
   color: inherit;
@@ -88,11 +88,13 @@
 .game-card figure {
   display: flex;
   width: 100%;
+  aspect-ratio: 16 / 9;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  gap: 0.75rem;
   margin: 0;
-  padding: clamp(0.8rem, 1.7vw, 1.25rem);
+  padding: 1.5rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: linear-gradient(160deg, rgba(25, 38, 58, 0.88), rgba(17, 24, 39, 0.88));
@@ -109,7 +111,7 @@
 
 .game-image {
   display: block;
-  width: min(100%, 15rem);
+  width: min(100%, 7rem);
   height: auto;
   aspect-ratio: 1;
   object-fit: contain;
@@ -118,7 +120,7 @@
 .roulette-card-wheel,
 .prize-card-wheel {
   display: grid;
-  width: min(100%, 15rem);
+  width: min(100%, 7rem);
   aspect-ratio: 1;
   place-items: center;
   border: 8px solid var(--gold-soft);
@@ -151,9 +153,9 @@
 
 .game-card figcaption {
   width: 100%;
-  padding: 0.75rem 0.5rem 0.25rem;
+  padding: 0;
   color: var(--foreground);
-  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-size: 1rem;
   font-weight: 750;
 }
 
@@ -273,9 +275,7 @@
 }
 
 @media (max-width: 900px) {
-  .game-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  .game-card { grid-column: span 6; }
 }
 
 @media (max-width: 560px) {
@@ -284,22 +284,24 @@
   }
 
   .game-list {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1rem;
   }
+
+  .game-card { grid-column: span 12; }
 
   .game-card figure {
     display: grid;
-    grid-template-columns: minmax(4.5rem, 5.5rem) 1fr;
+    grid-template-columns: 5rem 1fr;
     gap: 1rem;
-    padding: 0.65rem 0.9rem;
+    padding: 1.5rem;
     text-align: left;
   }
 
   .game-image,
   .roulette-card-wheel,
   .prize-card-wheel {
-    width: 5.5rem;
+    width: 5rem;
   }
 
   .roulette-card-wheel,

@@ -8,8 +8,8 @@
 
 body.roulette-page {
   background:
-    radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.2), transparent 52%),
-    linear-gradient(180deg, #0b1220 0%, var(--background) 72%);
+    radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.16), transparent 52%),
+    linear-gradient(180deg, #101821 0%, var(--background) 72%);
 }
 
 .roulette-app {
@@ -103,9 +103,17 @@ body.roulette-page {
 
 .roulette-layout {
   display: grid;
-  grid-template-columns: minmax(290px, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: start;
-  gap: 1.25rem;
+  gap: 1rem;
+}
+
+.roulette-layout > .wheel-panel {
+  grid-column: span 5;
+}
+
+.roulette-layout > .table-column {
+  grid-column: span 7;
 }
 
 .wheel-panel,
@@ -417,12 +425,14 @@ body.roulette-page {
 .dialog-note { min-height: 16px; margin: 5px 0 22px; color: var(--muted); font-size: 0.73rem; }
 
 @media (max-width: 900px) {
-  .roulette-layout { grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr); gap: 0.9rem; }
+  .roulette-layout { gap: 1rem; }
   .outside-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 700px) {
-  .roulette-layout { grid-template-columns: 1fr; }
+  .roulette-layout { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .roulette-layout > .wheel-panel,
+  .roulette-layout > .table-column { grid-column: span 12; }
   .wheel-panel, .table-column { width: 100%; max-width: 620px; justify-self: center; }
   .wheel-frame { width: min(100%, 360px); }
   .wheel-hub strong { font-size: 1.25rem; }

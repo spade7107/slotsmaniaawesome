@@ -23,7 +23,7 @@ The website is a single Next.js app served at the domain root. It contains the h
 
    The first migration creates public usernames. The second creates protected wallets, temporary guest sessions, game-round storage, blackjack state, and the durable leaderboard outbox. The third adds account-owned boost inventory and atomic purchase, activation, and round-settlement operations.
 
-   Set the Supabase Auth Site URL to the website origin and allow that origin in its redirect URL settings so email-confirmed sign-ups can return to the app.
+   In Supabase **Authentication → URL Configuration**, set the Site URL to the website origin and add the website's `/reset-password` URL to the Redirect URLs allow-list (for example, `http://localhost:3000/reset-password` for local development and `https://your-domain.example/reset-password` for production). Also allow the website origin for email-confirmed sign-ups. Password recovery requests explicitly redirect to `/reset-password`; Supabase falls back to the Site URL if that redirect is not allow-listed. If using a custom password recovery email template, its link should use `{{ .ConfirmationURL }}` so Supabase can apply the requested redirect.
 
 3. Start Redis and the leaderboard service, then start Next.js in another terminal:
 
@@ -48,7 +48,7 @@ The website is a single Next.js app served at the domain root. It contains the h
 | Classic prize-wheel design | `/games/prize-wheel` |
 | Existing Next.js roulette design | `/roulette` |
 | Existing Next.js prize-wheel design | `/arcade` |
-| Leaderboard, sign-in, sign-up | `/leaderboards`, `/login`, `/signup` |
+| Leaderboard, sign-in, sign-up, password reset | `/leaderboards`, `/login`, `/signup`, `/reset-password` |
 
 Both roulette designs and both prize-wheel designs remain available with their existing visual treatments. Legacy `.html` URLs redirect to their new routes. The previous Next.js root route at `/lucky-spinner` redirects to `/roulette`.
 

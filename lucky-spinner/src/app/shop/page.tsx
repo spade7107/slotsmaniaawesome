@@ -142,8 +142,8 @@ export default function ShopPage() {
         <section className="relative mt-8 overflow-hidden rounded-[2rem] border border-[#67d8c6]/15 bg-[#111827]/85 px-6 py-9 shadow-[0_24px_90px_rgba(0,0,0,0.28)] sm:px-10 sm:py-12">
           <div className="pointer-events-none absolute -right-20 -top-32 h-96 w-96 rounded-full bg-[#67d8c6]/[0.08] blur-3xl" />
           <div className="pointer-events-none absolute -bottom-36 left-1/3 h-72 w-72 rounded-full bg-[#f3cc70]/[0.06] blur-3xl" />
-          <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="max-w-3xl">
+          <div className="relative grid grid-cols-12 gap-4 lg:items-end">
+            <div className="col-span-12 max-w-3xl lg:col-span-9">
               <p className="inline-flex items-center gap-2 rounded-full border border-[#67d8c6]/20 bg-[#67d8c6]/[0.07] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-[#8ee7d8]">
                 <Sparkles aria-hidden="true" className="h-3.5 w-3.5" />
                 Your next lucky streak starts here
@@ -156,7 +156,7 @@ export default function ShopPage() {
                 Every boost powers 25 spins on slots and the prize wheel.
               </p>
             </div>
-            <div className="rounded-2xl border border-[#f3cc70]/20 bg-black/20 px-5 py-4 lg:min-w-52">
+            <div className="col-span-12 rounded-2xl border border-[#f3cc70]/20 bg-black/20 px-5 py-4 lg:col-span-3 lg:min-w-52">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">Your balance</p>
               <p className="mt-1 font-mono text-3xl font-black tabular-nums text-[#f3cc70]">
                 {loading ? "…" : shop ? formatCredits(shop.balance) : "—"}
@@ -197,7 +197,7 @@ export default function ShopPage() {
         {notice && <p role="status" className="mt-6 rounded-xl border border-[#67d8c6]/20 bg-[#67d8c6]/[0.07] px-4 py-3 text-sm text-[#a2f0e2]">{notice}</p>}
 
         <section className="mt-10">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#67d8c6]">Choose your edge</p>
               <h2 className="mt-1 text-2xl font-black text-[#fff7e5] sm:text-3xl">Boosts for every kind of spin</h2>
@@ -205,14 +205,14 @@ export default function ShopPage() {
             <p className="text-xs text-white/45">One active boost at a time · 25 completed plays</p>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid grid-cols-12 gap-4">
             {BOOST_TIERS.map((tier) => {
               const Icon = icons[tier.id];
               const popular = tier.id === "plus";
               return (
                 <article
                   key={tier.id}
-                  className={`relative flex flex-col overflow-hidden rounded-2xl border bg-[#111827]/80 p-5 transition duration-200 hover:-translate-y-1 hover:bg-[#151e30] sm:p-6 ${popular ? "border-[#8da9ff]/45 shadow-[0_16px_50px_rgba(95,124,224,0.1)]" : "border-white/10"}`}
+                  className={`relative col-span-12 flex flex-col overflow-hidden rounded-2xl border bg-[#111827]/80 p-5 transition duration-200 hover:-translate-y-1 hover:bg-[#151e30] sm:col-span-6 lg:col-span-4 sm:p-6 ${popular ? "border-[#8da9ff]/45 shadow-[0_16px_50px_rgba(95,124,224,0.1)]" : "border-white/10"}`}
                   style={{ boxShadow: `inset 0 1px 0 ${tier.accent}18` }}
                 >
                   {popular && (
@@ -290,7 +290,7 @@ export default function ShopPage() {
         </section>
 
         <section id="inventory" className="mt-12 scroll-mt-24 pb-12">
-          <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#67d8c6]">Saved for your next session</p>
               <h2 className="mt-1 text-2xl font-black text-[#fff7e5]">Your inventory</h2>
@@ -305,7 +305,7 @@ export default function ShopPage() {
               Loading your shop…
             </div>
           ) : shop?.authenticated && shop.inventory.length > 0 ? (
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
+            <div className="mt-5 grid grid-cols-12 gap-4">
               {shop.inventory.map((item) => {
                 const tier = BOOST_TIERS.find((entry) => entry.id === item.tier);
                 if (!tier) return null;
@@ -314,7 +314,7 @@ export default function ShopPage() {
                 return (
                   <article
                     key={item.id}
-                    className={`flex flex-wrap items-center gap-4 rounded-2xl border p-4 sm:p-5 ${active ? "border-[#f3cc70]/35 bg-[#f3cc70]/[0.05]" : "border-white/10 bg-[#111827]/60"}`}
+                    className={`col-span-12 flex flex-wrap items-center gap-4 rounded-2xl border p-4 sm:col-span-6 sm:p-5 ${active ? "border-[#f3cc70]/35 bg-[#f3cc70]/[0.05]" : "border-white/10 bg-[#111827]/60"}`}
                   >
                     <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl" style={{ backgroundColor: `${tier.accent}12`, color: tier.accent }}>
                       {active ? <Sparkles aria-hidden="true" className="h-5 w-5" /> : exhausted ? <Check aria-hidden="true" className="h-5 w-5" /> : <Zap aria-hidden="true" className="h-5 w-5" />}

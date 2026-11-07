@@ -6,11 +6,17 @@ body.dashboard-page {
 .dashboard-root {
   background:
     radial-gradient(ellipse at 50% -18%, rgba(52, 126, 141, 0.16), transparent 54%),
-    linear-gradient(180deg, #0b1220 0%, #090e19 72%);
+    linear-gradient(180deg, #101821 0%, #0d1117 72%);
 }
 
 .dashboard-layout {
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-main {
+  grid-column: span 12;
 }
 
 .dashboard-sidebar,
@@ -72,8 +78,8 @@ body.dashboard-page {
   border: 0;
   border-radius: 0.8rem;
   background: transparent;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 0.62rem;
+  color: var(--muted);
+  font-size: 0.875rem;
   font-weight: 700;
   text-decoration: none;
   touch-action: manipulation;
@@ -112,26 +118,31 @@ body.dashboard-page {
   border-radius: 999px;
   background: #d54d55;
   color: white;
-  font-size: 0.6rem;
+  font-size: 0.6875rem;
   font-weight: 900;
 }
 
 @media (min-width: 768px) {
   .dashboard-layout {
     display: grid;
-    grid-template-columns: 13rem minmax(0, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     align-items: start;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
   .dashboard-sidebar {
     position: sticky;
     top: 5.5rem;
+    grid-column: span 3;
     display: flex;
     min-height: calc(100dvh - 6.5rem);
     flex-direction: column;
     gap: 1.25rem;
     padding: 0.25rem 0;
+  }
+
+  .dashboard-main {
+    grid-column: span 9;
   }
 
   .dashboard-bottom-nav {
@@ -160,13 +171,30 @@ body.dashboard-page {
 
 @media (min-width: 1200px) {
   .dashboard-layout {
-    grid-template-columns: 13rem minmax(0, 1fr) 18rem;
-    gap: 1.25rem;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .dashboard-sidebar {
+    grid-column: span 2;
+  }
+
+  .dashboard-main {
+    grid-column: span 7;
+  }
+
+  .dashboard-utility-rail {
+    grid-column: span 3;
   }
 
   .dashboard-layout--collapsed,
   .dashboard-layout--guest {
-    grid-template-columns: 13rem minmax(0, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .dashboard-layout--collapsed .dashboard-main,
+  .dashboard-layout--guest .dashboard-main {
+    grid-column: span 10;
   }
 
   .dashboard-utility-rail {

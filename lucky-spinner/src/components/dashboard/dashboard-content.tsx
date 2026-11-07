@@ -427,7 +427,7 @@ export function DashboardContent() {
           </aside>
 
           <main id="lobby" className="dashboard-main min-w-0 scroll-mt-24">
-            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#67d8c6]">
                   {authenticated ? "Welcome back" : "Welcome to Slots Mania"}
@@ -436,7 +436,7 @@ export function DashboardContent() {
                   {authenticated ? username : "Find your next game"}
                 </h1>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-baseline gap-2">
                 <button
                   type="button"
                   onClick={() => setQuestsDrawerOpen(true)}
@@ -664,16 +664,16 @@ export function DashboardContent() {
                 <h3 id="profile-stats-heading" className="text-xs font-black uppercase tracking-wider text-white/45">
                   Lifetime stats
                 </h3>
-                <dl className="mt-3 grid grid-cols-3 gap-2">
-                  <div className="rounded-xl border border-white/10 p-3">
+                <dl className="mt-3 grid grid-cols-12 gap-2">
+                  <div className="col-span-12 rounded-xl border border-white/10 p-3 sm:col-span-4">
                     <dt className="text-[10px] font-semibold text-white/45">Rounds</dt>
                     <dd className="mt-1 font-mono text-lg font-black tabular-nums text-white">{formatCoins(dashboard.stats.completedRounds)}</dd>
                   </div>
-                  <div className="rounded-xl border border-white/10 p-3">
+                  <div className="col-span-12 rounded-xl border border-white/10 p-3 sm:col-span-4">
                     <dt className="text-[10px] font-semibold text-white/45">Wagered</dt>
                     <dd className="mt-1 font-mono text-lg font-black tabular-nums text-white">{formatCoins(dashboard.stats.totalWager)} GC</dd>
                   </div>
-                  <div className="rounded-xl border border-white/10 p-3">
+                  <div className="col-span-12 rounded-xl border border-white/10 p-3 sm:col-span-4">
                     <dt className="text-[10px] font-semibold text-white/45">Net</dt>
                     <dd className={`mt-1 font-mono text-lg font-black tabular-nums ${dashboard.stats.netProfit >= 0 ? "text-[#67d8c6]" : "text-red-300"}`}>
                       {dashboard.stats.netProfit > 0 ? "+" : ""}{formatCoins(dashboard.stats.netProfit)} GC
@@ -683,13 +683,13 @@ export function DashboardContent() {
               </section>
               <section aria-label="Level perks">
                 <h3 className="text-xs font-black uppercase tracking-wider text-white/45">Cosmetic level perks</h3>
-                <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="mt-3 grid grid-cols-12 gap-2">
                   {[
                     { level: 5, title: "Bronze badge" },
                     { level: 10, title: "Silver badge" },
                     { level: 20, title: "Gold badge" },
                   ].map((perk) => (
-                    <div key={perk.level} className={`rounded-xl border p-3 ${dashboard.progression.level >= perk.level ? "border-[#f3cc70]/30 bg-[#f3cc70]/[0.07]" : "border-white/10 bg-white/[0.02] opacity-60"}`}>
+                    <div key={perk.level} className={`col-span-12 rounded-xl border p-3 sm:col-span-4 ${dashboard.progression.level >= perk.level ? "border-[#f3cc70]/30 bg-[#f3cc70]/[0.07]" : "border-white/10 bg-white/[0.02]"}`}>
                       <p className="text-[10px] font-bold text-white/45">Level {perk.level}</p>
                       <p className="mt-1 text-xs font-bold text-[#f3cc70]">{perk.title}</p>
                       <p className="mt-1 text-[10px] text-white/45">{dashboard.progression.level >= perk.level ? "Unlocked" : "Locked"}</p>

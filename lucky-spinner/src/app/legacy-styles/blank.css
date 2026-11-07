@@ -3,8 +3,8 @@
   display: grid;
   place-items: center;
   background:
-    radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.2), transparent 52%),
-    linear-gradient(180deg, #0b1220 0%, var(--background) 72%);
+    radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.16), transparent 52%),
+    linear-gradient(180deg, #101821 0%, var(--background) 72%);
 }
 
 .play-button:link,

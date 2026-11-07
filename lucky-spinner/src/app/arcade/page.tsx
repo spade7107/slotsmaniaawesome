@@ -127,9 +127,9 @@ export default function ArcadePage() {
     <main
       className="min-h-screen px-4 py-5 text-white sm:px-6 sm:py-8"
       style={{
-        backgroundColor: "#090e19",
+        backgroundColor: "#0d1117",
         backgroundImage:
-          "radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.2), transparent 52%), repeating-linear-gradient(135deg, rgba(255,255,255,0.012) 0, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 6px)",
+          "radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.16), transparent 52%), linear-gradient(180deg, #101821 0%, #0d1117 72%)",
       }}
     >
       <div className="mx-auto max-w-6xl">
@@ -159,8 +159,8 @@ export default function ArcadePage() {
           <ActiveBoostStatus boost={activeBoost} />
         </div>
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(340px,0.95fr)]">
-          <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#121927]/85 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.35)] sm:p-7">
+        <div className="grid grid-cols-12 items-start gap-4">
+          <section className="relative col-span-12 overflow-hidden rounded-2xl border border-white/10 bg-[#121927]/85 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.35)] sm:p-7 lg:col-span-7">
             <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full border border-[#42d6c0]/10" />
             <div className="relative mb-6 flex items-start justify-between gap-4">
               <div>
@@ -234,7 +234,7 @@ export default function ArcadePage() {
             </div>
           </section>
 
-          <aside className="space-y-6">
+          <aside className="col-span-12 space-y-6 lg:col-span-5">
             <section className="rounded-2xl border border-white/10 bg-[#121927]/85 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.2)] sm:p-6">
               <div className="mb-5 flex items-center justify-between">
                 <div>

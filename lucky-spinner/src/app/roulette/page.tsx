@@ -180,9 +180,9 @@ export default function Home() {
     <main
       className="min-h-screen px-3 py-5 text-[#f3f6fb] sm:px-6 sm:py-8"
       style={{
-        backgroundColor: "#090e19",
+        backgroundColor: "#0d1117",
         backgroundImage:
-        "radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.2), transparent 52%), repeating-linear-gradient(135deg, rgba(255,255,255,0.012) 0, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 6px)",
+        "radial-gradient(ellipse at 50% -12%, rgba(52, 126, 141, 0.16), transparent 52%), linear-gradient(180deg, #101821 0%, #0d1117 72%)",
       }}
     >
       <div className="mx-auto max-w-7xl">
@@ -220,8 +220,8 @@ export default function Home() {
         </header>
         {error && <p role="alert" className="mb-4 text-sm text-red-300">{error}</p>}
 
-        <div className="grid items-start gap-6 xl:grid-cols-[minmax(320px,0.82fr)_minmax(0,1.18fr)]">
-          <section className="rounded-xl border border-white/10 bg-[#111827]/85 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] sm:p-6">
+        <div className="grid grid-cols-12 items-start gap-4">
+          <section className="col-span-12 rounded-xl border border-white/10 bg-[#111827]/85 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] sm:p-6 xl:col-span-5">
             <div className="mb-5 flex items-center justify-between">
               <div>
                 <p                 className="text-xs font-bold uppercase tracking-[0.2em] text-[#67d8c6]">
@@ -304,12 +304,12 @@ export default function Home() {
                   >
                     {recent.number}
                   </span>
-                )) : <span className="text-xs text-[#758378]">Results will appear here</span>}
+                )) : <span className="text-xs text-[#a5b1c2]">Results will appear here</span>}
               </div>
             </div>
           </section>
 
-          <div className="space-y-6">
+          <div className="col-span-12 space-y-6 xl:col-span-7">
             <section className="rounded-xl border border-white/10 bg-[#111827]/85 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.2)] sm:p-5">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>

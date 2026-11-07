@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Heart, Search, X } from "lucide-react";
@@ -12,8 +11,6 @@ export type DashboardGame = {
   category: "slots" | "table" | "other";
   href: string;
   description: string;
-  image?: string;
-  imageAlt?: string;
   wheel?: "roulette" | "prize";
   boostEligible: boolean;
 };
@@ -25,8 +22,6 @@ export const DASHBOARD_GAMES: DashboardGame[] = [
     category: "slots",
     href: "/games/slots",
     description: "Spin the reels and play the paylines.",
-    image: "/legacy-assets/slot.svg",
-    imageAlt: "Slots game artwork",
     boostEligible: true,
   },
   {
@@ -35,8 +30,6 @@ export const DASHBOARD_GAMES: DashboardGame[] = [
     category: "table",
     href: "/games/blackjack",
     description: "Choose when to hit or stand against the dealer.",
-    image: "/legacy-assets/black-jack-poker.svg",
-    imageAlt: "Blackjack game artwork",
     boostEligible: false,
   },
   {
@@ -62,48 +55,77 @@ export const DASHBOARD_GAMES: DashboardGame[] = [
 type Category = "all" | "slots" | "table" | "favorites" | "boosted";
 type Sort = "popular" | "name";
 
-function GameArtwork({ game, showBoostBadge = false }: { game: DashboardGame; showBoostBadge?: boolean }) {
-  const [loaded, setLoaded] = useState(!game.image);
-
+function GameArtwork({
+  game,
+  showBoostBadge = false,
+  className,
+}: {
+  game: DashboardGame;
+  showBoostBadge?: boolean;
+  className?: string;
+}) {
   return (
-    <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-white/10 bg-[linear-gradient(145deg,#17263a,#0e1725)]">
-      {game.image ? (
-        <>
-          {!loaded && (
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 animate-pulse bg-white/[0.06]"
-            />
-          )}
-          <Image
-            src={game.image}
-            alt={game.imageAlt ?? ""}
-            fill
-            sizes="(max-width: 767px) 90vw, (max-width: 1199px) 40vw, 25vw"
-            className={`object-contain p-6 transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
-            onLoad={() => setLoaded(true)}
-            onError={() => setLoaded(true)}
-          />
-        </>
-      ) : (
-        <div
-          aria-hidden="true"
-          className={`absolute inset-0 grid place-items-center ${game.wheel === "roulette" ? "bg-[repeating-conic-gradient(#101720_0deg_9.73deg,#b6414d_9.73deg_19.46deg)]" : "bg-[repeating-conic-gradient(#2a9d8f_0deg_30deg,#bd434b_30deg_60deg,#3584a5_60deg_90deg,#d7a643_90deg_120deg)]"}`}
-        >
-          <span className="grid aspect-square w-16 place-items-center rounded-full border-4 border-[#f3cc70] bg-[#101827] text-2xl font-black text-[#f3cc70] shadow-xl">
-            {game.wheel === "roulette" ? "0" : "GO"}
-          </span>
-        </div>
-      )}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#09111d] to-transparent" />
-      <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
-        <h3 className="text-xl font-black text-white drop-shadow-lg">{game.title}</h3>
-        {showBoostBadge && game.boostEligible && (
-          <span className="rounded-full border border-[#f3cc70]/25 bg-[#111827]/90 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#f3cc70]">
-            Boost eligible
-          </span>
+    <div
+      className={`relative overflow-hidden bg-[linear-gradient(145deg,#17263a,#0e1725)] ${className ?? "aspect-video rounded-xl border border-white/10"}`}
+    >
+      <svg viewBox="0 0 320 180" className="h-full w-full" fill="none" aria-hidden="true">
+        <rect width="320" height="180" fill="#111b2b" />
+        <path d="M0 148H320" stroke="#26364a" strokeWidth="2" />
+        {game.id === "slots" ? (
+          <g strokeWidth="2">
+            <rect x="48" y="35" width="224" height="110" rx="12" fill="#17283c" stroke="#67d8c6" />
+            {[0, 1, 2, 3, 4].map((column) => (
+              <g key={column}>
+                <rect x={58 + column * 42} y="45" width="34" height="90" rx="5" fill="#0d1117" stroke="#40536a" />
+                <text x={75 + column * 42} y="84" textAnchor="middle" fill="#f3cc70" fontSize="22" fontWeight="700">
+                  {["7", "◈", "7", "✦", "7"][column]}
+                </text>
+                <circle cx={75 + column * 42} cy="112" r="5" fill="#67d8c6" />
+              </g>
+            ))}
+            <path d="M58 90H260" stroke="#f3cc70" strokeWidth="2" />
+          </g>
+        ) : game.id === "blackjack" ? (
+          <g strokeWidth="2">
+            <rect x="93" y="32" width="84" height="116" rx="9" transform="rotate(-12 93 32)" fill="#f3f6fb" stroke="#a5b1c2" />
+            <rect x="146" y="35" width="84" height="116" rx="9" transform="rotate(10 146 35)" fill="#f3f6fb" stroke="#a5b1c2" />
+            <text x="113" y="64" fill="#172235" fontSize="24" fontWeight="700">A</text>
+            <path d="M121 71c-9-10-19 2 0 16 19-14 9-26 0-16Z" fill="#bd434b" stroke="#bd434b" />
+            <text x="190" y="68" fill="#172235" fontSize="24" fontWeight="700">K</text>
+            <path d="m205 78 11 11-11 11-11-11 11-11Z" fill="#bd434b" stroke="#bd434b" />
+          </g>
+        ) : game.wheel === "roulette" ? (
+          <g strokeWidth="2">
+            <circle cx="160" cy="90" r="63" fill="#17283c" stroke="#f3cc70" />
+            <circle cx="160" cy="90" r="50" fill="#0d1117" stroke="#a5b1c2" />
+            {[0, 45, 90, 135].map((rotation) => (
+              <path key={rotation} d="M160 40V140" stroke="#67d8c6" transform={`rotate(${rotation} 160 90)`} />
+            ))}
+            <circle cx="160" cy="90" r="22" fill="#17283c" stroke="#f3cc70" />
+            <circle cx="160" cy="90" r="7" fill="#f3cc70" stroke="#f3cc70" />
+            <circle cx="160" cy="31" r="5" fill="#f3f6fb" stroke="#f3f6fb" />
+            <path d="m152 17 8-12 8 12Z" fill="#f3cc70" stroke="#f3cc70" />
+          </g>
+        ) : (
+          <g strokeWidth="2">
+            <circle cx="160" cy="91" r="63" fill="#17283c" stroke="#f3cc70" />
+            <path d="M160 91V28A63 63 0 0 1 214.6 59.5Z" fill="#67d8c6" stroke="#0d1117" />
+            <path d="M160 91 214.6 59.5A63 63 0 0 1 214.6 122.5Z" fill="#3584a5" stroke="#0d1117" />
+            <path d="M160 91 214.6 122.5A63 63 0 0 1 160 154Z" fill="#f3cc70" stroke="#0d1117" />
+            <path d="M160 91 160 154A63 63 0 0 1 105.4 122.5Z" fill="#bd434b" stroke="#0d1117" />
+            <path d="M160 91 105.4 122.5A63 63 0 0 1 105.4 59.5Z" fill="#d7a643" stroke="#0d1117" />
+            <path d="M160 91 105.4 59.5A63 63 0 0 1 160 28Z" fill="#2a9d8f" stroke="#0d1117" />
+            <circle cx="160" cy="91" r="15" fill="#0d1117" stroke="#f3f6fb" />
+            <path d="m149 18 11-14 11 14Z" fill="#f3f6fb" stroke="#f3f6fb" />
+          </g>
         )}
-      </div>
+      </svg>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0d1117] to-transparent" />
+      {showBoostBadge && game.boostEligible && (
+        <span className="absolute right-3 top-3 inline-flex h-6 items-center rounded-full border border-[#f3cc70]/30 bg-[#111827]/90 px-2.5 text-[11px] font-bold text-[#f3cc70]">
+            Boost eligible
+        </span>
+      )}
     </div>
   );
 }
@@ -187,7 +209,7 @@ export function GameCatalog({
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#67d8c6]">
             Find your next game
           </p>
-          <h2 id="games-heading" className="mt-1 text-2xl font-black text-[#fff7e5] sm:text-3xl">
+          <h2 id="games-heading" className="mt-1 text-lg font-bold text-[#fff7e5]">
             Game room
           </h2>
         </div>
@@ -241,31 +263,32 @@ export function GameCatalog({
           </p>
         </div>
       ) : (
-        <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        <div className="mt-3 grid grid-cols-12 gap-4">
           {visibleGames.map((game) => {
             const isFavorite = favorites.includes(game.id);
             return (
               <article
                 key={game.id}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101a29]/90 p-3 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)] motion-safe:hover:scale-[1.05]"
+                className="group relative col-span-12 aspect-video overflow-hidden rounded-2xl border border-white/10 bg-[#101a29]/90 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)] sm:col-span-6 2xl:col-span-4"
               >
-                <GameArtwork game={game} showBoostBadge={authenticated} />
-                <p className="px-1 pb-1 pt-3 text-sm leading-relaxed text-white/55">
-                  {game.description}
-                </p>
+                <GameArtwork game={game} showBoostBadge={authenticated} className="absolute inset-0 h-full w-full" />
+                <div className="pointer-events-none absolute inset-x-6 bottom-6 z-[1] pr-2">
+                  <h3 className="font-bold text-white">{game.title}</h3>
+                  <p className="mt-1 text-white/75">{game.description}</p>
+                </div>
                 <button
                   type="button"
                   aria-label={`${isFavorite ? "Remove" : "Add"} ${game.title} ${isFavorite ? "from" : "to"} favorites`}
                   aria-pressed={isFavorite}
                   onClick={() => toggleFavorite(game.id)}
-                  className="absolute right-5 top-5 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-[#09111d]/85 text-white/70 backdrop-blur transition hover:border-pink-300/50 hover:text-pink-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
+                  className="absolute left-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/20 bg-[#0d1117]/85 text-white/80 backdrop-blur transition hover:border-[#67d8c6]/60 hover:text-[#67d8c6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
                 >
-                  <Heart aria-hidden="true" className={`h-5 w-5 ${isFavorite ? "fill-pink-400 text-pink-400" : ""}`} />
+                  <Heart aria-hidden="true" className={`h-5 w-5 ${isFavorite ? "fill-[#67d8c6] text-[#67d8c6]" : ""}`} />
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedGame(game)}
-                  className="absolute inset-x-3 bottom-14 top-3 z-[1] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
+                  className="absolute inset-6 z-[2] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
                   aria-label={`View ${game.title} details`}
                 />
                 <Link
@@ -273,7 +296,7 @@ export function GameCatalog({
                   onClick={() => {
                     if (soundEnabled) onSound();
                   }}
-                  className="absolute bottom-[4.75rem] left-6 right-6 hidden min-h-11 translate-y-2 items-center justify-center rounded-xl bg-[#67d8c6] px-4 text-sm font-black text-[#07151a] opacity-0 shadow-lg transition duration-200 hover:brightness-110 focus-visible:translate-y-0 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white group-hover:translate-y-0 group-hover:opacity-100 md:flex"
+                  className="absolute left-6 right-6 top-1/2 z-[2] hidden min-h-11 -translate-y-1/2 items-center justify-center rounded-xl bg-[#67d8c6] px-4 text-sm font-bold text-[#07151a] opacity-0 shadow-lg transition-opacity duration-200 hover:brightness-110 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white group-hover:opacity-100 md:flex"
                 >
                   Play now
                 </Link>

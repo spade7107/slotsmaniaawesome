@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useGameSession } from "@/hooks/use-game-session";
@@ -51,16 +50,36 @@ function readRound(value: unknown): RoundView | null {
   };
 }
 
-const cardSuits: Record<Card["suit"], string> = {
-  "♠": "spades",
-  "♥": "hearts",
-  "♦": "diamonds",
-  "♣": "clubs",
-};
-const cardValues: Record<string, string> = { A: "ace", J: "jack", Q: "queen", K: "king" };
+function CardFace({ card }: { card: Card }) {
+  const suitColor = card.suit === "♥" || card.suit === "♦" ? "#bd434b" : "#172235";
 
-function cardImage(card: Card) {
-  return `https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/${cardValues[card.value] ?? card.value.toLowerCase()}_of_${cardSuits[card.suit]}.png`;
+  return (
+    <svg
+      viewBox="0 0 64 96"
+      className="h-full w-full"
+      role="img"
+      aria-label={`${card.value} of ${card.suit}`}
+    >
+      <rect x="1" y="1" width="62" height="94" rx="7" fill="#f3f6fb" stroke="#a5b1c2" strokeWidth="2" />
+      <text x="8" y="23" fill={suitColor} fontSize="16" fontWeight="700">{card.value}</text>
+      <text x="8" y="39" fill={suitColor} fontSize="14">{card.suit}</text>
+      <text x="32" y="64" textAnchor="middle" fill={suitColor} fontSize="34">{card.suit}</text>
+      <g transform="rotate(180 55 80)" fill={suitColor}>
+        <text x="55" y="76" textAnchor="end" fontSize="16" fontWeight="700">{card.value}</text>
+        <text x="55" y="90" textAnchor="end" fontSize="14">{card.suit}</text>
+      </g>
+    </svg>
+  );
+}
+
+function CardBack({ label }: { label: string }) {
+  return (
+    <svg viewBox="0 0 64 96" className="h-full w-full" role="img" aria-label={label}>
+      <rect x="1" y="1" width="62" height="94" rx="7" fill="#17283c" stroke="#a5b1c2" strokeWidth="2" />
+      <path d="m32 27 19 21-19 21-19-21Z" fill="#0d1117" stroke="#67d8c6" strokeWidth="2" />
+      <circle cx="32" cy="48" r="6" fill="#f3cc70" />
+    </svg>
+  );
 }
 
 function statusMessage(status: string) {
@@ -143,32 +162,14 @@ export default function BlackjackPage() {
             {currentRound?.dealerHand.map((card, index) => (
               card ? (
                 <div className="w-16 h-24 bg-white rounded-lg shadow-md overflow-hidden flex items-center justify-center p-1 border border-slate-200 relative animate-deal-dealer" key={`dealer-${index}-${card.value}-${card.suit}`}>
-                  <Image
-                    unoptimized
-                    width={64}
-                    height={96}
-                    src={cardImage(card)}
-                    alt={`${card.value} of ${card.suit}`}
-                    className="w-full h-full object-contain"
-                    onError={(event) => {
-                      event.currentTarget.style.display = "none";
-                      const fallback = event.currentTarget.nextElementSibling;
-                      if (fallback instanceof HTMLElement) fallback.style.display = "flex";
-                    }}
-                  />
-                  <div className="absolute inset-0 hidden flex-col justify-between p-1 text-slate-900 font-bold text-xs select-none">
-                    <span>{card.value}</span><span className="text-xl text-center">{card.suit}</span>
-                    <span className="self-end rotate-180">{card.value}</span>
-                  </div>
+                  <CardFace card={card} />
                 </div>
               ) : (
                 <div
-                  className={`w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 animate-deal-dealer ${pendingAction === "stand" ? "pending-card" : ""}`}
+                  className={`w-16 h-24 rounded-lg shadow-md overflow-hidden animate-deal-dealer ${pendingAction === "stand" ? "pending-card" : ""}`}
                   key={`dealer-${index}-hidden-${pendingAction === "stand" ? "stand" : "waiting"}`}
-                  role={pendingAction === "stand" ? "img" : undefined}
-                  aria-label={pendingAction === "stand" ? "Dealer is playing" : undefined}
                 >
-                  🂠
+                  <CardBack label={pendingAction === "stand" ? "Dealer is playing" : "Face-down card"} />
                 </div>
               )
             ))}
@@ -188,32 +189,12 @@ export default function BlackjackPage() {
           <div id="player-cards" className="flex justify-center gap-2 min-h-[96px] items-center">
             {currentRound?.playerHand.map((card, index) => (
               <div className="w-16 h-24 bg-white rounded-lg shadow-md overflow-hidden flex items-center justify-center p-1 border border-slate-200 relative animate-deal-player" key={`player-${index}`}>
-                <Image
-                  unoptimized
-                  width={64}
-                  height={96}
-                  src={cardImage(card)}
-                  alt={`${card.value} of ${card.suit}`}
-                  className="w-full h-full object-contain"
-                  onError={(event) => {
-                    event.currentTarget.style.display = "none";
-                    const fallback = event.currentTarget.nextElementSibling;
-                    if (fallback instanceof HTMLElement) fallback.style.display = "flex";
-                  }}
-                />
-                <div className="absolute inset-0 hidden flex-col justify-between p-1 text-slate-900 font-bold text-xs select-none">
-                  <span>{card.value}</span><span className="text-xl text-center">{card.suit}</span>
-                  <span className="self-end rotate-180">{card.value}</span>
-                </div>
+                <CardFace card={card} />
               </div>
             ))}
             {pendingAction === "hit" && (
-              <div
-                className="w-16 h-24 bg-blue-900 border-2 border-blue-400 rounded-lg shadow-md flex items-center justify-center text-xl font-bold text-blue-300 animate-deal-player pending-card"
-                role="img"
-                aria-label="Drawing a card"
-              >
-                🂠
+              <div className="w-16 h-24 rounded-lg shadow-md overflow-hidden animate-deal-player pending-card">
+                <CardBack label="Drawing a card" />
               </div>
             )}
           </div>

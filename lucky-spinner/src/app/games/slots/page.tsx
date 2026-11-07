@@ -285,8 +285,8 @@ export default function SlotsPage() {
           </p>
         </section>
 
-        <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.08fr)_minmax(18rem,0.92fr)]">
-          <section className="rounded-2xl border border-[#776cb7]/30 bg-[#11152a]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:p-5">
+        <div className="mt-4 grid grid-cols-12 items-start gap-4">
+          <section className="col-span-12 rounded-2xl border border-[#776cb7]/30 bg-[#11152a]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:p-5 lg:col-span-7">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#48f7df]">Configure your run</p>
               <h2 className="mt-1 text-xl font-black text-[#f5f2ff]">Wager controls</h2>
@@ -374,7 +374,7 @@ export default function SlotsPage() {
             </p>
           </section>
 
-          <section className="rounded-2xl border border-[#776cb7]/30 bg-[#11152a]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:p-5">
+          <section className="col-span-12 rounded-2xl border border-[#776cb7]/30 bg-[#11152a]/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.22)] sm:p-5 lg:col-span-5">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#48f7df]">Line pays · Per GC bet</p>
               <h2 className="mt-1 text-xl font-black text-[#f5f2ff]">Signal values</h2>
