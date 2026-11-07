@@ -284,7 +284,7 @@ export function GameCatalog({
           </p>
         </div>
       ) : (
-        <div className="dashboard-game-grid mt-3 grid gap-4">
+        <div className="dashboard-game-grid mt-3">
           {visibleGames.map((game) => {
             const isFavorite = favorites.includes(game.id);
             return (
@@ -297,7 +297,7 @@ export function GameCatalog({
                 </div>
                 <div className="dashboard-game-copy pointer-events-none absolute z-[1]">
                   <h3 className="font-bold text-white">{game.title}</h3>
-                  <p className="dashboard-game-description mt-1 line-clamp-2 text-[#a5b1c2]">{game.description}</p>
+                  <p className="dashboard-game-description mt-1 line-clamp-2">{game.description}</p>
                 </div>
                 <button
                   type="button"

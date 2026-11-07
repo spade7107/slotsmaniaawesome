@@ -43,7 +43,7 @@ export function QuestList({
           </div>
           <div className="mt-3 flex items-center justify-between gap-3">
             {quest.claimed ? (
-              <span className="rounded-md border border-[#67d8c6]/20 bg-[#67d8c6]/[0.09] px-2 py-1 text-xs font-bold text-[#a5b1c2]">
+              <span className="dashboard-completed-state rounded-md px-2 py-1 text-xs font-bold">
                 Claimed
               </span>
             ) : (

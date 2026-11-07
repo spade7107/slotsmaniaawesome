@@ -32,9 +32,9 @@ body.dashboard-page {
 }
 
 .dashboard-game-copy {
-  inset-inline: var(--dashboard-card-inset);
+  inset-inline: 0;
   bottom: var(--dashboard-card-inset);
-  padding-right: 0.5rem;
+  padding: var(--dashboard-card-inset);
 }
 
 .dashboard-catalog-controls {
@@ -45,23 +45,31 @@ body.dashboard-page {
 }
 
 .dashboard-game-description {
-  color: #a5b1c2;
+  color: #94a3b8;
   line-height: 1.25;
 }
 
 .dashboard-game-heading {
-  font-size: 1.25rem !important;
+  font-size: 1.75rem !important;
   font-weight: 700 !important;
 }
 
 .dashboard-welcome-title {
-  font-size: 1rem !important;
-  font-weight: 600 !important;
+  font-size: 1.125rem !important;
+  font-weight: 500 !important;
   line-height: 1.25 !important;
 }
 
 .dashboard-game-grid {
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-completed-state {
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #34d399;
 }
 
 .dashboard-layout {

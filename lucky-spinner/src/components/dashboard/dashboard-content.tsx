@@ -411,7 +411,7 @@ export function DashboardContent() {
                     type="button"
                     disabled={!bonusAvailable || claimingId === "bonus"}
                     onClick={() => void claim("claim-bonus")}
-                    className={`mt-3 min-h-11 w-full rounded-lg border px-3 text-xs font-black transition ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a] hover:brightness-110" : "cursor-not-allowed border-[#67d8c6]/20 bg-[#67d8c6]/[0.09] text-[#a5b1c2]"}`}
+                    className={`mt-3 min-h-11 w-full rounded-lg border px-3 text-xs font-black transition ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a] hover:brightness-110" : "dashboard-completed-state cursor-not-allowed"}`}
                   >
                     {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "Claim 100 GC" : "Claimed today"}
                   </button>
@@ -430,7 +430,7 @@ export function DashboardContent() {
           <main id="lobby" className="dashboard-main min-w-0 scroll-mt-24">
             <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#a5b1c2]">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
                   {authenticated ? "Welcome back" : "Welcome to Slots Mania"}
                 </p>
                 <h1 className="dashboard-welcome-title mt-1 text-[#fff7e5]">
@@ -485,7 +485,7 @@ export function DashboardContent() {
                     type="button"
                     disabled={!bonusAvailable || claimingId === "bonus"}
                     onClick={() => void claim("claim-bonus")}
-                    className={`min-h-11 shrink-0 rounded-xl border px-4 text-xs font-black ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a]" : "border-[#67d8c6]/20 bg-[#67d8c6]/[0.09] text-[#a5b1c2]"}`}
+                    className={`min-h-11 shrink-0 rounded-xl border px-4 text-xs font-black ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a]" : "dashboard-completed-state"}`}
                   >
                     {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "CLAIM!" : "Claimed today"}
                   </button>
