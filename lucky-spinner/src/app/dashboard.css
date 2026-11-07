@@ -39,7 +39,6 @@ body.dashboard-page {
 }
 
 .dashboard-game-description {
-  color: #94a3b8;
   line-height: 1.25;
 }
 
@@ -56,7 +55,7 @@ body.dashboard-page {
 
 .dashboard-game-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
 }
 
@@ -237,10 +236,6 @@ body.dashboard-page {
 }
 
 @media (min-width: 1200px) {
-  .dashboard-game-grid {
-    grid-template-columns: repeat(2, minmax(280px, 1fr));
-  }
-
   .dashboard-layout {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 1rem;

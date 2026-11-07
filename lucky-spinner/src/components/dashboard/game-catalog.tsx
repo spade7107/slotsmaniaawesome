@@ -297,7 +297,7 @@ export function GameCatalog({
                 </div>
                 <div className="dashboard-game-card-content relative z-[1]">
                   <h3 className="font-bold text-white">{game.title}</h3>
-                  <p className="dashboard-game-description mt-1 line-clamp-2">{game.description}</p>
+                  <p className="dashboard-game-description mt-1 line-clamp-2 text-slate-400">{game.description}</p>
                 </div>
                 <button
                   type="button"
