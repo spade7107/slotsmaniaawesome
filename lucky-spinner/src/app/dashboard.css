@@ -31,12 +31,6 @@ body.dashboard-page {
   border-radius: inherit;
 }
 
-.dashboard-game-copy {
-  inset-inline: 0;
-  bottom: var(--dashboard-card-inset);
-  padding: var(--dashboard-card-inset);
-}
-
 .dashboard-catalog-controls {
   border: 1px solid var(--dashboard-border);
   border-radius: var(--dashboard-radius);
@@ -64,6 +58,16 @@ body.dashboard-page {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
+}
+
+.dashboard-game-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.dashboard-game-card-content {
+  padding: var(--dashboard-card-inset);
 }
 
 .dashboard-completed-state {
@@ -233,6 +237,10 @@ body.dashboard-page {
 }
 
 @media (min-width: 1200px) {
+  .dashboard-game-grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+
   .dashboard-layout {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 1rem;

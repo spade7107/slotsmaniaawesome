@@ -290,12 +290,12 @@ export function GameCatalog({
             return (
               <article
                 key={game.id}
-                className="dashboard-frame group relative aspect-video overflow-hidden bg-[#101a29]/90 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)]"
+                className="dashboard-frame dashboard-game-card group relative overflow-hidden bg-[#101a29]/90 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)]"
               >
-                <div className="dashboard-game-artwork absolute inset-0 z-0">
+                <div className="dashboard-game-artwork relative z-0 aspect-video">
                   <GameArtwork game={game} showBoostBadge={authenticated} className="absolute inset-0 h-full w-full" />
                 </div>
-                <div className="dashboard-game-copy pointer-events-none absolute z-[1]">
+                <div className="dashboard-game-card-content relative z-[1]">
                   <h3 className="font-bold text-white">{game.title}</h3>
                   <p className="dashboard-game-description mt-1 line-clamp-2">{game.description}</p>
                 </div>
@@ -311,7 +311,7 @@ export function GameCatalog({
                 <button
                   type="button"
                   onClick={() => setSelectedGame(game)}
-                  className="absolute inset-4 z-[2] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
+                  className="absolute inset-x-4 bottom-4 top-4 z-[2] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
                   aria-label={`View ${game.title} details`}
                 />
                 <Link
@@ -319,7 +319,7 @@ export function GameCatalog({
                   onClick={() => {
                     if (soundEnabled) onSound();
                   }}
-                  className="absolute left-4 right-4 top-1/2 z-[2] hidden min-h-11 -translate-y-1/2 items-center justify-center rounded-xl bg-[#67d8c6] px-4 text-sm font-bold text-[#07151a] opacity-0 shadow-lg transition-opacity duration-200 hover:brightness-110 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white group-hover:opacity-100 md:flex"
+                  className="absolute left-4 right-4 top-[35%] z-[2] hidden min-h-11 -translate-y-1/2 items-center justify-center rounded-xl bg-[#67d8c6] px-4 text-sm font-bold text-[#07151a] opacity-0 shadow-lg transition-opacity duration-200 hover:brightness-110 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white group-hover:opacity-100 md:flex"
                 >
                   Play now
                 </Link>
