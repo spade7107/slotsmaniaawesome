@@ -97,7 +97,7 @@ function NavLink({
       onClick={onClick}
       className="dashboard-rounded flex min-h-12 items-center gap-3 px-3 text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
     >
-      <Icon aria-hidden="true" className="h-[18px] w-[18px] shrink-0" />
+      <Icon aria-hidden="true" className="h-[18px] w-[18px] shrink-0" strokeWidth={2.25} />
       <span>{label}</span>
     </Link>
   );
@@ -296,12 +296,12 @@ export function DashboardContent() {
   return (
     <div className="dashboard-root min-h-screen text-white">
       <header className="dashboard-topbar sticky top-0 z-30 border-b border-white/[0.08] bg-[#09111d]/90 px-3 py-3 backdrop-blur-xl sm:px-5 lg:px-7">
-        <div className="mx-auto flex max-w-[1680px] items-center justify-between gap-2">
+        <div className="mx-auto flex w-full items-center justify-between gap-2">
           <Link href="/dashboard#lobby" className="dashboard-brand shrink-0 text-sm font-black tracking-[0.12em] text-[#fff7e5] sm:text-base">
             SLOTS <span className="dashboard-brand-extra text-[#67d8c6]">MANIA</span>
           </Link>
 
-          <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
+          <div className="flex min-w-0 items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => authenticated ? setProfileOpen(true) : router.push("/login")}
@@ -352,7 +352,7 @@ export function DashboardContent() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1680px] px-3 pb-24 pt-4 sm:px-5 lg:px-7">
+      <div className="mx-auto w-full px-3 pb-24 pt-4 sm:px-5 lg:px-7">
         {(loadError || actionError || actionMessage) && (
           <div className="mb-4 space-y-2" aria-live="polite">
             {loadError && (
@@ -386,7 +386,7 @@ export function DashboardContent() {
                 }}
                 className="dashboard-rounded flex min-h-12 w-full items-center gap-3 px-3 text-left text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
               >
-                <Trophy aria-hidden="true" className="h-[18px] w-[18px] shrink-0" />
+                <Trophy aria-hidden="true" className="h-[18px] w-[18px] shrink-0" strokeWidth={2.25} />
                 <span>Leaderboards &amp; quests</span>
               </button>
               {authenticated && (
@@ -411,7 +411,7 @@ export function DashboardContent() {
                     type="button"
                     disabled={!bonusAvailable || claimingId === "bonus"}
                     onClick={() => void claim("claim-bonus")}
-                    className="mt-3 min-h-11 w-full rounded-lg border border-transparent bg-[#f3cc70] px-3 text-xs font-black text-[#17202a] transition hover:brightness-110 disabled:cursor-not-allowed disabled:border-[#67d8c6]/15 disabled:bg-[#67d8c6]/[0.07] disabled:text-[#a5b1c2]"
+                    className={`mt-3 min-h-11 w-full rounded-lg border px-3 text-xs font-black transition ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a] hover:brightness-110" : "cursor-not-allowed border-[#67d8c6]/20 bg-[#67d8c6]/[0.09] text-[#a5b1c2]"}`}
                   >
                     {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "Claim 100 GC" : "Claimed today"}
                   </button>
@@ -450,7 +450,8 @@ export function DashboardContent() {
                     type="button"
                     onClick={() => setRightRailCollapsed((value) => !value)}
                     aria-expanded={!rightRailCollapsed}
-                    className="hidden min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-[#111b2b] px-3 text-xs font-bold text-white/70 transition hover:border-[#67d8c6]/35 hover:bg-[#17263a] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] xl:inline-flex"
+                    aria-controls="quick-quests"
+                    className="hidden min-h-11 items-center gap-2 rounded-xl border border-[#67d8c6]/20 bg-[#17263a] px-3 text-xs font-bold text-white/80 transition hover:border-[#67d8c6]/50 hover:bg-[#20354a] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] xl:inline-flex"
                   >
                     {rightRailCollapsed ? <ChevronLeft aria-hidden="true" className="h-4 w-4" /> : <ChevronRight aria-hidden="true" className="h-4 w-4" />}
                     {rightRailCollapsed ? "Show quests" : "Hide quests"}
@@ -484,7 +485,7 @@ export function DashboardContent() {
                     type="button"
                     disabled={!bonusAvailable || claimingId === "bonus"}
                     onClick={() => void claim("claim-bonus")}
-                    className="min-h-11 shrink-0 rounded-xl border border-transparent bg-[#f3cc70] px-4 text-xs font-black text-[#17202a] disabled:border-[#67d8c6]/15 disabled:bg-[#67d8c6]/[0.07] disabled:text-[#a5b1c2]"
+                    className={`min-h-11 shrink-0 rounded-xl border px-4 text-xs font-black ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a]" : "border-[#67d8c6]/20 bg-[#67d8c6]/[0.09] text-[#a5b1c2]"}`}
                   >
                     {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "CLAIM!" : "Claimed today"}
                   </button>
@@ -520,7 +521,7 @@ export function DashboardContent() {
           </main>
 
           {authenticated && (
-            <aside className="dashboard-utility-rail dashboard-frame rounded-2xl bg-[#0e1725]/70 p-4" aria-label="Quick quests">
+            <aside id="quick-quests" className="dashboard-utility-rail dashboard-frame rounded-2xl bg-[#0e1725]/70 p-4" aria-label="Quick quests">
               <div className="mb-4 flex items-center justify-between gap-2">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#67d8c6]">Daily goals</p>

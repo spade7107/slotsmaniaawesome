@@ -7,6 +7,7 @@ body.dashboard-page {
   --dashboard-radius: 0.75rem;
   --dashboard-border: rgba(255, 255, 255, 0.1);
   --dashboard-surface: #111b2b;
+  --dashboard-card-inset: 1rem;
   background:
     radial-gradient(ellipse at 50% -18%, rgba(52, 126, 141, 0.16), transparent 54%),
     linear-gradient(180deg, #101821 0%, #0d1117 72%);
@@ -25,6 +26,24 @@ body.dashboard-page {
   background-color: var(--dashboard-surface);
 }
 
+.dashboard-game-artwork {
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.dashboard-game-copy {
+  inset-inline: var(--dashboard-card-inset);
+  bottom: var(--dashboard-card-inset);
+  padding-right: 0.5rem;
+}
+
+.dashboard-catalog-controls {
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius);
+  background: rgba(255, 255, 255, 0.025);
+  padding: 0.5rem;
+}
+
 .dashboard-game-description {
   color: #a5b1c2;
   line-height: 1.25;
@@ -36,19 +55,13 @@ body.dashboard-page {
 }
 
 .dashboard-welcome-title {
-  font-size: 1.125rem !important;
+  font-size: 1rem !important;
   font-weight: 600 !important;
   line-height: 1.25 !important;
 }
 
 .dashboard-game-grid {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(17.5rem, calc((100% - 1rem) / 2))), 1fr));
-}
-
-@media (min-width: 640px) {
-  .dashboard-welcome-title {
-    font-size: 1.25rem !important;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .dashboard-layout {
@@ -222,11 +235,11 @@ body.dashboard-page {
   }
 
   .dashboard-main {
-    grid-column: span 6;
+    grid-column: span 7;
   }
 
   .dashboard-utility-rail {
-    grid-column: span 4;
+    grid-column: span 3;
   }
 
   .dashboard-layout--collapsed,

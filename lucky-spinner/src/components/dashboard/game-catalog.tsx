@@ -122,7 +122,7 @@ function GameArtwork({
       </svg>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0d1117] to-transparent" />
       {showBoostBadge && game.boostEligible && (
-        <span className="absolute right-3 top-3 z-[3] inline-flex h-6 items-center rounded-full border border-[#67d8c6]/40 bg-[#0d1117]/95 px-2.5 text-[11px] font-bold text-[#67d8c6]">
+        <span className="absolute right-4 top-4 z-[3] inline-flex h-6 items-center rounded-full border border-[#67d8c6]/40 bg-[#0d1117]/95 px-2.5 text-[11px] font-bold text-[#67d8c6]">
             Boost eligible
         </span>
       )}
@@ -246,8 +246,8 @@ export function GameCatalog({
         </label>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="dashboard-filter-scroll flex min-w-0 flex-1 gap-2 overflow-x-auto pb-2">
+      <div className="dashboard-catalog-controls mt-5 flex flex-wrap items-center gap-3">
+        <div className="dashboard-filter-scroll flex min-w-0 flex-1 gap-2 overflow-x-auto">
           {categories.map((item) => (
             <button
               key={item.id}
@@ -292,8 +292,10 @@ export function GameCatalog({
                 key={game.id}
                 className="dashboard-frame group relative aspect-video overflow-hidden bg-[#101a29]/90 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)]"
               >
-                <GameArtwork game={game} showBoostBadge={authenticated} className="absolute inset-0 h-full w-full" />
-                <div className="pointer-events-none absolute inset-x-6 bottom-6 z-[1] pr-2">
+                <div className="dashboard-game-artwork absolute inset-0 z-0">
+                  <GameArtwork game={game} showBoostBadge={authenticated} className="absolute inset-0 h-full w-full" />
+                </div>
+                <div className="dashboard-game-copy pointer-events-none absolute z-[1]">
                   <h3 className="font-bold text-white">{game.title}</h3>
                   <p className="dashboard-game-description mt-1 line-clamp-2 text-[#a5b1c2]">{game.description}</p>
                 </div>
@@ -302,14 +304,14 @@ export function GameCatalog({
                   aria-label={`${isFavorite ? "Remove" : "Add"} ${game.title} ${isFavorite ? "from" : "to"} favorites`}
                   aria-pressed={isFavorite}
                   onClick={() => toggleFavorite(game.id)}
-                  className="absolute left-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/20 bg-[#0d1117]/90 text-white/80 backdrop-blur transition hover:border-[#67d8c6]/60 hover:text-[#67d8c6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
+                  className="absolute left-4 top-4 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/20 bg-[#0d1117]/90 text-white/80 backdrop-blur transition hover:border-[#67d8c6]/60 hover:text-[#67d8c6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
                 >
                   <Heart aria-hidden="true" className={`h-5 w-5 ${isFavorite ? "fill-[#67d8c6] stroke-[#67d8c6]" : "fill-none stroke-white"}`} />
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedGame(game)}
-                  className="absolute inset-6 z-[2] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
+                  className="absolute inset-4 z-[2] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
                   aria-label={`View ${game.title} details`}
                 />
                 <Link
@@ -317,7 +319,7 @@ export function GameCatalog({
                   onClick={() => {
                     if (soundEnabled) onSound();
                   }}
-                  className="absolute left-6 right-6 top-1/2 z-[2] hidden min-h-11 -translate-y-1/2 items-center justify-center rounded-xl bg-[#67d8c6] px-4 text-sm font-bold text-[#07151a] opacity-0 shadow-lg transition-opacity duration-200 hover:brightness-110 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white group-hover:opacity-100 md:flex"
+                  className="absolute left-4 right-4 top-1/2 z-[2] hidden min-h-11 -translate-y-1/2 items-center justify-center rounded-xl bg-[#67d8c6] px-4 text-sm font-bold text-[#07151a] opacity-0 shadow-lg transition-opacity duration-200 hover:brightness-110 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white group-hover:opacity-100 md:flex"
                 >
                   Play now
                 </Link>
