@@ -23,6 +23,8 @@ test("Alchemist's Crucible spins are server-resolved and validate whole-GC bets"
   assert.equal(paidSpin.wager, 20);
   assert.equal(paidSpin.result.isBonusSpin, false);
   assert.equal(paidSpin.payout, paidSpin.result.totalWin);
+  assert.ok(Number.isSafeInteger(paidSpin.payout));
+  assert.ok(paidSpin.result.winningLines.every((line) => Number.isSafeInteger(line.finalWin)));
   assert.ok(paidSpin.result.rawGrid.every((reel) => reel.length === 3));
   assert.throws(() => resolveAlchemistsCrucibleSpin(20.5), /valid Alchemist's Crucible bet/);
   assert.throws(() => resolveAlchemistsCrucibleSpin(10), /valid Alchemist's Crucible bet/);

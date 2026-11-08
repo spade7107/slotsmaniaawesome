@@ -13,7 +13,9 @@ import {
   WinningLine,
 } from '../types/slot';
 
-// Weighted reel strips to ensure engaging gameplay with ~96.2% RTP
+export const CRUCIBLE_PAYOUT_SCALE = 0.0020008;
+
+// Payout scaling is calibrated across paid spins and complete bonus rounds to target 96.2% RTP.
 export const BASE_REEL_STRIP: SymbolId[] = [
   'RUNE_CLUB', 'RUNE_DIAMOND', 'RUNE_HEART', 'RUNE_SPADE',
   'RUNE_CLUB', 'MORTAR', 'RUNE_DIAMOND', 'SPELLBOOK',
@@ -38,9 +40,19 @@ const MULTIPLIER_POOL: (2 | 3 | 5)[] = [2, 2, 2, 3, 3, 5];
 /**
  * Pick random symbol from a strip
  */
-function getRandomSymbol(strip: SymbolId[], random: () => number): SymbolId {
+function getRandomSymbol(
+  strip: SymbolId[],
+  random: () => number
+): SymbolId {
   const index = Math.floor(random() * strip.length);
   return strip[index];
+}
+
+function settlePayout(amount: number, random: () => number): number {
+  const scaledAmount = amount * CRUCIBLE_PAYOUT_SCALE;
+  const wholeAmount = Math.floor(scaledAmount);
+  const fractionalAmount = scaledAmount - wholeAmount;
+  return wholeAmount + (fractionalAmount > 0 && random() < fractionalAmount ? 1 : 0);
 }
 
 /**
@@ -182,24 +194,28 @@ export function evaluateSpin(
         const reelIdx = matchedPositions[i].reel;
         if (expandedWilds[reelIdx]) {
           lineMultiplier *= expandedWilds[reelIdx].multiplier;
-          activeWildReelsInWins.add(reelIdx);
         }
       }
 
-      const baseWin = lineBet * basePayoutMultiplier;
-      const finalWin = baseWin * lineMultiplier;
+      const baseWin = lineBet * basePayoutMultiplier * CRUCIBLE_PAYOUT_SCALE;
+      const finalWin = settlePayout(lineBet * basePayoutMultiplier * lineMultiplier, random);
 
-      winningLines.push({
-        lineIndex,
-        symbolId: targetSymbol,
-        matchCount,
-        positions: matchedPositions,
-        baseWin,
-        multiplier: lineMultiplier,
-        finalWin,
-      });
+      if (finalWin > 0) {
+        winningLines.push({
+          lineIndex,
+          symbolId: targetSymbol,
+          matchCount,
+          positions: matchedPositions,
+          baseWin,
+          multiplier: lineMultiplier,
+          finalWin,
+        });
 
-      totalLineWin += finalWin;
+        totalLineWin += finalWin;
+        matchedPositions.slice(0, matchCount).forEach(({ reel }) => {
+          if (expandedWilds[reel]) activeWildReelsInWins.add(reel);
+        });
+      }
     }
   });
 
@@ -241,7 +257,7 @@ export function evaluateSpin(
     }
 
     const scatterMultiplier = SYMBOLS.OUROBOROS_SCATTER.payouts[scatterCount] || 2;
-    scatterWin = totalBet * scatterMultiplier;
+    scatterWin = settlePayout(totalBet * scatterMultiplier, random);
   }
 
   const totalWin = totalLineWin + scatterWin;

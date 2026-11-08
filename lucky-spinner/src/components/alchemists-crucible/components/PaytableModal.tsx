@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Flame, Sparkles, Shield } from 'lucide-react';
 import { SYMBOLS, SymbolId } from '../types/slot';
 import { SymbolIcon } from './SymbolIcon';
+import { CRUCIBLE_PAYOUT_SCALE } from '../utils/slotEngine';
 
 interface PaytableModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface PaytableModalProps {
 
 export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
+  const formatPayout = (amount: number) => `${(amount * CRUCIBLE_PAYOUT_SCALE).toFixed(3)}x`;
 
   const lowPaySymbols: SymbolId[] = [
     'RUNE_CLUB',
@@ -103,8 +105,8 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
                 <span className="text-teal-300 font-bold">+5 Extra Free Spins</span>!
               </li>
               <li>
-                <strong className="text-slate-200">Scatter Payouts:</strong> 3 Scatters = 2x Total
-                Bet, 4 Scatters = 10x Total Bet, 5 Scatters = 50x Total Bet.
+                <strong className="text-slate-200">Scatter Payouts:</strong> 3 Scatters = 0.004x Total
+                Bet, 4 Scatters = 0.020x Total Bet, 5 Scatters = 0.100x Total Bet.
               </li>
             </ul>
           </section>
@@ -133,17 +135,17 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
                       <div className="flex items-center gap-2 font-mono text-xs">
                         {def.payouts[2] && (
                           <span className="text-slate-400">
-                            2x: <strong className="text-amber-300">{def.payouts[2]}x</strong>
+                            2x: <strong className="text-amber-300">{formatPayout(def.payouts[2])}</strong>
                           </span>
                         )}
                         <span className="text-slate-400">
-                          3x: <strong className="text-amber-300">{def.payouts[3]}x</strong>
+                          3x: <strong className="text-amber-300">{formatPayout(def.payouts[3])}</strong>
                         </span>
                         <span className="text-slate-400">
-                          4x: <strong className="text-amber-300">{def.payouts[4]}x</strong>
+                          4x: <strong className="text-amber-300">{formatPayout(def.payouts[4])}</strong>
                         </span>
                         <span className="text-slate-400">
-                          5x: <strong className="text-amber-300">{def.payouts[5]}x</strong>
+                          5x: <strong className="text-amber-300">{formatPayout(def.payouts[5])}</strong>
                         </span>
                       </div>
                     </div>
@@ -172,13 +174,13 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
                     <h5 className="font-bold text-slate-200 text-xs">{def.name}</h5>
                     <div className="flex flex-col gap-0.5 font-mono text-[11px] text-slate-400">
                       <span>
-                        3x: <strong className="text-slate-200">{def.payouts[3]}x</strong>
+                        3x: <strong className="text-slate-200">{formatPayout(def.payouts[3])}</strong>
                       </span>
                       <span>
-                        4x: <strong className="text-slate-200">{def.payouts[4]}x</strong>
+                        4x: <strong className="text-slate-200">{formatPayout(def.payouts[4])}</strong>
                       </span>
                       <span>
-                        5x: <strong className="text-slate-200">{def.payouts[5]}x</strong>
+                        5x: <strong className="text-slate-200">{formatPayout(def.payouts[5])}</strong>
                       </span>
                     </div>
                   </div>
@@ -202,6 +204,8 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
               • Crucible Wilds appear only on Reels 2, 3, and 4.
               <br />
               • Free Spins are played at the same bet as the triggering round.
+              <br />
+              • Fractional-GC prizes are probabilistically rounded to whole GC.
             </p>
           </section>
         </div>

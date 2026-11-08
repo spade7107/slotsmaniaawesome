@@ -121,7 +121,7 @@ function parseCrucibleSpinResult(value: unknown): CrucibleSpinResult | null {
   for (const line of value.winningLines) {
     if (!isRecord(line) || !Number.isInteger(line.lineIndex) || !isSymbolId(line.symbolId) ||
         !Number.isInteger(line.matchCount) || !Array.isArray(line.positions) ||
-        !line.positions.every(isCellPosition) || !Number.isSafeInteger(line.baseWin) ||
+        !line.positions.every(isCellPosition) || !Number.isFinite(line.baseWin) ||
         !Number.isFinite(line.multiplier) || !Number.isSafeInteger(line.finalWin)) {
       return null;
     }
