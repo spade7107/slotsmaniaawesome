@@ -209,7 +209,6 @@ body.dashboard-page {
     top: 5.5rem;
     grid-column: span 3;
     display: flex;
-    min-height: calc(100dvh - 6.5rem);
     flex-direction: column;
     gap: 1.25rem;
     padding: 1rem 0 0;
@@ -420,19 +419,19 @@ html[data-reduce-motion="true"] *::after {
 
 .dashboard-canvas {
   display: flex !important;
-  flex: 1;
+  flex: 0 0 auto !important;
   flex-direction: column !important;
   justify-content: flex-start !important;
   align-items: stretch !important;
-  margin-top: 64px !important;
-  padding: 0 32px 32px !important;
+  margin-top: 0 !important;
+  padding: 24px 32px 48px !important;
   box-sizing: border-box;
 }
 
 .dashboard-layout {
   display: grid;
   width: 100%;
-  flex: 1;
+  flex: 0 0 auto;
   grid-template-columns: 3.5rem minmax(0, 1fr);
   align-items: start;
   gap: 1.25rem;
@@ -566,8 +565,7 @@ html[data-reduce-motion="true"] *::after {
   max-width: 1300px !important;
   align-items: stretch !important;
   align-content: start;
-  margin-right: auto;
-  margin-left: auto;
+  margin: 24px auto 0 !important;
 }
 
 .dashboard-game-card {
@@ -628,12 +626,6 @@ html[data-reduce-motion="true"] *::after {
 }
 
 @media (max-width: 767px) {
-  .dashboard-canvas {
-    padding-right: 32px !important;
-    padding-bottom: max(32px, env(safe-area-inset-bottom)) !important;
-    padding-left: 32px !important;
-  }
-
   .dashboard-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.75rem;
