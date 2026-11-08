@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getGameActor, setGuestCookie, type GameActor } from "@/server/game-actor";
 import {
   advanceBlackjack,
+  resolveAlchemistsCrucibleSpin,
   resolvePrizeWheel,
   resolveRoulette,
   resolveSlots,
@@ -12,6 +13,7 @@ import {
 import { getActivePlayerBoost } from "@/server/boosts";
 import { isBoostWagerAllowed, type ActiveBoost } from "@/lib/boosts";
 import { getSupabaseAdmin } from "@/server/supabase-admin";
+import type { ExpandedWildInfo } from "@/components/alchemists-crucible/types/slot";
 
 class GameApiError extends Error {
   constructor(
@@ -61,13 +63,41 @@ async function getActiveBlackjack(actor: GameActor) {
   return data;
 }
 
+function crucibleActorQuery(actor: GameActor) {
+  const query = getSupabaseAdmin()
+    .from("alchemists_crucible_bonus_sessions")
+    .select("id,version,bet,spins_remaining,total_spins,sticky_wilds,accumulated_win,status");
+  return actor.userId
+    ? query.eq("player_id", actor.userId)
+    : query.eq("guest_session_id", actor.guestSessionId);
+}
+
+async function getActiveCrucibleBonus(actor: GameActor) {
+  const { data, error } = await crucibleActorQuery(actor)
+    .eq("status", "active")
+    .maybeSingle();
+  if (error) throw new Error(`Could not load active Crucible free spins: ${error.message}`);
+  if (!data) return null;
+  return {
+    id: data.id,
+    version: data.version,
+    bet: data.bet,
+    spinsRemaining: data.spins_remaining,
+    totalSpins: data.total_spins,
+    stickyWilds: data.sticky_wilds as Record<number, ExpandedWildInfo>,
+    accumulatedWin: data.accumulated_win,
+    status: data.status,
+  };
+}
+
 export async function GET() {
   let actor: GameActor | null = null;
   try {
     actor = await getGameActor();
-    const [activeBlackjack, activeBoost] = await Promise.all([
+    const [activeBlackjack, activeBoost, activeCrucibleBonus] = await Promise.all([
       getActiveBlackjack(actor),
       getActivePlayerBoost(actor.userId),
+      getActiveCrucibleBonus(actor),
     ]);
     return response({
       balance: actor.balance,
@@ -75,6 +105,7 @@ export async function GET() {
       authenticated: Boolean(actor.userId),
       activeBlackjack,
       activeBoost,
+      activeCrucibleBonus,
     }, actor);
   } catch (error) {
     console.error("Could not load game session", error);
@@ -178,6 +209,96 @@ export async function POST(request: NextRequest) {
 
     if (!validUuid(body.operationId)) {
       throw new GameApiError(400, "operationId must be a UUID");
+    }
+
+    if (body.game === "alchemists-crucible") {
+      const { data: previousRound, error: previousRoundError } = await admin
+        .from("game_rounds")
+        .select("balance_after,balance_version,result,net_profit")
+        .eq("operation_id", body.operationId)
+        .eq("game", "alchemists-crucible")
+        .match(actor.userId
+          ? { player_id: actor.userId }
+          : { guest_session_id: actor.guestSessionId });
+      if (previousRoundError) {
+        throw new Error(`Could not check Crucible spin status: ${previousRoundError.message}`);
+      }
+      if (previousRound?.[0]) {
+        const round = previousRound[0];
+        return response({
+          balance: round.balance_after,
+          balanceVersion: round.balance_version,
+          result: round.result,
+          netProfit: round.net_profit,
+          replayed: true,
+        }, actor);
+      }
+
+      let bonusId: string | null = null;
+      let bonusVersion: number | null = null;
+      let stickyWilds: Record<number, ExpandedWildInfo> = {};
+      let spinBet: unknown = body.bet;
+      let isFreeSpin = false;
+
+      if (body.action === "free-spin") {
+        if (!validUuid(body.bonusId) || !Number.isInteger(body.bonusVersion)) {
+          throw new GameApiError(400, "Choose a valid Crucible free spin");
+        }
+        const { data: bonus, error: bonusError } = await crucibleActorQuery(actor)
+          .eq("id", body.bonusId)
+          .eq("status", "active")
+          .maybeSingle();
+        if (bonusError) {
+          throw new Error(`Could not load Crucible free spins: ${bonusError.message}`);
+        }
+        if (!bonus || bonus.version !== body.bonusVersion) {
+          throw new GameApiError(409, "Your Crucible free spins changed. Please try again.");
+        }
+        bonusId = bonus.id;
+        bonusVersion = bonus.version;
+        spinBet = bonus.bet;
+        stickyWilds = bonus.sticky_wilds as Record<number, ExpandedWildInfo>;
+        isFreeSpin = true;
+      } else if (body.action !== "spin") {
+        throw new GameApiError(400, "Choose a Crucible spin action");
+      }
+
+      const outcome = resolveAlchemistsCrucibleSpin(spinBet, isFreeSpin, stickyWilds);
+      const nextStickyWilds = isFreeSpin
+        ? Object.fromEntries(
+          Object.entries(outcome.result.expandedWilds).map(([reel, wild]) => [
+            reel,
+            { ...wild, isSticky: true },
+          ]),
+        )
+        : null;
+      const { data, error } = await admin.rpc("apply_alchemists_crucible_round", {
+        p_user_id: actor.userId,
+        p_guest_session_id: actor.guestSessionId,
+        p_operation_id: body.operationId,
+        p_wager: outcome.wager,
+        p_payout: outcome.payout,
+        p_result: outcome.result,
+        p_bonus_id: bonusId,
+        p_bonus_version: bonusVersion,
+        p_sticky_wilds: nextStickyWilds,
+      });
+      if (error) {
+        if (error.message.includes("Insufficient credits")) {
+          throw new GameApiError(409, "Not enough GC for that bet");
+        }
+        if (error.message.includes("free spins changed")) {
+          throw new GameApiError(409, "Your Crucible free spins changed. Please try again.");
+        }
+        if (error.message.includes("active Crucible")) {
+          throw new GameApiError(409, "Finish your active Crucible free spins first");
+        }
+        if (error.message.includes("expired")) {
+          throw new GameApiError(401, "Your guest session expired. Reload to start a new one.");
+        }
+        throw new Error(`Could not record Crucible spin: ${error.message}`);
+      }
+      return response(data, actor);
     }
 
     if (body.game === "slots" || body.game === "prize-wheel") {

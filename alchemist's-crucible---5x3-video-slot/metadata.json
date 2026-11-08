@@ -1,0 +1,6 @@
+{
+  "name": "Alchemist's Crucible - 5x3 Video Slot",
+  "description": "5x3 reel slot machine featuring 20 fixed paylines, Expanding Multiplier Crucible Wilds (2x, 3x, 5x), and Philosopher's Free Spins with Sticky Wilds.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

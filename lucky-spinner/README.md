@@ -20,8 +20,9 @@ The website is a single Next.js app served at the domain root. It contains the h
    - `supabase/migrations/20261029000000_game_accounts.sql`
    - `supabase/migrations/20261030000000_credit_shop.sql`
    - `supabase/migrations/20261102000000_dashboard_features.sql`
+   - `supabase/migrations/20261107000000_alchemists_crucible_wallet.sql`
 
-   The first migration creates public usernames. The second creates protected wallets, temporary guest sessions, game-round storage, blackjack state, and the durable leaderboard outbox. The third adds account-owned boost inventory and atomic purchase, activation, and round-settlement operations.
+   The first migration creates public usernames. The second creates protected wallets, temporary guest sessions, game-round storage, blackjack state, and the durable leaderboard outbox. The third adds account-owned boost inventory and atomic purchase, activation, and round-settlement operations. The fifth adds server-settled Alchemist's Crucible rounds and persistent free-spin sessions to the shared wallet.
 
    In Supabase **Authentication → URL Configuration**, set the Site URL to the website origin and add the website's `/reset-password` URL to the Redirect URLs allow-list (for example, `http://localhost:3000/reset-password` for local development and `https://your-domain.example/reset-password` for production). Also allow the website origin for email-confirmed sign-ups. Password recovery requests explicitly redirect to `/reset-password`; Supabase falls back to the Site URL if that redirect is not allow-listed. If using a custom password recovery email template, its link should use `{{ .ConfirmationURL }}` so Supabase can apply the requested redirect.
 
@@ -69,7 +70,7 @@ Configure these for the Next.js deployment:
 | `GUEST_SESSION_SECRET` | HMAC key for temporary, HTTP-only guest-session cookies |
 | `NEXT_PUBLIC_LEADERBOARD_API_URL` | Browser-reachable base URL for the Express leaderboard API |
 
-Signed-in accounts receive 1,000 Gold Coins (GC) the first time their wallet is initialized. GC persist in Supabase; there is no automatic refill or client-side reset. Guests can play with a temporary server-managed balance, but their balance is not attached to an account and their results are excluded from leaderboards. Game, shop, and leaderboard interfaces label balances and wagers as GC.
+Signed-in accounts receive 1,000 Gold Coins (GC) the first time their wallet is initialized. GC persist in Supabase; there is no automatic refill or client-side reset. Guests can play with a temporary server-managed balance, but their balance is not attached to an account and their results are excluded from leaderboards. All game balances and outcomes, including Alchemist's Crucible base and free spins, use server-side wallet settlement. Game, shop, and leaderboard interfaces label balances and wagers as GC.
 
 `GET /api/game` initializes or reads the caller's balance and returns an active blackjack round when one exists. `POST /api/game` accepts game actions for slots, roulette, prize wheels, or blackjack. The server validates wagers, generates random outcomes, computes payouts, and updates balances atomically. Clients cannot submit a balance, score, or game outcome as authoritative data. Blackjack cards and deck state remain server-side.
 

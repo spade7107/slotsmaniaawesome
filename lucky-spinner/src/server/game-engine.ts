@@ -12,6 +12,13 @@ import {
   evaluateSlotLines,
   generateSlotGrid,
 } from "../lib/slots";
+import {
+  evaluateSpin as evaluateAlchemistsCrucibleSpin,
+} from "../components/alchemists-crucible/utils/slotEngine";
+import type {
+  ExpandedWildInfo,
+  SpinResult as AlchemistsCrucibleSpinResult,
+} from "../components/alchemists-crucible/types/slot";
 
 const rouletteTargets = new Map<string, BetTarget>(
   [...numberTargets, ...dozenTargets, ...columnTargets, ...outsideTargets].map((target) => [
@@ -228,6 +235,34 @@ export function resolvePrizeWheel(wager: unknown, boost?: WinRateBoost): GameOut
     while (winningOutcome.netProfit <= 0) winningOutcome = randomPrizeWheelOutcome(wager);
     return winningOutcome;
   });
+}
+
+const alchemistsCrucibleBets = [20, 40, 100, 200, 500, 1000] as const;
+
+export function resolveAlchemistsCrucibleSpin(
+  bet: unknown,
+  isFreeSpin = false,
+  stickyWilds: Record<number, ExpandedWildInfo> = {},
+): { wager: number; payout: number; result: AlchemistsCrucibleSpinResult & { isBonusSpin: boolean } } {
+  if (
+    typeof bet !== "number" ||
+    !alchemistsCrucibleBets.includes(bet as (typeof alchemistsCrucibleBets)[number])
+  ) {
+    throw new Error("Choose a valid Alchemist's Crucible bet");
+  }
+
+  const spin = evaluateAlchemistsCrucibleSpin(
+    bet,
+    isFreeSpin,
+    stickyWilds,
+    undefined,
+    () => randomInt(probabilityResolution) / probabilityResolution,
+  );
+  return {
+    wager: isFreeSpin ? 0 : bet,
+    payout: spin.totalWin,
+    result: { ...spin, isBonusSpin: isFreeSpin },
+  };
 }
 
 export interface BlackjackCard {

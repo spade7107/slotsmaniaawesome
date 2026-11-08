@@ -4,6 +4,7 @@ import {
   advanceBlackjack,
   blackjackHandValue,
   getLossConversionProbability,
+  resolveAlchemistsCrucibleSpin,
   resolvePrizeWheel,
   resolveRoulette,
   resolveSlots,
@@ -16,6 +17,26 @@ import {
   SLOT_COLUMNS,
   SLOT_ROWS,
 } from "../src/lib/slots";
+
+test("Alchemist's Crucible spins are server-resolved and validate whole-GC bets", () => {
+  const paidSpin = resolveAlchemistsCrucibleSpin(20);
+  assert.equal(paidSpin.wager, 20);
+  assert.equal(paidSpin.result.isBonusSpin, false);
+  assert.equal(paidSpin.payout, paidSpin.result.totalWin);
+  assert.ok(paidSpin.result.rawGrid.every((reel) => reel.length === 3));
+  assert.throws(() => resolveAlchemistsCrucibleSpin(20.5), /valid Alchemist's Crucible bet/);
+  assert.throws(() => resolveAlchemistsCrucibleSpin(10), /valid Alchemist's Crucible bet/);
+});
+
+test("Crucible free spins use the stored stake without placing another wallet wager", () => {
+  const freeSpin = resolveAlchemistsCrucibleSpin(40, true, {
+    1: { reel: 1, multiplier: 3, isSticky: true },
+  });
+  assert.equal(freeSpin.wager, 0);
+  assert.equal(freeSpin.result.isBonusSpin, true);
+  assert.equal(freeSpin.payout, freeSpin.result.totalWin);
+  assert.ok(freeSpin.result.expandedGrid[1].every((symbol) => symbol === "CRUCIBLE_WILD"));
+});
 
 test("slots server result has a three by five grid and settles selected paylines", () => {
   const outcome = resolveSlots(5, 10);

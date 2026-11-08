@@ -1,0 +1,21 @@
+.alchemists-crucible-game .font-cinzel {
+  font-family: Cinzel, Georgia, serif;
+}
+
+.alchemists-crucible-game ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.alchemists-crucible-game ::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.alchemists-crucible-game ::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: rgba(217, 119, 6, 0.4);
+}
+
+.alchemists-crucible-game ::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.7);
+}

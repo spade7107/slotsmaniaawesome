@@ -17,6 +17,14 @@ export type DashboardGame = {
 
 export const DASHBOARD_GAMES: DashboardGame[] = [
   {
+    id: "alchemists-crucible",
+    title: "Alchemist's Crucible",
+    category: "slots",
+    href: "/games/alchemists-crucible",
+    description: "Expand multiplier wilds and unlock sticky free spins.",
+    boostEligible: false,
+  },
+  {
     id: "slots",
     title: "Slots",
     category: "slots",
@@ -71,7 +79,21 @@ function GameArtwork({
       <svg viewBox="0 0 320 180" className="h-full w-full" fill="none" aria-hidden="true">
         <rect width="320" height="180" fill="#111b2b" />
         <path d="M0 148H320" stroke="#26364a" strokeWidth="2" />
-        {game.id === "slots" ? (
+        {game.id === "alchemists-crucible" ? (
+          <g strokeWidth="2">
+            <rect x="43" y="28" width="234" height="120" rx="14" fill="#17283c" stroke="#f59e0b" />
+            {[0, 1, 2, 3, 4].map((column) => (
+              <g key={column}>
+                <rect x={52 + column * 44} y="38" width="36" height="100" rx="6" fill="#0d1117" stroke="#624b2b" />
+                <text x={70 + column * 44} y="87" textAnchor="middle" fill={column === 2 ? "#fb923c" : "#f3cc70"} fontSize="24" fontWeight="700">
+                  {["♧", "◇", "⚗", "♡", "✦"][column]}
+                </text>
+                <circle cx={70 + column * 44} cy="116" r="4" fill="#14b8a6" />
+              </g>
+            ))}
+            <path d="M53 91H267" stroke="#f3cc70" strokeWidth="2" />
+          </g>
+        ) : game.id === "slots" ? (
           <g strokeWidth="2">
             <rect x="48" y="35" width="224" height="110" rx="12" fill="#17283c" stroke="#67d8c6" />
             {[0, 1, 2, 3, 4].map((column) => (

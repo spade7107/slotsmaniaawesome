@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --font-cinzel: 'Cinzel', serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+@keyframes crucible-flame {
+  0%, 100% {
+    filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.7)) drop-shadow(0 0 24px rgba(239, 68, 68, 0.5));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.95)) drop-shadow(0 0 35px rgba(245, 158, 11, 0.7));
+    transform: scale(1.02);
+  }
+}
+
+@keyframes rune-glow {
+  0%, 100% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px currentColor);
+  }
+}
+
+@keyframes gold-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-crucible {
+  animation: crucible-flame 2s ease-in-out infinite;
+}
+
+.animate-rune-glow {
+  animation: rune-glow 2.5s ease-in-out infinite;
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #fbbf24 0%, #fef08a 25%, #f59e0b 50%, #fef08a 75%, #fbbf24 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: gold-shimmer 3s linear infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 6, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.7);
+}
