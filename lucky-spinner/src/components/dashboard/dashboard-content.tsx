@@ -437,7 +437,7 @@ export function DashboardContent() {
             </nav>
           </aside>
 
-          <main id="lobby" className="dashboard-main min-w-0 scroll-mt-24">
+          <main id="lobby" className="dashboard-main min-w-0 justify-center scroll-mt-24">
             {authenticated && data?.activeBoost && (
               <div className="mb-6">
                 <ActiveBoostStatus boost={data.activeBoost} />

@@ -494,6 +494,7 @@ html[data-reduce-motion="true"] *::after {
   min-width: 0;
   min-height: calc(100dvh - 4rem);
   flex-direction: column;
+  justify-content: center;
   gap: 1.25rem;
 }
 
@@ -550,14 +551,17 @@ html[data-reduce-motion="true"] *::after {
 .dashboard-game-grid {
   display: grid !important;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
-  gap: 20px !important;
+  gap: 24px !important;
   width: 100% !important;
+  max-width: 1300px !important;
   align-items: stretch !important;
   align-content: start;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .dashboard-game-card {
-  min-height: 0;
+  min-height: 340px;
   transform: translateY(0);
   border-radius: 0.9rem;
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
@@ -569,7 +573,9 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .dashboard-game-artwork {
-  aspect-ratio: 16 / 9;
+  min-height: 260px;
+  flex: 1 1 auto;
+  aspect-ratio: 4 / 3;
 }
 
 .dashboard-game-card-content {
