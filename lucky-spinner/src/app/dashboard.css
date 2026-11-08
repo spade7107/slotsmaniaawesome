@@ -55,6 +55,7 @@ body.dashboard-page {
 
 .dashboard-game-grid {
   display: grid;
+  width: 100%;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
 }
@@ -83,6 +84,8 @@ body.dashboard-page {
 
 .dashboard-main {
   grid-column: span 12;
+  min-width: 0;
+  width: 100%;
 }
 
 .dashboard-sidebar,
@@ -237,20 +240,17 @@ body.dashboard-page {
 
 @media (min-width: 1200px) {
   .dashboard-layout {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-columns: minmax(11.5rem, 13rem) minmax(0, 1fr) minmax(17.5rem, 18rem);
     gap: 1rem;
   }
 
   .dashboard-sidebar {
-    grid-column: span 2;
+    grid-column: auto;
   }
 
-  .dashboard-main {
-    grid-column: span 7;
-  }
-
+  .dashboard-main,
   .dashboard-utility-rail {
-    grid-column: span 3;
+    grid-column: auto;
   }
 
   .dashboard-layout--collapsed,
@@ -260,7 +260,7 @@ body.dashboard-page {
 
   .dashboard-layout--collapsed .dashboard-main,
   .dashboard-layout--guest .dashboard-main {
-    grid-column: span 10;
+    grid-column: 2 / -1;
   }
 
   .dashboard-utility-rail {
