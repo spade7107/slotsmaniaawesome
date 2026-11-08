@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   Trophy,
   Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import { ActiveBoostStatus } from "@/components/active-boost-status";
@@ -30,6 +31,7 @@ import { useResponsiblePlay } from "@/components/dashboard/responsible-play-prov
 import type { DashboardQuest, DashboardResponse } from "@/components/dashboard/types";
 import { getSupabaseClient } from "@/lib/supabase";
 import { playUiSound } from "@/lib/ui-sounds";
+import packageJson from "../../../package.json";
 
 function formatCoins(value: number): string {
   return value.toLocaleString("en-US");
@@ -469,6 +471,38 @@ export function DashboardContent() {
 
         </div>
       </div>
+
+      <footer className="dashboard-statusbar" aria-label="Status and controls">
+        <div className="dashboard-statusbar-inner">
+          <div className="dashboard-statusbar-build">
+            <span>v{packageJson.version}</span>
+            <span className="dashboard-statusbar-dot" aria-hidden="true" />
+            <span className="dashboard-statusbar-online">Online</span>
+          </div>
+          <div className="dashboard-statusbar-badges" role="group" aria-label="Fair play information">
+            <span className="dashboard-statusbar-badge">Fair Play</span>
+            <span className="dashboard-statusbar-badge">RNG</span>
+          </div>
+          <button
+            type="button"
+            className="dashboard-statusbar-sound"
+            aria-label={soundEnabled ? "Turn UI sounds off" : "Turn UI sounds on"}
+            aria-pressed={soundEnabled}
+            title={soundEnabled ? "Turn UI sounds off" : "Turn UI sounds on"}
+            onClick={() => {
+              const enabled = !soundEnabled;
+              setSoundEnabled(enabled);
+              if (enabled) playUiSound(true, "confirm");
+            }}
+          >
+            {soundEnabled ? (
+              <Volume2 aria-hidden="true" className="h-4 w-4" />
+            ) : (
+              <VolumeX aria-hidden="true" className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+      </footer>
 
       <DashboardModal open={questsDrawerOpen} onClose={() => setQuestsDrawerOpen(false)} className="dashboard-utility-dialog">
         <div className="flex min-h-full flex-col p-5 sm:p-6">

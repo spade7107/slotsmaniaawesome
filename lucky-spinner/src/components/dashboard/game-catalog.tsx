@@ -290,7 +290,7 @@ export function GameCatalog({
                 key={game.id}
                 className="dashboard-frame dashboard-game-card group relative overflow-hidden bg-[#101a29]/90 transition duration-200 hover:border-[#67d8c6]/45 hover:bg-[#132033] hover:shadow-[0_20px_55px_rgba(0,0,0,0.28)]"
               >
-                <div className="dashboard-game-artwork relative z-0 aspect-video">
+                <div className="dashboard-game-artwork relative z-0">
                   <GameArtwork game={game} showBoostBadge={authenticated} className="absolute inset-0 h-full w-full" />
                   <button
                     type="button"
