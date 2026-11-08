@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Accessibility,
-  ChevronLeft,
   ChevronRight,
   CircleHelp,
   Clock3,
@@ -13,8 +12,8 @@ import {
   Gamepad2,
   Gift,
   Home,
+  ListChecks,
   LogOut,
-  Menu,
   Package,
   Settings,
   ShieldCheck,
@@ -26,14 +25,11 @@ import {
 import { ActiveBoostStatus } from "@/components/active-boost-status";
 import { DashboardModal } from "@/components/dashboard/modal";
 import { GameCatalog } from "@/components/dashboard/game-catalog";
-import { PromoCarousel, type PromoSlide } from "@/components/dashboard/promo-carousel";
 import { QuestList } from "@/components/dashboard/quest-list";
 import { useResponsiblePlay } from "@/components/dashboard/responsible-play-provider";
 import type { DashboardQuest, DashboardResponse } from "@/components/dashboard/types";
 import { getSupabaseClient } from "@/lib/supabase";
 import { playUiSound } from "@/lib/ui-sounds";
-
-const PROMOTIONS: PromoSlide[] = [];
 
 function formatCoins(value: number): string {
   return value.toLocaleString("en-US");
@@ -43,14 +39,6 @@ function formatSession(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   return hours > 0 ? `${hours}h ${String(minutes % 60).padStart(2, "0")}m` : `${minutes}m`;
-}
-
-function formatCountdown(value: string | undefined): string {
-  if (!value) return "—";
-  const seconds = Math.max(0, Math.floor((Date.parse(value) - Date.now()) / 1_000));
-  const hours = Math.floor(seconds / 3_600);
-  const minutes = Math.floor((seconds % 3_600) / 60);
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
 function ModalHeading({
@@ -95,10 +83,12 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className="dashboard-rounded flex min-h-12 items-center gap-3 px-3 text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
+      aria-label={label}
+      data-tooltip={label}
+      className="dashboard-nav-link dashboard-rounded flex min-h-12 items-center gap-3 px-3 text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
     >
       <Icon aria-hidden="true" className="h-[18px] w-[18px] shrink-0" strokeWidth={2.25} />
-      <span>{label}</span>
+      <span className="dashboard-nav-label">{label}</span>
     </Link>
   );
 }
@@ -116,7 +106,7 @@ export function DashboardContent() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [responsibleOpen, setResponsibleOpen] = useState(false);
   const [questsDrawerOpen, setQuestsDrawerOpen] = useState(false);
-  const [rightRailCollapsed, setRightRailCollapsed] = useState(false);
+  const [questCountdown, setQuestCountdown] = useState("—");
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const settingsLoaded = useRef(false);
@@ -163,6 +153,34 @@ export function DashboardContent() {
   }, [authenticated, dashboard?.dailyBonus.resetsAt, loadDashboard]);
 
   useEffect(() => {
+    const resetAt = dashboard?.dailyBonus.resetsAt;
+    if (!questsDrawerOpen) return;
+    if (!resetAt) {
+      setQuestCountdown("—");
+      return;
+    }
+
+    const updateCountdown = () => {
+      const resetTime = Date.parse(resetAt);
+      if (!Number.isFinite(resetTime)) {
+        setQuestCountdown("—");
+        return;
+      }
+      const seconds = Math.max(0, Math.floor((resetTime - Date.now()) / 1_000));
+      const hours = Math.floor(seconds / 3_600);
+      const minutes = Math.floor((seconds % 3_600) / 60);
+      const remainingSeconds = seconds % 60;
+      setQuestCountdown(
+        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`,
+      );
+    };
+
+    updateCountdown();
+    const interval = window.setInterval(updateCountdown, 1_000);
+    return () => window.clearInterval(interval);
+  }, [dashboard?.dailyBonus.resetsAt, questsDrawerOpen]);
+
+  useEffect(() => {
     const timer = window.setTimeout(() => {
       let savedSound = false;
       let savedMotion = false;
@@ -194,6 +212,7 @@ export function DashboardContent() {
   const username = dashboard?.profile.username ?? (authenticated ? "Player" : "Guest");
   const initial = username.slice(0, 1).toLocaleUpperCase();
   const quests = dashboard?.quests ?? [];
+  const activeQuestCount = authenticated ? quests.filter((quest) => !quest.claimed).length : 0;
 
   const playClick = useCallback(() => {
     playUiSound(soundEnabled);
@@ -272,7 +291,15 @@ export function DashboardContent() {
         claimingId={claimingId}
         onClaim={(quest) => void claim("claim-quest", quest)}
       />
-      {authenticated ? (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        {!authenticated && (
+          <Link
+            href="/login"
+            className="inline-flex min-h-11 items-center text-sm font-bold text-[#67d8c6] hover:text-white"
+          >
+            Sign in to unlock quests
+          </Link>
+        )}
         <Link
           href="/leaderboards"
           onClick={playClick}
@@ -282,36 +309,72 @@ export function DashboardContent() {
           View leaderboards
           <ChevronRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </Link>
-      ) : (
-        <Link
-          href="/login"
-          className="inline-flex min-h-11 items-center text-sm font-bold text-[#67d8c6] hover:text-white"
-        >
-          Sign in to unlock quests
-        </Link>
-      )}
+      </div>
     </div>
   );
 
   return (
-    <div className="dashboard-root min-h-screen text-white">
-      <header className="dashboard-topbar sticky top-0 z-30 border-b border-white/[0.08] bg-[#09111d]/90 px-3 py-3 backdrop-blur-xl sm:px-5 lg:px-7">
-        <div className="mx-auto flex w-full items-center justify-between gap-2">
-          <Link href="/dashboard#lobby" className="dashboard-brand shrink-0 text-sm font-black tracking-[0.12em] text-[#fff7e5] sm:text-base">
-            SLOTS <span className="dashboard-brand-extra text-[#67d8c6]">MANIA</span>
-          </Link>
+    <div className="dashboard-root flex min-h-screen flex-col text-white">
+      <header className="dashboard-topbar sticky top-0 z-30 border-b border-white/[0.08] bg-[#09111d]/95 px-3 backdrop-blur-xl sm:px-5 lg:px-6">
+        <div className="dashboard-topbar-inner mx-auto flex w-full items-center justify-between gap-3">
+          <div className="dashboard-topbar-brand flex min-w-0 items-center gap-3">
+            <Link href="/dashboard#lobby" className="dashboard-brand shrink-0 text-sm font-black tracking-[0.12em] text-[#fff7e5] sm:text-base">
+              SLOTS <span className="dashboard-brand-extra text-[#67d8c6]">MANIA</span>
+            </Link>
+            <span aria-hidden="true" className="h-5 w-px shrink-0 bg-white/15" />
+            <span className="dashboard-breadcrumb truncate text-xs font-semibold text-white/55 sm:text-sm">Game Room</span>
+          </div>
 
-          <div className="flex min-w-0 items-center justify-end gap-2">
+          <div className="dashboard-topbar-center">
+            {authenticated ? (
+              <button
+                type="button"
+                disabled={!bonusAvailable || claimingId === "bonus"}
+                onClick={() => void claim("claim-bonus")}
+                aria-label={bonusAvailable ? `Claim ${dashboard?.dailyBonus.reward ?? 100} Gold Coins daily bonus` : "Daily bonus already claimed"}
+                className={`dashboard-bonus-claim ${bonusAvailable ? "dashboard-bonus-claim--ready" : "dashboard-bonus-claim--claimed"}`}
+              >
+                <Gift aria-hidden="true" className="h-4 w-4 shrink-0" />
+                <span>{claimingId === "bonus" ? "Claiming…" : bonusAvailable ? `+${dashboard?.dailyBonus.reward ?? 100} GC Ready` : "Bonus claimed"}</span>
+              </button>
+            ) : (
+              <Link href="/login" className="dashboard-bonus-claim dashboard-bonus-claim--ready">
+                <Gift aria-hidden="true" className="h-4 w-4 shrink-0" />
+                <span>Daily bonus</span>
+              </Link>
+            )}
+          </div>
+
+          <div className="dashboard-topbar-actions flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => setResponsibleOpen(true)}
+              className="dashboard-session-pill flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-2.5 text-xs font-bold tabular-nums text-white/75 transition hover:border-[#67d8c6]/40 hover:text-white sm:px-3"
+              aria-label={`Session ${formatSession(responsiblePlay.elapsedSeconds)}. Open responsible play reminders`}
+            >
+              <Clock3 aria-hidden="true" className="h-4 w-4 text-[#67d8c6]" />
+              <span>{formatSession(responsiblePlay.elapsedSeconds)}</span>
+            </button>
+
+            <div
+              className="dashboard-balance-pill flex min-h-10 shrink-0 items-center gap-1 rounded-full border border-white/10 bg-white/[0.035] px-2.5 text-xs font-bold tabular-nums text-white/75 sm:gap-1.5 sm:px-3 sm:text-sm"
+              aria-label={`${balanceText} Gold Coins`}
+            >
+              <Coins aria-hidden="true" className="h-4 w-4 shrink-0 text-white/60" />
+              <span className="dashboard-balance-value max-w-[5.5rem] truncate">{balanceText}</span>
+              <span className="text-[10px] tracking-wide">GC</span>
+            </div>
+
             <button
               type="button"
               onClick={() => authenticated ? setProfileOpen(true) : router.push("/login")}
-              className="flex min-h-11 min-w-11 items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] p-1.5 pr-2.5 text-left transition hover:border-[#67d8c6]/40 hover:bg-white/[0.07] sm:pr-3"
+              className="dashboard-profile-button flex min-h-10 min-w-10 shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] p-1.5 text-left transition hover:border-[#67d8c6]/40 hover:bg-white/[0.07] sm:pr-3"
               aria-label={authenticated ? `Open ${username} profile and stats` : "Sign in"}
             >
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[linear-gradient(145deg,#67d8c6,#268a83)] text-sm font-black text-[#07151a]">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[linear-gradient(145deg,#67d8c6,#268a83)] text-xs font-black text-[#07151a]">
                 {initial}
               </span>
-              <span className="hidden min-w-0 sm:block">
+              <span className="dashboard-profile-copy hidden min-w-0 sm:block">
                 <span className="block max-w-24 truncate text-xs font-bold text-white/90">{username}</span>
                 <span className="block text-[10px] font-semibold text-[#67d8c6]">
                   {authenticated && dashboard ? `Lvl ${dashboard.progression.level}` : "Guest"}
@@ -321,38 +384,33 @@ export function DashboardContent() {
 
             <button
               type="button"
-              onClick={() => setResponsibleOpen(true)}
-              className="dashboard-session-pill flex min-h-11 items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs font-bold tabular-nums text-white/75 transition hover:border-[#67d8c6]/40 hover:text-white"
-              aria-label={`Session ${formatSession(responsiblePlay.elapsedSeconds)}. Open responsible play reminders`}
+              onClick={() => {
+                setQuestsDrawerOpen(true);
+                playClick();
+              }}
+              aria-label={`Open daily quests${activeQuestCount > 0 ? `, ${activeQuestCount} active` : ""}`}
+              aria-haspopup="dialog"
+              className="dashboard-icon-button dashboard-quest-trigger relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.035] text-white/70 transition hover:border-[#67d8c6]/40 hover:text-white"
             >
-              <Clock3 aria-hidden="true" className="h-4 w-4 text-[#67d8c6]" />
-              <span className="hidden lg:inline">Session:</span>
-              <span>{formatSession(responsiblePlay.elapsedSeconds)}</span>
+              <ListChecks aria-hidden="true" className="h-[18px] w-[18px]" />
+              {activeQuestCount > 0 && (
+                <span className="dashboard-quest-badge" aria-hidden="true">{activeQuestCount}</span>
+              )}
             </button>
-
-            <div
-              className="dashboard-balance-pill flex min-h-11 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.035] px-3 text-sm font-bold tabular-nums text-white/75"
-              aria-label={`${balanceText} Gold Coins`}
-            >
-              <Coins aria-hidden="true" className="h-4 w-4 shrink-0 text-white/60" />
-              <span className="max-w-[5.5rem] truncate">{balanceText}</span>
-              <span className="text-[10px] tracking-wide">GC</span>
-            </div>
 
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
               aria-label="Open settings"
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.035] text-white/70 transition hover:border-white/25 hover:text-white"
+              className="dashboard-icon-button grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[0.035] text-white/70 transition hover:border-white/25 hover:text-white"
             >
-              <span className="hidden sm:inline"><Settings aria-hidden="true" className="h-5 w-5" /></span>
-              <span className="sm:hidden"><Menu aria-hidden="true" className="h-5 w-5" /></span>
+              <Settings aria-hidden="true" className="h-[18px] w-[18px]" />
             </button>
           </div>
         </div>
       </header>
 
-      <div className="mx-auto w-full px-3 pb-24 pt-4 sm:px-5 lg:px-7">
+      <div className="dashboard-canvas mx-auto flex w-full flex-1 flex-col px-3 py-3 sm:px-5 lg:px-6">
         {(loadError || actionError || actionMessage) && (
           <div className="mb-4 space-y-2" aria-live="polite">
             {loadError && (
@@ -373,129 +431,23 @@ export function DashboardContent() {
           </div>
         )}
 
-        <div className={`dashboard-layout ${rightRailCollapsed ? "dashboard-layout--collapsed" : ""} ${authenticated ? "" : "dashboard-layout--guest"}`}>
+        <div className="dashboard-layout">
           <aside className="dashboard-sidebar" aria-label="Primary navigation">
-            <nav className="space-y-1">
+            <nav className="dashboard-sidebar-nav">
               <NavLink href="/dashboard#lobby" label="Lobby" icon={Home} onClick={playClick} />
-              <NavLink href="/dashboard#games" label="Games" icon={Gamepad2} onClick={playClick} />
-              <button
-                type="button"
-                onClick={() => {
-                  setQuestsDrawerOpen(true);
-                  playClick();
-                }}
-                className="dashboard-rounded flex min-h-12 w-full items-center gap-3 px-3 text-left text-sm font-semibold text-white/60 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
-              >
-                <Trophy aria-hidden="true" className="h-[18px] w-[18px] shrink-0" strokeWidth={2.25} />
-                <span>Leaderboards &amp; quests</span>
-              </button>
-              {authenticated && (
-                <>
-                  <NavLink href="/shop" label="Store" icon={ShoppingBag} onClick={playClick} />
-                  <NavLink href="/shop#inventory" label="Inventory" icon={Package} onClick={playClick} />
-                </>
-              )}
+              <NavLink href="/dashboard#games" label="All Games" icon={Gamepad2} onClick={playClick} />
+              <NavLink href="/leaderboards" label="Leaderboards" icon={Trophy} onClick={playClick} />
+              <NavLink href="/shop" label="Store" icon={ShoppingBag} onClick={playClick} />
+              <NavLink href="/shop#inventory" label="Inventory" icon={Package} onClick={playClick} />
             </nav>
-
-            <section id="daily-bonus-sidebar" className="dashboard-sidebar-bonus dashboard-frame mt-auto bg-[linear-gradient(145deg,rgba(243,204,112,.1),rgba(17,24,39,.75))] p-4">
-              <div className="flex items-center gap-2 text-[#f3cc70]">
-                <Gift aria-hidden="true" className="h-4 w-4" />
-                <h2 className="text-xs font-black uppercase tracking-wider">Daily bonus</h2>
-              </div>
-              {authenticated ? (
-                <>
-                  <p className="mt-2 text-xs text-white/55">
-                    {bonusAvailable ? "Your Gold Coins are ready." : `Next claim in ${formatCountdown(dashboard?.dailyBonus.resetsAt)} UTC`}
-                  </p>
-                  <button
-                    type="button"
-                    disabled={!bonusAvailable || claimingId === "bonus"}
-                    onClick={() => void claim("claim-bonus")}
-                    className={`mt-3 min-h-11 w-full rounded-lg border px-3 text-xs font-black transition ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a] hover:brightness-110" : "dashboard-completed-state cursor-not-allowed"}`}
-                  >
-                    {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "Claim 100 GC" : "Claimed today"}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="mt-2 text-xs leading-relaxed text-white/55">Sign in to unlock the daily bonus.</p>
-                  <Link href="/login" className="mt-2 inline-flex min-h-11 items-center text-xs font-bold text-[#f3cc70]">
-                    Sign in
-                  </Link>
-                </>
-              )}
-            </section>
           </aside>
 
           <main id="lobby" className="dashboard-main min-w-0 scroll-mt-24">
-            <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
-                  {authenticated ? "Welcome back" : "Welcome to Slots Mania"}
-                </p>
-                <h1 className="dashboard-welcome-title mt-1 text-[#fff7e5]">
-                  {authenticated ? username : "Find your next game"}
-                </h1>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <button
-                  type="button"
-                  onClick={() => setQuestsDrawerOpen(true)}
-                  className="min-h-11 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-bold text-white/70 transition hover:border-[#67d8c6]/40 hover:text-white xl:hidden"
-                >
-                  Quick quests
-                </button>
-                {authenticated && (
-                  <button
-                    type="button"
-                    onClick={() => setRightRailCollapsed((value) => !value)}
-                    aria-expanded={!rightRailCollapsed}
-                    aria-controls="quick-quests"
-                    className="hidden min-h-11 items-center gap-2 rounded-xl border border-[#67d8c6]/20 bg-[#17263a] px-3 text-xs font-bold text-white/80 transition hover:border-[#67d8c6]/50 hover:bg-[#20354a] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] xl:inline-flex"
-                  >
-                    {rightRailCollapsed ? <ChevronLeft aria-hidden="true" className="h-4 w-4" /> : <ChevronRight aria-hidden="true" className="h-4 w-4" />}
-                    {rightRailCollapsed ? "Show quests" : "Hide quests"}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <PromoCarousel slides={PROMOTIONS} />
-
             {authenticated && data?.activeBoost && (
               <div className="mb-6">
                 <ActiveBoostStatus boost={data.activeBoost} />
               </div>
             )}
-
-            <section
-              id="daily-bonus"
-              aria-labelledby="daily-bonus-heading"
-              className="dashboard-frame mb-5 bg-[#f3cc70]/[0.055] p-4 md:hidden"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f3cc70]">Daily reward</p>
-                  <h2 id="daily-bonus-heading" className="mt-1 font-bold text-[#fff7e5]">
-                    {authenticated ? "Daily bonus" : "Sign in for daily rewards"}
-                  </h2>
-                </div>
-                {authenticated ? (
-                  <button
-                    type="button"
-                    disabled={!bonusAvailable || claimingId === "bonus"}
-                    onClick={() => void claim("claim-bonus")}
-                    className={`min-h-11 shrink-0 rounded-xl border px-4 text-xs font-black ${bonusAvailable ? "border-transparent bg-[#f3cc70] text-[#17202a]" : "dashboard-completed-state"}`}
-                  >
-                    {claimingId === "bonus" ? "Claiming…" : bonusAvailable ? "CLAIM!" : "Claimed today"}
-                  </button>
-                ) : (
-                  <Link href="/login" className="min-h-11 rounded-xl bg-[#f3cc70] px-4 py-3 text-xs font-black text-[#17202a]">
-                    Sign in
-                  </Link>
-                )}
-              </div>
-            </section>
 
             {responsiblePlay.breakSecondsRemaining > 0 && (
               <div className="mb-5 flex items-center justify-between gap-3 rounded-xl border border-[#67d8c6]/20 bg-[#67d8c6]/[0.06] px-4 py-3 text-sm">
@@ -520,91 +472,18 @@ export function DashboardContent() {
             />
           </main>
 
-          {authenticated && (
-            <aside id="quick-quests" className="dashboard-utility-rail dashboard-frame rounded-2xl bg-[#0e1725]/70 p-4" aria-label="Quick quests">
-              <div className="mb-4 flex items-center justify-between gap-2">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#67d8c6]">Daily goals</p>
-                  <h2 className="mt-1 text-lg font-black text-[#fff7e5]">Quick quests</h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setRightRailCollapsed(true)}
-                  aria-label="Collapse quick quests"
-                  className="grid h-11 w-11 place-items-center rounded-lg text-white/45 hover:bg-white/5 hover:text-white"
-                >
-                  <ChevronRight aria-hidden="true" className="h-4 w-4" />
-                </button>
-              </div>
-              {questPanel}
-              <p className="mt-4 border-t border-white/10 pt-3 text-[10px] leading-relaxed text-white/35">
-                Quests reset at 00:00 UTC. Progress counts completed game rounds.
-              </p>
-            </aside>
-          )}
         </div>
       </div>
 
-      <nav className="dashboard-bottom-nav" aria-label="Mobile navigation">
-        <Link href="/dashboard#lobby" onClick={playClick} className="dashboard-bottom-item">
-          <Home aria-hidden="true" className="h-5 w-5" />
-          <span>Lobby</span>
-        </Link>
-        <Link href="/dashboard#games" onClick={playClick} className="dashboard-bottom-item">
-          <Gamepad2 aria-hidden="true" className="h-5 w-5" />
-          <span>Games</span>
-        </Link>
-        {authenticated ? (
-          <button
-            type="button"
-            onClick={() => {
-              document.getElementById("daily-bonus")?.scrollIntoView({ behavior: "smooth", block: "center" });
-              playClick();
-            }}
-            className="dashboard-bottom-item dashboard-bottom-featured"
-          >
-            <Gift aria-hidden="true" className="h-5 w-5" />
-            <span>{bonusAvailable ? "CLAIM!" : formatCountdown(dashboard?.dailyBonus.resetsAt)}</span>
-          </button>
-        ) : (
-          <Link href="/login" className="dashboard-bottom-item dashboard-bottom-featured">
-            <Gift aria-hidden="true" className="h-5 w-5" />
-            <span>Sign in</span>
-          </Link>
-        )}
-        <button
-          type="button"
-          onClick={() => {
-            setQuestsDrawerOpen(true);
-            playClick();
-          }}
-          className="dashboard-bottom-item"
-        >
-          <Trophy aria-hidden="true" className="h-5 w-5" />
-          <span>Quests</span>
-          {authenticated && quests.filter((quest) => quest.claimable).length > 0 && (
-            <span className="dashboard-nav-badge">{quests.filter((quest) => quest.claimable).length}</span>
-          )}
-        </button>
-        {authenticated ? (
-          <Link href="/shop" onClick={playClick} className="dashboard-bottom-item">
-            <ShoppingBag aria-hidden="true" className="h-5 w-5" />
-            <span>Store</span>
-          </Link>
-        ) : (
-          <Link href="/leaderboards" className="dashboard-bottom-item">
-            <Trophy aria-hidden="true" className="h-5 w-5" />
-            <span>Leaders</span>
-          </Link>
-        )}
-      </nav>
-
       <DashboardModal open={questsDrawerOpen} onClose={() => setQuestsDrawerOpen(false)} className="dashboard-utility-dialog">
-        <div className="p-5 sm:p-6">
+        <div className="flex min-h-full flex-col p-5 sm:p-6">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#67d8c6]">Daily goals</p>
-              <h2 className="mt-1 text-xl font-black text-[#fff7e5]">Quests &amp; leaderboards</h2>
+              <h2 className="mt-1 text-xl font-black text-[#fff7e5]">Daily Quests</h2>
+              <p className="mt-2 text-xs font-semibold tabular-nums text-white/50">
+                Resets in <span className="font-mono text-[#f3cc70]">{questCountdown}</span>
+              </p>
             </div>
             <button
               type="button"
@@ -615,7 +494,10 @@ export function DashboardContent() {
               <X aria-hidden="true" className="h-5 w-5" />
             </button>
           </div>
-          {questPanel}
+          <div className="flex-1">{questPanel}</div>
+          <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/40">
+            Progress counts completed game rounds.
+          </p>
         </div>
       </DashboardModal>
 

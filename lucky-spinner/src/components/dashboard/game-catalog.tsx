@@ -122,7 +122,7 @@ function GameArtwork({
       </svg>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0d1117] to-transparent" />
       {showBoostBadge && game.boostEligible && (
-        <span className="absolute right-4 top-4 z-[3] inline-flex h-6 items-center rounded-full border border-[#67d8c6]/40 bg-[#0d1117]/95 px-2.5 text-[11px] font-bold text-[#67d8c6]">
+        <span className="absolute right-2 top-2 z-[3] inline-flex h-6 items-center rounded-full border border-[#67d8c6]/40 bg-[#0d1117]/95 px-2.5 text-[11px] font-bold text-[#67d8c6]">
             Boost eligible
         </span>
       )}
@@ -221,32 +221,14 @@ export function GameCatalog({
 
   return (
     <section id="games" aria-labelledby="games-heading" className="scroll-mt-24">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#67d8c6]">
-            Find your next game
-          </p>
-          <h2 id="games-heading" className="dashboard-game-heading mt-1 text-[#fff7e5]">
-            Game room
-          </h2>
-        </div>
-        <label className="relative min-w-[min(100%,14rem)] flex-1 sm:max-w-xs">
-          <span className="sr-only">Search games</span>
-          <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-          <input
-            ref={searchInputRef}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search games"
-            className="dashboard-frame dashboard-surface min-h-11 w-full py-2 pl-10 pr-16 text-sm text-white outline-none transition placeholder:text-white/55 focus:border-[#67d8c6]/70 focus:ring-2 focus:ring-[#67d8c6]/25"
-          />
-          <kbd aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[10px] text-white/55">
-            Ctrl K
-          </kbd>
-        </label>
+      <div className="mb-5">
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#67d8c6]">Explore</p>
+        <h2 id="games-heading" className="dashboard-game-heading mt-1 text-[#fff7e5]">
+          Game Room
+        </h2>
       </div>
 
-      <div className="dashboard-catalog-controls mt-5 flex flex-wrap items-center gap-3">
+      <div className="dashboard-catalog-controls">
         <div className="dashboard-filter-scroll flex min-w-0 flex-1 gap-2 overflow-x-auto">
           {categories.map((item) => (
             <button
@@ -263,17 +245,33 @@ export function GameCatalog({
             </button>
           ))}
         </div>
-        <label className="flex min-h-11 shrink-0 items-center gap-2 text-xs font-semibold text-white/55">
-          <span>Sort</span>
-          <select
-            value={sort}
-            onChange={(event) => setSort(event.target.value === "name" ? "name" : "popular")}
-            className="dashboard-frame dashboard-surface min-h-11 px-3 text-xs font-bold text-white outline-none focus:border-[#67d8c6]/70 focus:ring-2 focus:ring-[#67d8c6]/25"
-          >
-            <option value="popular">Popular</option>
-            <option value="name">Name A–Z</option>
-          </select>
-        </label>
+        <div className="dashboard-catalog-actions">
+          <label className="dashboard-game-search">
+            <span className="sr-only">Search games</span>
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+            <input
+              ref={searchInputRef}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search games"
+              className="dashboard-frame dashboard-surface min-h-11 w-full py-2 pl-10 pr-16 text-sm text-white outline-none transition placeholder:text-white/55 focus:border-[#67d8c6]/70 focus:ring-2 focus:ring-[#67d8c6]/25"
+            />
+            <kbd aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[10px] text-white/55">
+              Ctrl+K
+            </kbd>
+          </label>
+          <label className="dashboard-sort-control">
+            <span className="sr-only">Sort games</span>
+            <select
+              value={sort}
+              onChange={(event) => setSort(event.target.value === "name" ? "name" : "popular")}
+              className="dashboard-frame dashboard-surface min-h-11 w-full px-3 text-xs font-bold text-white outline-none focus:border-[#67d8c6]/70 focus:ring-2 focus:ring-[#67d8c6]/25"
+            >
+              <option value="popular">Popular</option>
+              <option value="name">Name A–Z</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       {visibleGames.length === 0 ? (
@@ -294,35 +292,36 @@ export function GameCatalog({
               >
                 <div className="dashboard-game-artwork relative z-0 aspect-video">
                   <GameArtwork game={game} showBoostBadge={authenticated} className="absolute inset-0 h-full w-full" />
+                  <button
+                    type="button"
+                    onClick={() => setSelectedGame(game)}
+                    className="dashboard-game-mobile-action absolute inset-0 z-[2] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
+                    aria-label={`View ${game.title} details`}
+                  />
+                  <Link
+                    href={game.href}
+                    onClick={() => {
+                      if (soundEnabled) onSound();
+                    }}
+                    className="dashboard-game-play-overlay absolute inset-0 z-[2] hidden items-center justify-center rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-white md:flex"
+                  >
+                    <span className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#67d8c6] px-5 text-sm font-bold text-[#07151a] shadow-lg transition hover:brightness-110">
+                      Play Now
+                    </span>
+                  </Link>
                 </div>
                 <div className="dashboard-game-card-content relative z-[1]">
                   <h3 className="font-bold text-white">{game.title}</h3>
-                  <p className="dashboard-game-description mt-1 line-clamp-2 text-slate-400">{game.description}</p>
                 </div>
                 <button
                   type="button"
                   aria-label={`${isFavorite ? "Remove" : "Add"} ${game.title} ${isFavorite ? "from" : "to"} favorites`}
                   aria-pressed={isFavorite}
                   onClick={() => toggleFavorite(game.id)}
-                  className="absolute left-4 top-4 z-10 grid h-11 w-11 place-items-center rounded-full border border-white/20 bg-[#0d1117]/90 text-white/80 backdrop-blur transition hover:border-[#67d8c6]/60 hover:text-[#67d8c6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
+                  className="absolute left-2 top-2 z-10 grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-[#0d1117]/90 text-white/80 backdrop-blur transition hover:border-[#67d8c6]/60 hover:text-[#67d8c6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6]"
                 >
                   <Heart aria-hidden="true" className={`h-5 w-5 ${isFavorite ? "fill-[#67d8c6] stroke-[#67d8c6]" : "fill-none stroke-white"}`} />
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedGame(game)}
-                  className="absolute inset-x-4 bottom-4 top-4 z-[2] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#67d8c6] md:hidden"
-                  aria-label={`View ${game.title} details`}
-                />
-                <Link
-                  href={game.href}
-                  onClick={() => {
-                    if (soundEnabled) onSound();
-                  }}
-                  className="absolute left-4 right-4 top-[35%] z-[2] hidden min-h-11 -translate-y-1/2 items-center justify-center rounded-xl bg-[#67d8c6] px-4 text-sm font-bold text-[#07151a] opacity-0 shadow-lg transition-opacity duration-200 hover:brightness-110 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white group-hover:opacity-100 md:flex"
-                >
-                  Play now
-                </Link>
               </article>
             );
           })}

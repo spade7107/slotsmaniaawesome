@@ -57,7 +57,7 @@ export function QuestList({
                   onClick={() => onClaim(quest)}
                   className="min-h-11 rounded-lg bg-[#67d8c6] px-3 text-xs font-black text-[#07151a] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35"
                 >
-                  {claimingId === quest.id ? "Claiming…" : quest.claimable ? "Claim GC" : "In progress"}
+                  {claimingId === quest.id ? "Claiming…" : quest.claimable ? "Claim" : "In progress"}
                 </button>
               </>
             )}
