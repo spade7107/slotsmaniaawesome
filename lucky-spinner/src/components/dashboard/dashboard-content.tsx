@@ -313,7 +313,7 @@ export function DashboardContent() {
   );
 
   return (
-    <div className="dashboard-root flex min-h-screen flex-col text-white">
+    <div className="dashboard-root flex min-h-screen w-full flex-col text-white">
       <header className="dashboard-topbar sticky top-0 z-30 border-b border-white/[0.08] bg-[#09111d]/95 px-3 backdrop-blur-xl sm:px-5 lg:px-6">
         <div className="dashboard-topbar-inner mx-auto flex w-full items-center justify-between gap-3">
           <div className="dashboard-topbar-brand flex min-w-0 items-center gap-3">
@@ -407,7 +407,7 @@ export function DashboardContent() {
         </div>
       </header>
 
-      <div className="dashboard-canvas mx-auto flex w-full flex-1 flex-col px-3 py-3 sm:px-5 lg:px-6">
+      <div className="dashboard-canvas flex w-full flex-1 flex-col">
         {(loadError || actionError || actionMessage) && (
           <div className="mb-4 space-y-2" aria-live="polite">
             {loadError && (

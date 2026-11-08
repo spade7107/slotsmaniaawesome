@@ -30,7 +30,7 @@ body.dashboard-page {
 .dashboard-game-artwork {
   display: flex;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 16 / 9;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -408,7 +408,8 @@ html[data-reduce-motion="true"] *::after {
   justify-content: center;
   align-items: stretch;
   margin-top: 0;
-  max-width: 1160px;
+  width: 100%;
+  max-width: none;
   min-height: calc(100dvh - var(--dashboard-header-height) - var(--dashboard-footer-height));
   padding: 24px clamp(12px, 3vw, 32px);
   box-sizing: border-box;
@@ -583,7 +584,7 @@ html[data-reduce-motion="true"] *::after {
 .dashboard-statusbar-inner {
   display: grid;
   width: 100%;
-  max-width: 1160px;
+  max-width: none;
   min-height: var(--dashboard-footer-height);
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;

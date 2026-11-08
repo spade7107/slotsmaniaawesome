@@ -120,7 +120,7 @@ function GameArtwork({
           </g>
         )}
       </svg>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0d1117] to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0d1117] to-transparent" />
       {showBoostBadge && game.boostEligible && (
         <span className="absolute right-2 top-2 z-[3] inline-flex h-6 items-center rounded-full border border-[#67d8c6]/40 bg-[#0d1117]/95 px-2.5 text-[11px] font-bold text-[#67d8c6]">
             Boost eligible
