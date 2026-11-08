@@ -488,13 +488,13 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .dashboard-main {
-  display: flex;
+  display: flex !important;
   flex: 1;
   grid-column: auto;
   min-width: 0;
-  min-height: calc(100dvh - 4rem);
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
   gap: 1.25rem;
 }
 
@@ -561,7 +561,6 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .dashboard-game-card {
-  min-height: 340px;
   transform: translateY(0);
   border-radius: 0.9rem;
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
@@ -570,12 +569,6 @@ html[data-reduce-motion="true"] *::after {
 .dashboard-game-card:hover,
 .dashboard-game-card:focus-within {
   transform: translateY(-4px);
-}
-
-.dashboard-game-artwork {
-  min-height: 260px;
-  flex: 1 1 auto;
-  aspect-ratio: 4 / 3;
 }
 
 .dashboard-game-card-content {
@@ -789,11 +782,6 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .dashboard-layout {
-  min-height: calc(100vh - 64px);
-  min-height: calc(100dvh - 64px);
-}
-
-.dashboard-main {
   min-height: calc(100vh - 64px);
   min-height: calc(100dvh - 64px);
 }
