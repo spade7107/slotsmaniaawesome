@@ -155,10 +155,7 @@ export function DashboardContent() {
   useEffect(() => {
     const resetAt = dashboard?.dailyBonus.resetsAt;
     if (!questsDrawerOpen) return;
-    if (!resetAt) {
-      setQuestCountdown("—");
-      return;
-    }
+    if (!resetAt) return;
 
     const updateCountdown = () => {
       const resetTime = Date.parse(resetAt);
@@ -325,7 +322,7 @@ export function DashboardContent() {
             <span className="dashboard-breadcrumb truncate text-xs font-semibold text-white/55 sm:text-sm">Game Room</span>
           </div>
 
-          <div className="dashboard-topbar-center">
+          <div className="dashboard-topbar-actions flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
             {authenticated ? (
               <button
                 type="button"
@@ -343,9 +340,7 @@ export function DashboardContent() {
                 <span>Daily bonus</span>
               </Link>
             )}
-          </div>
 
-          <div className="dashboard-topbar-actions flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={() => setResponsibleOpen(true)}

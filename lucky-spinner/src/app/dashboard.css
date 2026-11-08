@@ -341,13 +341,6 @@ html[data-reduce-motion="true"] *::after {
   flex: 0 1 32%;
 }
 
-.dashboard-topbar-center {
-  display: flex;
-  min-width: 0;
-  flex: 0 0 11rem;
-  justify-content: center;
-}
-
 .dashboard-bonus-claim {
   display: inline-flex;
   width: 10.5rem;
@@ -388,6 +381,10 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .dashboard-topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-left: auto;
   flex: 1 1 32%;
 }
 
@@ -417,12 +414,14 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .dashboard-canvas {
+  flex: 1;
   min-height: calc(100dvh - 4rem);
 }
 
 .dashboard-layout {
   display: grid;
   width: 100%;
+  flex: 1;
   min-height: calc(100dvh - 5.5rem);
   grid-template-columns: 3.5rem minmax(0, 1fr);
   align-items: start;
@@ -490,8 +489,10 @@ html[data-reduce-motion="true"] *::after {
 
 .dashboard-main {
   display: flex;
+  flex: 1;
   grid-column: auto;
   min-width: 0;
+  min-height: calc(100dvh - 4rem);
   flex-direction: column;
   gap: 1.25rem;
 }
@@ -547,9 +548,12 @@ html[data-reduce-motion="true"] *::after {
 }
 
 .dashboard-game-grid {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+  gap: 20px !important;
+  width: 100% !important;
+  align-items: stretch !important;
   align-content: start;
-  gap: 1rem;
 }
 
 .dashboard-game-card {
@@ -701,10 +705,6 @@ html[data-reduce-motion="true"] *::after {
     letter-spacing: 0.06em;
   }
 
-  .dashboard-topbar-center {
-    flex: 0 0 6.4rem;
-  }
-
   .dashboard-bonus-claim {
     width: 6.4rem;
     min-height: 2.25rem;
@@ -717,10 +717,6 @@ html[data-reduce-motion="true"] *::after {
   .dashboard-bonus-claim > span {
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .dashboard-topbar-actions {
-    gap: 0.2rem;
   }
 
   .dashboard-session-pill {
@@ -763,19 +759,37 @@ html[data-reduce-motion="true"] *::after {
   }
 }
 
-@media (max-width: 374px) {
+@media (max-width: 420px) {
   .dashboard-session-pill {
     display: none;
   }
 
-  .dashboard-topbar-center {
-    flex-basis: 5.7rem;
+  .dashboard-bonus-claim {
+    width: 5rem;
+    flex-basis: 5rem;
   }
 
-  .dashboard-bonus-claim {
-    width: 5.7rem;
-    flex-basis: 5.7rem;
+  .dashboard-profile-button,
+  .dashboard-icon-button {
+    width: 2rem;
+    min-width: 2rem;
+    min-height: 2rem;
   }
+}
+
+.dashboard-canvas {
+  min-height: calc(100vh - 64px);
+  min-height: calc(100dvh - 64px);
+}
+
+.dashboard-layout {
+  min-height: calc(100vh - 64px);
+  min-height: calc(100dvh - 64px);
+}
+
+.dashboard-main {
+  min-height: calc(100vh - 64px);
+  min-height: calc(100dvh - 64px);
 }
 
 @media (prefers-reduced-motion: reduce) {
