@@ -46,7 +46,7 @@ export const BonusOverlay: React.FC<BonusOverlayProps> = ({
                 </span>
                 {multiplier > 1 && (
                   <span className="mt-2 px-3 py-1 rounded-full bg-amber-500/30 border border-amber-400 text-amber-200 font-mono text-xs font-bold">
-                    {multiplier}X Combined Crucible Multiplier
+                    {multiplier}X Crucible Multiplier
                   </span>
                 )}
               </div>

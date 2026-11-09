@@ -13,9 +13,8 @@ import {
   WinningLine,
 } from '../types/slot';
 
-export const CRUCIBLE_PAYOUT_SCALE = 0.0020008;
-
-// Payout scaling is calibrated across paid spins and complete bonus rounds to target 96.2% RTP.
+// Base game math is calibrated to ~96.2% RTP. The Crucible Wild is deliberately
+// rare (one stop in 96 per middle reel) because expanded wilds are very powerful.
 export const BASE_REEL_STRIP: SymbolId[] = [
   'RUNE_CLUB', 'RUNE_DIAMOND', 'RUNE_HEART', 'RUNE_SPADE',
   'RUNE_CLUB', 'MORTAR', 'RUNE_DIAMOND', 'SPELLBOOK',
@@ -25,8 +24,10 @@ export const BASE_REEL_STRIP: SymbolId[] = [
   'RUNE_CLUB', 'PHILOSOPHER_STONE', 'RUNE_DIAMOND', 'RUNE_HEART',
 ];
 
-// Reels 2, 3, and 4 (indices 1, 2, 3) include the Crucible Wild
-export const MIDDLE_REEL_STRIP: SymbolId[] = [
+// Reels 2, 3, and 4 (indices 1, 2, 3) use this strip. It is generated from the
+// original 24-stop template so the scatter frequency stays at 1 in 24 while the
+// Crucible Wild frequency is reduced to 1 in 96 stops.
+const MIDDLE_REEL_TEMPLATE: SymbolId[] = [
   'RUNE_CLUB', 'CRUCIBLE_WILD', 'RUNE_DIAMOND', 'MORTAR',
   'RUNE_HEART', 'CRUCIBLE_WILD', 'SPELLBOOK', 'RUNE_SPADE',
   'POTION', 'CRUCIBLE_WILD', 'PHILOSOPHER_STONE', 'OUROBOROS_SCATTER',
@@ -34,6 +35,31 @@ export const MIDDLE_REEL_STRIP: SymbolId[] = [
   'SPELLBOOK', 'RUNE_SPADE', 'POTION', 'CRUCIBLE_WILD',
   'PHILOSOPHER_STONE', 'RUNE_CLUB', 'RUNE_DIAMOND', 'RUNE_HEART',
 ];
+
+const WILD_REPLACEMENTS: SymbolId[] = [
+  'RUNE_CLUB', 'RUNE_DIAMOND', 'RUNE_HEART', 'RUNE_SPADE',
+  'MORTAR', 'SPELLBOOK', 'POTION', 'PHILOSOPHER_STONE',
+  'RUNE_CLUB', 'RUNE_DIAMOND', 'RUNE_HEART', 'RUNE_SPADE',
+  'MORTAR', 'SPELLBOOK', 'POTION', 'PHILOSOPHER_STONE',
+  'RUNE_CLUB', 'RUNE_DIAMOND', 'RUNE_HEART', 'RUNE_SPADE',
+];
+
+function buildMiddleReelStrip(length: number, wildCount: number): SymbolId[] {
+  const strip: SymbolId[] = [];
+  while (strip.length < length) strip.push(...MIDDLE_REEL_TEMPLATE);
+  strip.length = length;
+
+  let wildsToReplace = strip.filter(symbol => symbol === 'CRUCIBLE_WILD').length - wildCount;
+  for (let index = strip.length - 1; index >= 0 && wildsToReplace > 0; index--) {
+    if (strip[index] === 'CRUCIBLE_WILD') {
+      strip[index] = WILD_REPLACEMENTS[wildsToReplace % WILD_REPLACEMENTS.length];
+      wildsToReplace--;
+    }
+  }
+  return strip;
+}
+
+export const MIDDLE_REEL_STRIP: SymbolId[] = buildMiddleReelStrip(96, 1);
 
 const MULTIPLIER_POOL: (2 | 3 | 5)[] = [2, 2, 2, 3, 3, 5];
 
@@ -46,13 +72,6 @@ function getRandomSymbol(
 ): SymbolId {
   const index = Math.floor(random() * strip.length);
   return strip[index];
-}
-
-function settlePayout(amount: number, random: () => number): number {
-  const scaledAmount = amount * CRUCIBLE_PAYOUT_SCALE;
-  const wholeAmount = Math.floor(scaledAmount);
-  const fractionalAmount = scaledAmount - wholeAmount;
-  return wholeAmount + (fractionalAmount > 0 && random() < fractionalAmount ? 1 : 0);
 }
 
 /**
@@ -138,8 +157,8 @@ export function evaluateSpin(
       continue;
     }
 
-    // Check if a Crucible Wild landed on this reel
-    const hasWild = rawGrid[reel].some(sym => sym === 'CRUCIBLE_WILD');
+    // The Crucible expands only when it lands on the center row of the reel.
+    const hasWild = rawGrid[reel][1] === 'CRUCIBLE_WILD';
     if (hasWild) {
       // Expands to cover entire reel
       for (let row = 0; row < 3; row++) {
@@ -188,17 +207,17 @@ export function evaluateSpin(
     const basePayoutMultiplier = symbolDef?.payouts[matchCount] || 0;
 
     if (basePayoutMultiplier > 0) {
-      // Calculate line multiplier from participating expanded wilds
+      // Use the highest multiplier among the expanded wilds on this line.
       let lineMultiplier = 1;
       for (let i = 0; i < matchCount; i++) {
         const reelIdx = matchedPositions[i].reel;
         if (expandedWilds[reelIdx]) {
-          lineMultiplier *= expandedWilds[reelIdx].multiplier;
+          lineMultiplier = Math.max(lineMultiplier, expandedWilds[reelIdx].multiplier);
         }
       }
 
-      const baseWin = lineBet * basePayoutMultiplier * CRUCIBLE_PAYOUT_SCALE;
-      const finalWin = settlePayout(lineBet * basePayoutMultiplier * lineMultiplier, random);
+      const baseWin = lineBet * basePayoutMultiplier;
+      const finalWin = baseWin * lineMultiplier;
 
       if (finalWin > 0) {
         winningLines.push({
@@ -219,11 +238,11 @@ export function evaluateSpin(
     }
   });
 
-  // Calculate cumulative combined multiplier across all active winning wild reels
+  // Highest multiplier among all expanded wilds that participated in a win.
   let totalMultiplier = 1;
   activeWildReelsInWins.forEach(reelIdx => {
     if (expandedWilds[reelIdx]) {
-      totalMultiplier *= expandedWilds[reelIdx].multiplier;
+      totalMultiplier = Math.max(totalMultiplier, expandedWilds[reelIdx].multiplier);
     }
   });
 
@@ -256,8 +275,8 @@ export function evaluateSpin(
       freeSpinsAwarded = 10;
     }
 
-    const scatterMultiplier = SYMBOLS.OUROBOROS_SCATTER.payouts[scatterCount] || 2;
-    scatterWin = settlePayout(totalBet * scatterMultiplier, random);
+    const scatterMultiplier = SYMBOLS.OUROBOROS_SCATTER.payouts[scatterCount] || 1;
+    scatterWin = totalBet * scatterMultiplier;
   }
 
   const totalWin = totalLineWin + scatterWin;

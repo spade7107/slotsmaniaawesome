@@ -56,25 +56,26 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
             <p className="text-slate-300 leading-relaxed text-xs md:text-sm">
               The <strong className="text-amber-300">Crucible Wild</strong> appears on{' '}
               <strong className="text-white">Reels 2, 3, and 4</strong> and substitutes for all
-              symbols except the Scatter.
+              symbols except the Scatter. It only expands when it lands on the center row.
             </p>
             <ul className="mt-2 space-y-1.5 text-xs text-slate-400 list-disc list-inside">
               <li>
-                <strong className="text-slate-200">Full Reel Expansion:</strong> Whenever a
-                Crucible Wild lands anywhere on a reel, it expands to cover all 3 rows of that
+                <strong className="text-slate-200">Center-Row Expansion:</strong> When a Crucible
+                Wild lands on the center row of a reel, it expands to cover all 3 rows of that
                 reel.
               </li>
               <li>
-                <strong className="text-slate-200">Multiplier Reveal:</strong> If it completes or
-                participates in a winning combination, it reveals a random multiplier of{' '}
+                <strong className="text-slate-200">Multiplier Reveal:</strong> An expanded Crucible
+                Wild reveals a random multiplier of{' '}
                 <span className="text-amber-300 font-bold">2x</span>,{' '}
                 <span className="text-amber-300 font-bold">3x</span>, or{' '}
-                <span className="text-amber-300 font-bold">5x</span>!
+                <span className="text-amber-300 font-bold">5x</span> when it participates in a
+                winning line.
               </li>
               <li>
-                <strong className="text-slate-200">Multiplying Multipliers:</strong> If multiple
-                Crucible Wilds participate in a winning line, their multipliers multiply together!
-                (e.g., <span className="text-amber-300">2x × 3x = 6x Total Multiplier</span>).
+                <strong className="text-slate-200">Highest Multiplier:</strong> If multiple expanded
+                Crucible Wilds participate in a winning line, the highest multiplier applies
+                (e.g., <span className="text-amber-300">2x and 5x = 5x Total Multiplier</span>).
               </li>
             </ul>
           </section>
@@ -103,8 +104,8 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
                 <span className="text-teal-300 font-bold">+5 Extra Free Spins</span>!
               </li>
               <li>
-                <strong className="text-slate-200">Scatter Payouts:</strong> 3 Scatters = 2x Total
-                Bet, 4 Scatters = 10x Total Bet, 5 Scatters = 50x Total Bet.
+                <strong className="text-slate-200">Scatter Payouts:</strong> 3 Scatters = 1x Total
+                Bet, 4 Scatters = 7x Total Bet, 5 Scatters = 36x Total Bet.
               </li>
             </ul>
           </section>
